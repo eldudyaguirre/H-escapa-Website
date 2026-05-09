@@ -31,8 +31,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "h-escapa.up.railway.app",
-    "secretos-ocultos.com",
-    "www.secretos-ocultos.com",
+    "h-escapa.com",
+    "www.h-escapa.com",
 
 ]
 
