@@ -1,1 +1,1 @@
-web: gunicorn hescapa.wsgi 
+web: python manage.py collectstatic --noinput && gunicorn hescapa.wsgi
