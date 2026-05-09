@@ -27,8 +27,16 @@ SECRET_KEY = 'django-insecure-=x4cuej*(&7$8^r!nvlj=+t)g5ub*#j9fl2apz1#f&ddvr-tkg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "h-escapa.up.railway.app",
+    "secretos-ocultos.com",
+    "www.secretos-ocultos.com",
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://h-escapa.up.railway.app"
+ 
+]
 
 # Application definition
 
