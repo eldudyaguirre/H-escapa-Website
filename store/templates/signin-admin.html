@@ -1,20 +1,18 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
     <title>H-escapa - Ingreso al Sistema</title>
-    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
     <div class="container">
         <i class="ring"></i>
         <i class="ring"></i>
         <i class="ring"></i>
-        <a class="logo-header" href="{% url 'home' %}">
-            <img src="{% static '/img/logo.svg' %}" alt="Logo" >
+        <a class="logo-header" href="index.html">
+            <img src="static/img/logo.svg" alt="Logo" >
         </a>
             <form class="login-form">
                 <h2>Ingreso</h2>

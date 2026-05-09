@@ -398,18 +398,6 @@ body{
     height: 8px;
 }
 
-.section-title .retitle{
-	content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    background: var(--white-color);
-	border-radius: 50%;
-    width: 8px;
-    height: 8px;
-}
-
 
 .section-title h1{
 	font-size: 70px;
@@ -949,8 +937,8 @@ header.main-header .header-sticky.active::before{
 .hero-list{
 	position: relative;
 	border-top: 1px solid var(--dark-divider-color);
-	margin-top: 70px;
-	padding: 20px 0 0;
+	margin-top: 180px;
+	padding: 60px 0 0;
 	z-index: 1;
 }
 
@@ -1543,13 +1531,12 @@ header.main-header .header-sticky.active::before{
 }
 
 .video-counter-item h2{
-	font-size: 42px;
+	font-size: 50px;
 	color: var(--white-color);
 	margin-bottom: 10px;
 }
 
 .video-counter-item p{
-	font-size: 14px;
 	color: var(--white-color);
 	text-transform: capitalize;
 	opacity: 80%;
@@ -1722,7 +1709,7 @@ header.main-header .header-sticky.active::before{
 
 .cta-box{
 	position: relative;
-	background-color: var(--h-escapa1-color);
+	background-color: var(--accent-color);
 	border-radius: 20px;
 	display: flex;
 	align-items: end;
@@ -1793,7 +1780,7 @@ header.main-header .header-sticky.active::before{
 	font-weight: 500;
 	line-height: 1.2em;
 	text-transform: capitalize;
-	background: var(--primary-color);
+	background: var(--h-escapa1-color);
 	color: var(--white-color);
 	border-radius: 10px;
 	padding: 16px 20px;
@@ -1817,7 +1804,7 @@ header.main-header .header-sticky.active::before{
 	right: 0;
     width: 0;
     height: 106%;
-    background: var(--primary-color);
+    background: var(--h-escapa1-color);
     transform: skew(45deg);
     transition: all 0.4s ease-in-out;
     z-index: -1;
@@ -2538,11 +2525,9 @@ header.main-header .header-sticky.active::before{
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
-	padding: 100px 0 80px;
-	margin: 0;
-	margin-top: -151px;
-	margin-bottom: 0px;
-	padding-bottom: 40px;
+	padding: 270px 0 170px;
+	margin-top: -160px;
+	margin-bottom: -290px;
 }
 
 .header-services{
@@ -2628,7 +2613,7 @@ header.main-header .header-sticky.active::before{
     right: 0;
     background: linear-gradient(0deg, rgba(66, 165, 158, 0) 75.27%, rgba(66, 165, 158, 0.8) 100%), linear-gradient(270deg, rgba(66, 165, 158, 0) 25.18%, var(--h-escapa1-color) 105.08%);
     width: 100%;
-    height: 100%;
+    height: 36%;
     z-index: 0;
 }
 
@@ -2950,7 +2935,7 @@ header.main-header .header-sticky.active::before{
 
 .our-benefit-item .icon-box{
     position: relative;
-    background: var(--h-escapa1-color);
+    background: var(--accent-color);
     border-radius: 8px;
     width: 40px;
     height: 40px;
@@ -4228,7 +4213,7 @@ header.main-header .header-sticky.active::before{
     align-items: center;
     gap: 20px;
     padding: 12px 30px;
-    background-color: var(--h-escapa1-color);
+    background-color: var(--accent-color);
     border-radius: 0 0 20px 20px;
 }
 
@@ -4364,7 +4349,7 @@ header.main-header .header-sticky.active::before{
 	top: 0;
 	left: 0;
 	bottom: 0;
-	background-color: var(--h-escapa1-color);
+	background-color: var(--accent-color);
 	border-radius: 100px;
 }
 
@@ -4841,7 +4826,7 @@ header.main-header .header-sticky.active::before{
 }
 
 .contact-form-box{
-    background-color: var(--h-escapa2-color);
+    background-color: var(--secondary-color);
     border-radius: 20px;
     text-align: center;
     padding: 80px;
@@ -4865,7 +4850,7 @@ header.main-header .header-sticky.active::before{
 }
 
 .contact-info-box{
-    background-color: var(--h-escapa1-color);
+    background-color: var(--accent-color);
     border-radius: 20px;
 	display: flex;
 	flex-wrap: wrap;

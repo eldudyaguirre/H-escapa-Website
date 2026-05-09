@@ -11,7 +11,7 @@
 	<!-- Page Title -->
     <title>Hipno - Psychology and Counseling HTML Template</title>
 	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
+	<link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.png">
 	<!-- Google Fonts Css-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,7 +61,7 @@
                             <ul class="navbar-nav mr-auto" id="menu">
                                 <li class="nav-item submenu"><a class="nav-link" href="./">Home</a>
                                     <ul>
-                                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home - Image</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="index.html">Home - Image</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-video.html">Home - Video</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-slider.html">Home - Slider</a></li>
                                     </ul>
@@ -85,7 +85,7 @@
                                         <li class="nav-item"><a class="nav-link" href="404.html">404</a></li>
                                     </ul>
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
                                 <li class="nav-item highlighted-menu"><a class="nav-link" href="book-appointment.html">book appointment</a></li>                           
                             </ul>
                         </div>
@@ -554,11 +554,11 @@
                         <!-- Footer Menu Start -->
                         <div class="footer-menu">
                             <ul>                            
-                                <li><a href="{% url 'home' %}">home</a></li>
+                                <li><a href="index.html">home</a></li>
                                 <li><a href="about.html">about us</a></li>
                                 <li><a href="services.html">services</a></li>
                                 <li><a href="blog.html">blog</a></li>
-                                <li><a href="{% url 'contact' %}">contact us</a></li>
+                                <li><a href="contact.html">contact us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Menu End -->
@@ -578,22 +578,36 @@
      </footer>
     <!-- Footer End -->
 
-<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/validator.min.js' %}"></script>
-<script src="{% static 'js/jquery.slicknav.js' %}"></script>
-<script src="{% static 'js/swiper-bundle.min.js' %}"></script>
-<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-<script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-<script src="{% static 'js/SmoothScroll.js' %}"></script>
-<script src="{% static 'js/parallaxie.js' %}"></script>
-<script src="{% static 'js/gsap.min.js' %}"></script>
-<script src="{% static 'js/magiccursor.js' %}"></script>
-<script src="{% static 'js/SplitText.js' %}"></script>
-<script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
-<script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
-<script src="{% static 'js/wow.min.js' %}"></script>
-<script src="{% static 'js/function.js' %}"></script>
+    <!-- Jquery Library File -->
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap js file -->
+    <script src="static/js/bootstrap.min.js"></script>
+    <!-- Validator js file -->
+    <script src="static/js/validator.min.js"></script>
+    <!-- SlickNav js file -->
+    <script src="static/js/jquery.slicknav.js"></script>
+    <!-- Swiper js file -->
+    <script src="static/js/swiper-bundle.min.js"></script>
+    <!-- Counter js file -->
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.counterup.min.js"></script>
+    <!-- Magnific js file -->
+    <script src="static/js/jquery.magnific-popup.min.js"></script>
+    <!-- SmoothScroll -->
+    <script src="static/js/SmoothScroll.js"></script>
+    <!-- Parallax js -->
+    <script src="static/js/parallaxie.js"></script>
+    <!-- MagicCursor js file -->
+    <script src="static/js/gsap.min.js"></script>
+    <script src="static/js/magiccursor.js"></script>
+    <!-- Text Effect js file -->
+    <script src="static/js/SplitText.js"></script>
+    <script src="static/js/ScrollTrigger.min.js"></script>
+    <!-- YTPlayer js File -->
+    <script src="static/js/jquery.mb.YTPlayer.min.js"></script>
+    <!-- Wow js file -->
+    <script src="static/js/wow.min.js"></script>
+    <!-- Main Custom js file -->
+    <script src="static/js/function.js"></script>
 </body>
 </html>

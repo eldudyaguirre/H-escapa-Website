@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -15,25 +14,33 @@
     <!-- Page Title -->
     <title>Hester Palacio Segovia | Psicóloga Clínica en Cuenca - H-escapa</title>
 	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
+	<link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.png">
 	<!-- Google Fonts Css-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/swiper-bundle.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
-	<link href="{% static 'css/magnific-popup.css' %}" rel="stylesheet">
-	<link href="{% static 'css/mousecursor.css' %}" rel="stylesheet">
-	<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+	<!-- Bootstrap Css -->
+	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<!-- SlickNav Css -->
+	<link href="static/css/slicknav.min.css" rel="stylesheet">
+	<!-- Swiper Css -->
+	<link rel="stylesheet" href="static/css/swiper-bundle.min.css">
+	<!-- Font Awesome Icon Css-->
+	<link href="static/css/all.min.css" rel="stylesheet" media="screen">
+	<!-- Animated Css -->
+	<link href="static/css/animate.css" rel="stylesheet">
+    <!-- Magnific Popup Core Css File -->
+	<link rel="stylesheet" href="static/css/magnific-popup.css">
+	<!-- Mouse Cursor Css File -->
+	<link rel="stylesheet" href="static/css/mousecursor.css">
+	<!-- Main Custom Css -->
+	<link href="static/css/custom.css" rel="stylesheet" media="screen">
     <script type="application/ld+json">
     {
     "@context": "https://schema.org",
     "@type": "Psychologist",
     "name": "Hester Palacio Segovia",
-    "image": "https://h-escapa.com/static/img/team-2.jpg",
+    "image": "https://h-escapa.com/static/img/team-1.jpg",
     "jobTitle": "Psicóloga Clínica",
     "address": {
         "@type": "PostalAddress",
@@ -51,7 +58,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="{% static '/img/loader.svg' %}" alt=""></div>
+			<div id="loading-icon"><img src="static/img/loader.svg" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -63,7 +70,7 @@
 				<div class="container">
 					<!-- Logo Start -->
 					<a class="navbar-brand" href="./">
-						<img src="{% static '/img/logo.svg' %}" alt="Logo">
+						<img src="static/img/logo.svg" alt="Logo">
 					</a>
 					<!-- Logo End -->
 
@@ -71,16 +78,18 @@
 					<div class="collapse navbar-collapse main-menu">
                         <div class="nav-menu-wrapper">
                             <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li> 
-                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="./">Inicio</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="about.html">Acerca de</a></li>
+                                <li class="nav-item"><a class="nav-link" href="services.html">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="contact.html">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Inicio de Sesión</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="book-appointment.html">Reservar una cita</a></li>                           
                             </ul>
                         </div>
                         <!-- Header Btn Start -->
                         <div class="header-btn d-inline-flex">
-                            <a href="{% url 'agendamiento' %}" class="btn-default">Reservar una cita</a>
+                            <a href="book-appointment.html" class="btn-default">Reservar una cita</a>
                         </div>
                         <!-- Header Btn End -->
 					</div>
@@ -103,8 +112,8 @@
 						<h1 class="text-anime-style-2" data-cursor="-opaque">Psi.cli. Hester Palacio Segovia</h1>
 						<nav class="wow fadeInUp">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="{% url 'home' %}">inicio</a></li>
-								<li class="breadcrumb-item"><a href="{% url 'about' %}">Acerca de</a></li>
+								<li class="breadcrumb-item"><a href="./">inicio</a></li>
+								<li class="breadcrumb-item"><a href="team.html">Acerca de</a></li>
 								<li class="breadcrumb-item active" aria-current="page">Hester Palacio</li>
 							</ol>
 						</nav>
@@ -128,7 +137,7 @@
                             <!-- Team Sidebar Image Start -->
                             <div class="team-sidebar-image">
                                 <figure class="image-anime">
-                                    <img src="{% static '/img/team-2.jpg' %}" alt="">
+                                    <img src="static/img/team-1.jpg" alt="">
                                 </figure>
                             </div>
                             <!-- Team Sidebar Image End -->
@@ -392,7 +401,7 @@
                                 <!-- Why Choose Item Start -->
                                 <div class="why-choose-item wow fadeInUp">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-why-choose-3.svg' %}" alt="">
+                                        <img src="static/img/icon-why-choose-3.svg" alt="">
                                     </div>
                                     <div class="why-choose-item-content">
                                         <h3>Experiencia y formación profesional</h3>
@@ -403,7 +412,7 @@
                                 <!-- Why Choose Item Start -->
                                 <div class="why-choose-item wow fadeInUp" data-wow-delay="0.2s">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-why-choose-5.svg' %}" alt="">
+                                        <img src="static/img/icon-why-choose-5.svg" alt="">
                                     </div>
                                     <div class="why-choose-item-content">
                                         <h3>Enfoque centrado en la persona</h3>
@@ -414,7 +423,7 @@
                                 <!-- Why Choose Item Start -->
                                 <div class="why-choose-item wow fadeInUp" data-wow-delay="0.4s">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-why-choose-6.svg' %}" alt="">
+                                        <img src="static/img/icon-why-choose-6.svg" alt="">
                                     </div>
                                     <div class="why-choose-item-content">
                                         <h3>Espacio seguro y confidencial</h3>
@@ -425,7 +434,7 @@
                                 <!-- Why Choose Item Start -->
                                 <div class="why-choose-item wow fadeInUp" data-wow-delay="0.6s">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-why-choose-7.svg' %}" alt="">
+                                        <img src="static/img/icon-why-choose-7.svg" alt="">
                                     </div>
                                     <div class="why-choose-item-content">
                                         <h3>Compromiso con tu crecimiento personal</h3>
@@ -524,7 +533,7 @@
                 <div class="col-lg-12">
                     <!-- Footer Logo Start -->
                     <div class="footer-logo">
-                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
+                        <img src="static/img/footer-logo.svg" alt="">
                     </div>
                     <!-- Footer Logo End -->                    
                 </div>
@@ -586,11 +595,11 @@
                         <!-- Footer Menu Start -->
                         <div class="footer-menu">
                             <ul>                            
-                                <li><a href="{% url 'home' %}">Inicio</a></li>
-                                <li><a href="{% url 'about' %}">Acerca de</a></li>
-                                <li><a href="{% url 'services' %}">Servicios</a></li>
-                                <li><a href="{% url 'bloggeneral' %}">Blog</a></li>
-                                <li><a href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li><a href="index.html">Inicio</a></li>
+                                <li><a href="about.html">Acerca de</a></li>
+                                <li><a href="services.html">Servicios</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="contact.html">Contáctanos</a></li>
                             </ul>
                         </div>
                         <!-- Footer Menu End -->
@@ -610,22 +619,36 @@
      </footer>
     <!-- Footer End -->
 
-    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/validator.min.js' %}"></script>
-    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
-    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
-    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-    <script src="{% static 'js/SmoothScroll.js' %}"></script>
-    <script src="{% static 'js/parallaxie.js' %}"></script>
-    <script src="{% static 'js/gsap.min.js' %}"></script>
-    <script src="{% static 'js/magiccursor.js' %}"></script>
-    <script src="{% static 'js/SplitText.js' %}"></script>
-    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
-    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
-    <script src="{% static 'js/wow.min.js' %}"></script>
-    <script src="{% static 'js/function.js' %}"></script>
+    <!-- Jquery Library File -->
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap js file -->
+    <script src="static/js/bootstrap.min.js"></script>
+    <!-- Validator js file -->
+    <script src="static/js/validator.min.js"></script>
+    <!-- SlickNav js file -->
+    <script src="static/js/jquery.slicknav.js"></script>
+    <!-- Swiper js file -->
+    <script src="static/js/swiper-bundle.min.js"></script>
+    <!-- Counter js file -->
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.counterup.min.js"></script>
+    <!-- Magnific js file -->
+    <script src="static/js/jquery.magnific-popup.min.js"></script>
+    <!-- SmoothScroll -->
+    <script src="static/js/SmoothScroll.js"></script>
+    <!-- Parallax js -->
+    <script src="static/js/parallaxie.js"></script>
+    <!-- MagicCursor js file -->
+    <script src="static/js/gsap.min.js"></script>
+    <script src="static/js/magiccursor.js"></script>
+    <!-- Text Effect js file -->
+    <script src="static/js/SplitText.js"></script>
+    <script src="static/js/ScrollTrigger.min.js"></script>
+    <!-- YTPlayer js File -->
+    <script src="static/js/jquery.mb.YTPlayer.min.js"></script>
+    <!-- Wow js file -->
+    <script src="static/js/wow.min.js"></script>
+    <!-- Main Custom js file -->
+    <script src="static/js/function.js"></script>
 </body>
 </html>

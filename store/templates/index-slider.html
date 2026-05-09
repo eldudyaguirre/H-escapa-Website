@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -62,14 +61,14 @@
                             <ul class="navbar-nav mr-auto" id="menu">
                                 <li class="nav-item submenu"><a class="nav-link" href="./">Home</a>
                                     <ul>
-                                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home - Image</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="index.html">Home - Image</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-video.html">Home - Video</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-slider.html">Home - Slider</a></li>
                                     </ul>
                                 </li>                                
                                 <li class="nav-item"><a class="nav-link" href="about.html">About Us</a>
                                 <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
                                 <li class="nav-item submenu"><a class="nav-link" href="#">Pages</a>
                                     <ul>                                        
                                         <li class="nav-item"><a class="nav-link" href="service-single.html">Service Details</a></li>
@@ -86,7 +85,7 @@
                                         <li class="nav-item"><a class="nav-link" href="404.html">404</a></li>
                                     </ul>
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
                                 <li class="nav-item highlighted-menu"><a class="nav-link" href="book-appointment.html">book appointment</a></li>                           
                             </ul>
                         </div>
@@ -135,7 +134,7 @@
                                         <div class="hero-content-body">
                                             <!-- Hero Button Start -->
                                             <div class="hero-btn wow fadeInUp" data-wow-delay="0.4s">
-                                                <a href="{% url 'contact' %}" class="btn-default">get started today</a>
+                                                <a href="contact.html" class="btn-default">get started today</a>
                                             </div>
                                             <!-- Hero Button End -->            
                                         </div>
@@ -175,7 +174,7 @@
                                         <div class="hero-content-body">
                                             <!-- Hero Button Start -->
                                             <div class="hero-btn wow fadeInUp" data-wow-delay="0.4s">
-                                                <a href="{% url 'contact' %}" class="btn-default">get started today</a>
+                                                <a href="contact.html" class="btn-default">get started today</a>
                                             </div>
                                             <!-- Hero Button End -->            
                                         </div>
@@ -296,7 +295,7 @@
                         <!-- About Us Content Button Start -->
                         <div class="about-us-content-btn wow fadeInUp" data-wow-delay="0.6s">
                             <a href="about.html" class="btn-default">learn more</a>
-                            <a href="{% url 'contact' %}" class="btn-default btn-highlighted">get in touch</a>
+                            <a href="contact.html" class="btn-default btn-highlighted">get in touch</a>
                         </div>
                         <!-- About Us Content Button End -->
                     </div>
@@ -453,7 +452,7 @@
                 <div class="col-lg-12">
                     <!-- Service Get Quote Text Start -->
                     <div class="service-get-quote-text wow fadeInUp" data-wow-delay="1s">
-                        <p><span>Free</span> Let's make something great work together. <a href="{% url 'contact' %}">Get Free Quote</a></p>
+                        <p><span>Free</span> Let's make something great work together. <a href="contact.html">Get Free Quote</a></p>
                     </div>
                     <!-- Service Get Quote Text End -->
                 </div>
@@ -554,7 +553,7 @@
                                 <div class="why-choose-body-content wow fadeInUp">
                                     <h3>Choosing Us for Mental Wellness</h3>
                                     <p>Choosing us for your mental wellness means partnering with a dedicated team of professionals committed to your growth and healing. Our holistic approach combines evidence-based therapies, personalized support, and a compassionate.</p>
-                                    <a href="{% url 'contact' %}" class="btn-default">contact us</a>
+                                    <a href="contact.html" class="btn-default">contact us</a>
                                 </div>
                                 <!-- Why Choose Body Content End -->
                             </div>
@@ -757,7 +756,7 @@
                 <div class="col-lg-6">
                     <!-- Section Button Start -->
                     <div class="section-btn wow fadeInUp" data-wow-delay="0.2s">
-                        <a href="{% url 'contact' %}" class="btn-default">contact us</a>
+                        <a href="contact.html" class="btn-default">contact us</a>
                     </div>
                     <!-- Section Button End -->
                 </div>
@@ -872,7 +871,7 @@
                 <div class="col-lg-7">
                     <!-- Section Button Start -->
                     <div class="section-btn">
-                        <a href="{% url 'contact' %}" class="btn-default">contact us</a>
+                        <a href="contact.html" class="btn-default">contact us</a>
                     </div>
                     <!-- Section Button End -->
                 </div>
@@ -1233,7 +1232,7 @@
                 <div class="col-lg-6">
                     <!-- Section Button Start -->
                     <div class="section-btn wow fadeInUp" data-wow-delay="0.2s">
-                        <a href="{% url 'bloggeneral' %}" class="btn-default">view all post</a>
+                        <a href="blog.html" class="btn-default">view all post</a>
                     </div>
                     <!-- Section Button End -->
                 </div>
@@ -1602,11 +1601,11 @@
                         <!-- Footer Menu Start -->
                         <div class="footer-menu">
                             <ul>                            
-                                <li><a href="{% url 'home' %}">home</a></li>
+                                <li><a href="index.html">home</a></li>
                                 <li><a href="about.html">about us</a></li>
                                 <li><a href="services.html">services</a></li>
-                                <li><a href="{% url 'bloggeneral' %}">blog</a></li>
-                                <li><a href="{% url 'contact' %}">contact us</a></li>
+                                <li><a href="blog.html">blog</a></li>
+                                <li><a href="contact.html">contact us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Menu End -->

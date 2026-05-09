@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -10,19 +9,27 @@
 	<!-- Page Title -->
     <title>H-escapa - Peritajes Judiciales</title>
 	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
+	<link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.png">
 	<!-- Google Fonts Css-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/swiper-bundle.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
-	<link href="{% static 'css/magnific-popup.css' %}" rel="stylesheet">
-	<link href="{% static 'css/mousecursor.css' %}" rel="stylesheet">
-	<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+	<!-- Bootstrap Css -->
+	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<!-- SlickNav Css -->
+	<link href="static/css/slicknav.min.css" rel="stylesheet">
+	<!-- Swiper Css -->
+	<link rel="stylesheet" href="static/css/swiper-bundle.min.css">
+	<!-- Font Awesome Icon Css-->
+	<link href="static/css/all.min.css" rel="stylesheet" media="screen">
+	<!-- Animated Css -->
+	<link href="static/css/animate.css" rel="stylesheet">
+    <!-- Magnific Popup Core Css File -->
+	<link rel="stylesheet" href="static/css/magnific-popup.css">
+	<!-- Mouse Cursor Css File -->
+	<link rel="stylesheet" href="static/css/mousecursor.css">
+	<!-- Main Custom Css -->
+	<link href="static/css/custom.css" rel="stylesheet" media="screen">
 </head>
 <body>
 
@@ -30,7 +37,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="{% static '/img/loader.svg' %}" alt=""></div>
+			<div id="loading-icon"><img src="static/img/loader.svg" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -42,7 +49,7 @@
 				<div class="container" >
 					<!-- Logo Start -->
 					<a class="navbar-brand">
-						<img src="{% static '/img/logo.svg' %}" alt="Logo">
+						<img src="static/img/logo.svg" alt="Logo">
 					</a>
 					<!-- Logo End -->
 
@@ -50,16 +57,20 @@
 					<div class="collapse navbar-collapse main-menu">
                         <div class="nav-menu-wrapper">
                             <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li> 
-                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="./">Inicio</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="about.html">Acerca de</a></li>
+                                <li class="nav-item"><a class="nav-link" href="services.html">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+<!--                                book-appointment.html
+                                -->
+                                <li class="nav-item"><a class="nav-link" href="contact.html">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="signin.html">Inicio de Sesión</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="#">Reservar una cita</a></li>                           
                             </ul>
                         </div>
                         <!-- Header Btn Start -->
                         <div class="header-btn d-inline-flex">
-                            <a href="{% url 'agendamiento' %}" class="btn-default">Reservar una cita</a>
+                            <a href="book-appointment.html" class="btn-default">Reservar una cita</a>
                         </div>
                         <!-- Header Btn End -->
 					</div>
@@ -82,8 +93,8 @@
 						<h1 class="text-anime-style-2" data-cursor="-opaque">Evaluaciones Periciales</h1>
 						<nav class="wow fadeInUp">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
-								<li class="breadcrumb-item"><a href="{% url 'services' %}">Servicios</a></li>
+								<li class="breadcrumb-item"><a href="./">Inicio</a></li>
+								<li class="breadcrumb-item"><a href="services.html">Servicios</a></li>
 								<li class="breadcrumb-item active" aria-current="page">evaluaciones periciales</li>
 							</ol>
 						</nav>
@@ -106,12 +117,12 @@
                         <div class="service-catagery-list wow fadeInUp">
                             <h3>Categoria de Servicios</h3>
                             <ul>
-                                <li><a href="{% url 'individualtherapy' %}">Terapia Individual Personalizada</a></li>
-                                <li><a href="{% url 'coupletherapy' %}">Terapia de Pareja</a></li>
-                                <li><a href="{% url 'kidstherapy' %}">Terapia Infantil y Adolescente</a></li>
-                                <li><a href="{% url 'depansitherapy' %}">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
-                                <li><a href="{% url 'meditation' %}">Mindfulness y meditación</a></li>
-                                <li><a href="{% url 'grupaltherapy' %}">Terapia Grupal</a></li>
+                                <li><a href="Individual-therapy.html">Terapia Individual Personalizada</a></li>
+                                <li><a href="Kids-therapy.html">Terapia de Pareja</a></li>
+                                <li><a href="Depansi-therapy.html">Terapia Infantil y Adolescente</a></li>
+                                <li><a href="Depansi-therapy.html">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
+                                <li><a href="Meditation.html">Mindfulness y meditación</a></li>
+                                <li><a href="Grupal-therapy.html">Terapia Grupal</a></li>
                             </ul>
                         </div>
                         <!-- Service Category List End -->
@@ -121,22 +132,22 @@
                             <div class="customer-images">
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="{% static '/img/customer-img-1.jpg' %}" alt="">
+                                        <img src="static/img/customer-img-1.jpg" alt="">
                                     </figure>
                                 </div>                                    
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="{% static '/img/customer-img-2.jpg' %}" alt="">
+                                        <img src="static/img/customer-img-2.jpg" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="{% static '/img/customer-img-3.jpg' %}" alt="">
+                                        <img src="static/img/customer-img-3.jpg" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="{% static '/img/customer-img-4.jpg' %}" alt="">
+                                        <img src="static/img/customer-img-4.jpg" alt="">
                                     </figure>
                                 </div>
                             </div>
@@ -155,7 +166,7 @@
                         <!-- Service Feature Image Start -->
                         <div class="service-feature-image">
                             <figure class="image-anime reveal">
-                                <img src="{% static '/img/service-image-4.jpg' %}" alt="">
+                                <img src="static/img/service-image-4.jpg" alt="">
                             </figure>
                         </div>
                         <!-- Service Feature Image End -->
@@ -186,7 +197,7 @@
                                 <!-- Therapy Benefits Start -->
                                 <div class="therapy-benefits-image">
                                     <figure class="image-anime reveal">
-                                        <img src="{% static '/img/our-benefit-img-2.jpg' %}" alt="">
+                                        <img src="static/img/our-benefit-img-2.jpg" alt="">
                                     </figure>
                                 </div>
                                 <!-- Therapy Benefits End -->
@@ -198,7 +209,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-service-benefit-9.svg' %}" alt="">
+                                        <img src="static/img/icon-service-benefit-9.svg" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -211,7 +222,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp" data-wow-delay="0.2s">
                                     <div class="icon-box">
-                                        <img src="{% static '/img/icon-service-benefit-1.svg' %}" alt="">
+                                        <img src="static/img/icon-service-benefit-1.svg" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -284,7 +295,7 @@
                                 <div class="video-image">
                                     <a href="https://www.youtube.com/watch?v=Y-x0efG1seA" class="popup-video" data-cursor-text="Play">
                                         <figure class="image-anime">
-                                            <img src="{% static '/img/service-entry-video-bg3.jpg' %}" alt="">
+                                            <img src="static/img/service-entry-video-bg3.jpg" alt="">
                                         </figure>
                                     </a>
                                 </div>
@@ -432,7 +443,7 @@
                 <div class="col-lg-12">
                     <!-- Footer Logo Start -->
                     <div class="footer-logo">
-                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
+                        <img src="static/img/footer-logo.svg" alt="">
                     </div>
                     <!-- Footer Logo End -->                    
                 </div>
@@ -494,11 +505,11 @@
                         <!-- Footer Menu Start -->
                         <div class="footer-menu">
                             <ul>                            
-                                <li><a href="{% url 'home' %}">Inicio</a></li>
-                                <li><a href="{% url 'about' %}">Acerca de</a></li>
-                                <li><a href="{% url 'services' %}">Servicios</a></li>
-                                <li><a href="{% url 'bloggeneral' %}">Blog</a></li>
-                                <li><a href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li><a href="index.html">Inicio</a></li>
+                                <li><a href="about.html">Acerca de</a></li>
+                                <li><a href="services.html">Servicios</a></li>
+                                <li><a href="blog.html">Blog</a></li>
+                                <li><a href="contact.html">Contáctanos</a></li>
                             </ul>
                         </div>
                         <!-- Footer Menu End -->
@@ -518,22 +529,36 @@
      </footer>
     <!-- Footer End -->
 
-    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/validator.min.js' %}"></script>
-    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
-    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
-    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-    <script src="{% static 'js/SmoothScroll.js' %}"></script>
-    <script src="{% static 'js/parallaxie.js' %}"></script>
-    <script src="{% static 'js/gsap.min.js' %}"></script>
-    <script src="{% static 'js/magiccursor.js' %}"></script>
-    <script src="{% static 'js/SplitText.js' %}"></script>
-    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
-    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
-    <script src="{% static 'js/wow.min.js' %}"></script>
-    <script src="{% static 'js/function.js' %}"></script>
+    <!-- Jquery Library File -->
+    <script src="static/js/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap js file -->
+    <script src="static/js/bootstrap.min.js"></script>
+    <!-- Validator js file -->
+    <script src="static/js/validator.min.js"></script>
+    <!-- SlickNav js file -->
+    <script src="static/js/jquery.slicknav.js"></script>
+    <!-- Swiper js file -->
+    <script src="static/js/swiper-bundle.min.js"></script>
+    <!-- Counter js file -->
+    <script src="static/js/jquery.waypoints.min.js"></script>
+    <script src="static/js/jquery.counterup.min.js"></script>
+    <!-- Magnific js file -->
+    <script src="static/js/jquery.magnific-popup.min.js"></script>
+    <!-- SmoothScroll -->
+    <script src="static/js/SmoothScroll.js"></script>
+    <!-- Parallax js -->
+    <script src="static/js/parallaxie.js"></script>
+    <!-- MagicCursor js file -->
+    <script src="static/js/gsap.min.js"></script>
+    <script src="static/js/magiccursor.js"></script>
+    <!-- Text Effect js file -->
+    <script src="static/js/SplitText.js"></script>
+    <script src="static/js/ScrollTrigger.min.js"></script>
+    <!-- YTPlayer js File -->
+    <script src="static/js/jquery.mb.YTPlayer.min.js"></script>
+    <!-- Wow js file -->
+    <script src="static/js/wow.min.js"></script>
+    <!-- Main Custom js file -->
+    <script src="static/js/function.js"></script>
 </body>
 </html>
