@@ -2,7 +2,12 @@ from django.urls import path, include
 from . import views
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
+from django.contrib.sitemaps.views import sitemap
+from store.sitemaps import StaticViewSitemap
 
+sitemaps = {
+    'static': StaticViewSitemap,
+}
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -34,6 +39,13 @@ urlpatterns = [
 
     path('homein-calendario/', views.homeincalendario, name='homeincalendario'),   
     path('homein-nuevopaciente/', views.homeinnuevopaciente, name='homeinnuevopaciente'),   
-
+    path(
+        'sitemap.xml',
+        sitemap,
+        {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'
+    ),
 ]
+
+
 
