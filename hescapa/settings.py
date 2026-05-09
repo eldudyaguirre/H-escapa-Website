@@ -22,21 +22,26 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY =  os.getenv("SECRET_KEY")
+SECRET_KEY =  os.getenv("SECRET_KEY", "django-local-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
-
+#DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True
 ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
     "h-escapa.up.railway.app",
     "secretos-ocultos.com",
     "www.secretos-ocultos.com",
+
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://h-escapa.up.railway.app"
- 
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "https://h-escapa.up.railway.app",
 ]
+
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
