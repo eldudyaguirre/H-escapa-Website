@@ -1,0 +1,494 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="description" content="Ayuda S.O.S. es un grupo terapéutico dirigido a mujeres que han vivido violencia en el hogar. Un espacio seguro, confidencial y de acompañamiento emocional en H-escapa, Cuenca.">
+	<meta name="author" content="Imashuti">
+	<!-- Page Title -->
+    <title>H-escapa - Ayuda SOS</title>
+	<!-- Favicon Icon -->
+	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
+	<!-- Google Fonts Css-->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/swiper-bundle.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+	<link href="{% static 'css/magnific-popup.css' %}" rel="stylesheet">
+	<link href="{% static 'css/mousecursor.css' %}" rel="stylesheet">
+	<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Preloader Start -->
+	<div class="preloader">
+		<div class="loading-container">
+			<div class="loading"></div>
+			<div id="loading-icon"><img src="{% static '/img/loader.svg' %}" alt=""></div>
+		</div>
+	</div>
+	<!-- Preloader End -->
+
+    <!-- Header Start -->
+	<header class="main-header">
+		<div class="header-sticky">
+			<nav class="navbar navbar-expand-lg">
+				<div class="container" >
+					<!-- Logo Start -->
+					<a class="navbar-brand">
+						<img src="{% static '/img/logo.svg' %}" alt="Logo">
+					</a>
+					<!-- Logo End -->
+
+					<!-- Main Menu Start -->
+					<div class="collapse navbar-collapse main-menu">
+                        <div class="nav-menu-wrapper">
+                            <ul class="navbar-nav mr-auto" id="menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio de Sesión</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="#">Reservar una cita</a></li>                           
+                            </ul>
+                        </div>
+                        <!-- Header Btn Start -->
+                        <div class="header-btn d-inline-flex">
+                            <a href="{% url 'agendamiento' %}" class="btn-default">Reservar una cita</a>
+                        </div>
+                        <!-- Header Btn End -->
+					</div>
+					<!-- Main Menu End -->
+					<div class="navbar-toggle"></div>
+				</div>
+			</nav>
+			<div class="responsive-menu"></div>
+		</div>
+	</header>
+	<!-- Header End -->
+
+    <!-- Page Header Start -->
+	<div class="page-header parallaxie header-ayudasos">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<!-- Page Header Box Start -->
+					<div class="page-header-box">
+						<h1 class="text-anime-style-2" data-cursor="-opaque">Ayuda SOS</h1>
+						<nav class="wow fadeInUp">
+							<ol class="breadcrumb">
+								<p class="wow fadeInUp subtitlewhite" >Grupo terapéutico dirigido a mujeres que han vivido violencia en el hogar.</p>
+							</ol>
+						</nav>
+					</div>
+					<!-- Page Header Box End -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Page Header End -->
+
+    <!-- Page Case Study Single Start -->
+    <div class="page-case-study-single">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <!-- Case Study Sidebar Start -->
+                    <div class="case-study-sidebar">
+                        <!-- Case Study Detail Box Start -->
+                        <div class="case-study-detail-box wow fadeInUp">
+                            <h2>Ayuda S.O.S. </h2>
+
+                            <!-- Case Study Detail Box Start -->
+                            <div class="case-study-list-box">
+                                <!-- Case Stydy Item Content Start -->
+                                <div class="case-study-list-item">
+                                    <h3>Modalidad:</h3>
+                                    <p>Presencial/Virtual</p>
+                                </div>
+                                <!-- Case Stydy Item Content End -->
+
+                                <!-- Case Stydy Item Content Start -->
+                                <div class="case-study-list-item">
+                                    <h3>Dirigido a:</h3>
+                                    <p>Mujeres que han vivido violencia en el hogar</p>
+                                </div>
+                                <!-- Case Stydy Item Content End -->
+
+                                <!-- Case Stydy Item Content Start -->
+                                <div class="case-study-list-item">
+                                    <h3>Frecuencia:</h3>
+                                    <p>Todos los miércoles</p>
+                                    <p>8h30pm</p>
+                                </div>
+                                <!-- Case Stydy Item Content End -->
+
+                                <!-- Case Stydy Item Content Start -->
+                                <div class="case-study-list-item">
+                                    <h3>Dirección:</h3>
+                                    <p>Francisco Moscoso 5-39 y Av 10 de Agosto</p>
+                                </div>
+                                <!-- Case Stydy Item Content End -->
+
+                            </div>
+                        </div>
+                        <!-- Case Study Detail Box End -->
+                    </div>
+                    <!-- Case Study Sidebar End -->
+                </div>
+                <div class="col-lg-8">
+                    <!-- Case Study Single Content Start -->
+                    <div class="case-study-single-content">
+                        <!-- Case Study Featured Image Start -->
+                        <div class="case-study-featured-image">
+                            <figure class="image-anime reveal">
+                                <img src="{% static '/img/ayudasos-img-1.jpg' %}" alt="">
+                            </figure>
+                        </div>
+                        <!-- Case Study Featured Image End -->
+
+                        <!-- Case Study Entry Start -->
+                        <div class="case-study-entry2">
+                            <p class="wow fadeInUp">
+                            Ayuda S.O.S. es un grupo terapéutico creado para brindar acompañamiento emocional a mujeres que han vivido situaciones de violencia dentro del hogar. 
+                            Este espacio busca ofrecer contención, escucha activa y herramientas psicológicas que favorezcan la recuperación emocional y el fortalecimiento personal.
+                            </p>
+
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">
+                            El grupo funciona como un entorno seguro y confidencial donde cada participante puede compartir su experiencia sin juicio. 
+                            A través del trabajo grupal, se fomenta el apoyo mutuo, la validación emocional y el desarrollo de recursos internos para reconstruir la autoestima y la autonomía.
+                            </p>                            
+                            <h2 class="text-anime-style-3">Enfoque terapéutico</h2>
+                            <p class="wow fadeInUp">
+                            El grupo Ayuda S.O.S. se desarrolla desde un enfoque terapéutico basado en evidencia, integrando herramientas de la terapia cognitivo-conductual y técnicas de regulación emocional. 
+                            Se trabaja en la identificación de patrones de violencia, reconstrucción de la autoestima y fortalecimiento de la autonomía personal dentro de un entorno seguro y confidencial.
+                            </p>
+                            <!-- Therapeutic Approch List Start -->
+                            <div class="therapeutic-approach-list wow fadeInUp">
+                                <!-- Therapeutic Approch Item Start -->
+                                <div class="therapeutic-approach-item2">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-why-choose-8.svg' %}" alt="">
+                                    </div>
+
+                                    <div class="therapeutic-approach-content">
+                                        <h3>Psicoeducación</h3>
+                                        <p>Comprensión del ciclo de la violencia y sus efectos emocionales.</p>
+                                    </div>
+                                </div>
+                                <!-- Therapeutic Approch Item End -->
+
+                                <!-- Therapeutic Approch Item Start -->
+                                <div class="therapeutic-approach-item2">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-why-choose-1.svg' %}" alt="">
+                                    </div>
+
+                                    <div class="therapeutic-approach-content">
+                                        <h3>Regulación emocional</h3>
+                                        <p>Técnicas para manejar ansiedad, miedo, culpa y estrés postraumático.</p>
+                                    </div>
+                                </div>
+                                <!-- Therapeutic Approch Item End -->
+
+                                <!-- Therapeutic Approch Item Start -->
+                                <div class="therapeutic-approach-item2">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-why-choose-7.svg' %}" alt="">
+                                    </div>
+
+                                    <div class="therapeutic-approach-content">
+                                        <h3>Fortalecimiento de autoestima</h3>
+                                        <p>Reconstrucción del autoconcepto y empoderamiento personal.</p>
+                                    </div>
+                                </div>
+                                <!-- Therapeutic Approch Item End -->
+
+                                <!-- Therapeutic Approch Item Start -->
+                                <div class="therapeutic-approach-item2">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-service-benefit-4.svg' %}" alt="">
+                                    </div>
+
+                                    <div class="therapeutic-approach-content">
+                                        <h3>Red de apoyo</h3>
+                                        <p>Construcción de vínculos saludables dentro del grupo.</p>
+                                    </div>
+                                </div>
+                                <!-- Therapeutic Approch Item End -->
+                            </div>
+                            <!-- Therapeutic Approch List End -->
+
+                            <h2 class="text-anime-style-2">Objetivos del grupo</h2>
+
+                            <p class="wow fadeInUp">El objetivo principal del grupo es acompañar el proceso de recuperación emocional, fortalecer la seguridad personal y promover decisiones conscientes que favorezcan el bienestar integral de cada participante.</p>
+
+                            <!-- Case Study Image List Start -->
+                            <div class="case-study-image-list">
+                                <!-- Case Study List Start -->
+                                <div class="case-study-list wow fadeInUp" data-wow-delay="0.2s">
+                                    <ul>
+                                        <li>Reconstrucción de la autoestima</li>
+                                        <li>Fortalecimiento de la seguridad personal</li>
+                                        <li>Aprendizaje de límites saludables</li>
+                                        <li>Reducción de ansiedad y miedo</li>
+                                        <li>Creación de una red de apoyo emocional</li>
+                                    </ul>
+                                </div>
+                                <!-- Case Study List End -->
+
+                                <!-- Case Study Image Start -->
+                                <div class="case-study-entry-image">
+                                    <figure class="image-anime reveal">
+                                        <img src="{% static '/img/case-study-entry-img.jpg' %}" alt="">
+                                    </figure>
+                                </div>
+                                <!-- Case Study Image End -->
+                            </div>
+                            <!-- Case Study Image List End -->
+                        </div>
+                        <!-- Case Study Entry End -->
+
+                        <!-- Pahe Single FAQs Start -->
+                        <div class="page-single-faqs">
+                            <div class="section-title">
+                                <h2 class="text-anime-style-2" data-cursor="-opaque">Preguntas Frecuentes</h2>
+                            </div>
+
+                            <!-- FAQ Accordion Start -->
+                            <div class="faq-accordion page-faq-accordion" id="faqaccordion">
+                                <!-- FAQ Item Start -->
+                                <div class="accordion-item wow fadeInUp">
+                                    <h2 class="accordion-header" id="heading1">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                            <span>1.</span> ¿Es confidencial la participación?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#faqaccordion">
+                                        <div class="accordion-body">
+                                            <p>Sí. La confidencialidad es un principio fundamental del grupo. Todas las participantes se comprometen a respetar la privacidad del espacio.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- FAQ Item End -->
+
+                                <!-- FAQ Item Start -->
+                                <div class="accordion-item wow fadeInUp" data-wow-delay="0.2s">
+                                    <h2 class="accordion-header" id="heading2">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                            <span>2.</span> ¿Necesito haber denunciado para participar?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#faqaccordion">
+                                        <div class="accordion-body">
+                                            <p>No. El grupo está dirigido a mujeres que buscan apoyo emocional, independientemente de su situación legal.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- FAQ Item End -->
+
+                                <!-- FAQ Item Start -->
+                                <div class="accordion-item wow fadeInUp" data-wow-delay="0.4s">
+                                    <h2 class="accordion-header" id="heading3">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                            <span>3.</span> ¿Es obligatorio compartir mi historia?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#faqaccordion">
+                                        <div class="accordion-body">
+                                            <p>No. Cada participante decide cuánto desea compartir y cuándo hacerlo.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- FAQ Item End -->
+
+                                <!-- FAQ Item Start -->
+                                <div class="accordion-item wow fadeInUp" data-wow-delay="0.6s">
+                                    <h2 class="accordion-header" id="heading4">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                            <span>4.</span> ¿El grupo reemplaza la terapia individual?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#faqaccordion">
+                                        <div class="accordion-body">
+                                            <p>No necesariamente. Puede complementarse con procesos individuales según cada caso.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- FAQ Item End -->
+
+                                <!-- FAQ Item Start -->
+                                <div class="accordion-item wow fadeInUp" data-wow-delay="0.8s">
+                                    <h2 class="accordion-header" id="heading5">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                            <span>5.</span> ¿Cómo puedo inscribirme?
+                                        </button>
+                                    </h2>
+                                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#faqaccordion">
+                                        <div class="accordion-body">
+                                            <p>Envíanos un mensaje y te daremos la información necesaria para ser parte del grupo.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- FAQ Item End -->
+                            </div>
+                            <!-- FAQ Accordion End -->
+                        </div>
+                        <!-- Pahe Single FAQs End -->
+                    </div>
+                    <!-- Case Study Single Content End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Case Study Single End -->
+
+<!-- Footer CTA Box Start -->
+    <div class="footer-cta-box-ayudasos">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <!-- Footer CTa Content Start -->
+                    <div class="footer-cta-content">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">¡Unete a nuestro grupo ahora mismo!</h2>
+                        </div>
+                        <!-- Section Title End -->
+                    </div>
+                    <!-- Footer CTa Content End -->                  
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- Footer CTA Button Start -->
+                    <div class="footer-cta-btn wow fadeInUp">
+                        <a href="https://wa.me/593992840994?text=Quiero%20m%C3%A1s%20informaci%C3%B3n%20de:%20Ayuda%20SOS" class="btn-default btn-phone2"><i class="fa-brands fa-whatsapp"></i> Saber más</a>
+                        <a href="{% url 'grupaltherapy' %}" class="btn-defaultfooter btn-comment"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+                    </div>
+                    <!-- Footer CTA Button End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer CTA Box End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">                
+                <div class="col-lg-12">
+                    <!-- Footer Logo Start -->
+                    <div class="footer-logo">
+                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
+                    </div>
+                    <!-- Footer Logo End -->                    
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- About Footer Start -->
+                    <div class="about-footer">
+                        <div class="section-title">
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Estamos aquí cuando estés listo/a</h2>
+                        </div>
+
+                        <!-- Footer Contact Box Start -->
+                        <div class="footer-contact-box">
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Número Celular</p>
+                                <h3>0992840994</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Email</p>
+                                <h3>info@h-escapa.com</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Dirección</p>
+                                <h3>Francisco Moscoso 5-39 y Av 10 de Agosto</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+                        </div>
+                        <!-- Footer Contact Box End -->
+                    </div>
+                    <!-- About Footer End -->
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Footer Social Link Start -->
+                    <div class="footer-social-links">
+                        <h3>Síguenos en redes sociales</h3>
+                        <p>Encuentra recursos, consejos y contenido sobre bienestar emocional.</p>
+                        <ul>
+                            <li><a href="https://www.facebook.com/hesterpalacio.psic.cli"><i class="fa-brands fa-facebook-f"></i></a></li>
+                            <li><a href="https://www.instagram.com/ps.cl.hester_palacio/"><i class="fa-brands fa-instagram"></i></a></li>
+                            <li><a href="https://www.tiktok.com/@psc_hester_palacio"><i class="fa-brands fa-tiktok"></i></a></li>
+                        </ul>
+                    </div>
+                    <!-- Footer Social Link End -->
+                </div>
+            </div>
+
+            <!-- Footer Copyright Section Start -->
+            <div class="footer-copyright">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <!-- Footer Menu Start -->
+                        <div class="footer-menu">
+                            <ul>                            
+                                <li><a href="{% url 'home' %}">Inicio</a></li>
+                                <li><a href="{% url 'about' %}">Acerca de</a></li>
+                                <li><a href="{% url 'services' %}">Servicios</a></li>
+                                <li><a href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li><a href="{% url 'contact' %}">Contáctanos</a></li>
+                            </ul>
+                        </div>
+                        <!-- Footer Menu End -->
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Footer Copyright Start -->
+                        <div class="footer-copyright-text">
+                            <p>Imashuti © 2026 Todos los derechos reservados.</p>
+                        </div>
+                        <!-- Footer Copyright End -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Copyright Section End -->
+        </div>
+     </footer>
+    <!-- Footer End -->
+
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/validator.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/SmoothScroll.js' %}"></script>
+    <script src="{% static 'js/parallaxie.js' %}"></script>
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/magiccursor.js' %}"></script>
+    <script src="{% static 'js/SplitText.js' %}"></script>
+    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
+    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/function.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}H-escapa - Menú Principal{% endblock %}
+
+
+{% block content %}
+        <main class="main-content">
+            <div class="dashboard-home" id="home">
+
+                <!-- ===== KPI CARDS ===== -->
+                <div class="kpi-grid">
+
+                    <div class="kpi-card">
+                        <i class='bx bx-calendar-check'></i>
+                        <div>
+                            <h3>5</h3>
+                            <p>Citas hoy</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <i class='bx bx-user'></i>
+                        <div>
+                            <h3>42</h3>
+                            <p>Pacientes activos</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <i class='bx bx-file'></i>
+                        <div>
+                            <h3>3</h3>
+                            <p>Tests pendientes</p>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <i class='bx bx-edit-alt'></i>
+                        <div>
+                            <h3>8</h3>
+                            <p>Posts publicados</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- ===== MAIN CONTENT GRID ===== -->
+                <div class="dashboard-grid">
+
+                    <!-- Agenda -->
+                    <div class="dashboard-card">
+                        <h4>Agenda de Hoy</h4>
+                        <ul class="agenda-list">
+                            <li>08:00 - María López - Confirmada</li>
+                            <li>10:00 - Juan Pérez - Pendiente</li>
+                            <li>14:00 - Ana Torres - Online</li>
+                        </ul>
+                    </div>
+
+                    <!-- Actividad -->
+                    <div class="dashboard-card">
+                        <h4>Actividad Reciente</h4>
+                        <ul class="activity-list">
+                            <li>Nuevo paciente registrado</li>
+                            <li>Test1 generado</li>
+                            <li>Post “Mindfulness” publicado</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="dashboard-agenda" id="calendario">
+                <div class="esapciotrabajo">
+
+                </div>
+
+            </div>
+        </main>
+{% endblock %}

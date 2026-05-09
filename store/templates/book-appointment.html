@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="Imashuti">
+	<!-- Page Title -->
+    <title>H-escapa - Agenda tu cita</title>
+	<!-- Favicon Icon -->
+	<link rel="shortcut icon" type="image/x-icon" href="{% static '/img/favicon.png' %}">
+	<!-- Google Fonts Css-->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/swiper-bundle.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+	<link href="{% static 'css/magnific-popup.css' %}" rel="stylesheet">
+	<link href="{% static 'css/mousecursor.css' %}" rel="stylesheet">
+	<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Preloader Start -->
+	<div class="preloader">
+		<div class="loading-container">
+			<div class="loading"></div>
+			<div id="loading-icon"><img src="{% static '/img/loader.svg' %}" alt=""></div>
+		</div>
+	</div>
+	<!-- Preloader End -->
+
+    <!-- Header Start -->
+	<header class="main-header">
+		<div class="header-sticky">
+			<nav class="navbar navbar-expand-lg">
+				<div class="container">
+					<!-- Logo Start -->
+					<a class="navbar-brand">
+						<img src="{% static '/img/logo.svg' %}" alt="Logo">
+					</a>
+					<!-- Logo End -->
+
+					<!-- Main Menu Start -->
+					<div class="collapse navbar-collapse main-menu1">
+                        <div class="nav-menu-wrapper">
+                            <ul class="navbar-nav mr-auto" id="menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                            </ul>
+                        </div>
+					</div>
+					<!-- Main Menu End -->
+					<div class="navbar-toggle"></div>
+				</div>
+			</nav>
+			<div class="responsive-menu"></div>
+		</div>
+	</header>
+	<!-- Header End -->
+
+    <!-- Page Header Start -->
+	<div class="page-header1">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Page Header End -->
+
+    <!-- Our Appointment Section Start -->
+    <div class="our-appointment">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Our Appointment Box Start -->
+                    <div class="our-appointment-box">
+                        <!-- Appointment Form Start -->
+                        <div class="appointment-form">
+                            <!-- Contact Us Form Start -->
+                            <form id="appointmentForm" action="#" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.25s">
+                                <div class="row">
+                                    <div class="form-group col-md-6 mb-4">
+                                        <input type="text" name="fname" class="form-control" id="fname" placeholder="Nombres" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-6 mb-4">
+                                        <input type="text" name="lname" class="form-control" id="lname" placeholder="Apellidos" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-12 mb-4">
+                                        <input type="email" name ="email" class="form-control" id="email" placeholder="Email" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+                                    
+                                    <div class="form-group col-md-12 mb-4">
+                                        <input type="text" name="phone" class="form-control" id="phone" placeholder="Número de Celular" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-6 mb-4">
+                                        <select name="services" class="form-control form-select" id="Servicio" required>
+                                            <option value="" disabled selected>Seleccionar Servicio</option>
+                                            <option value="manual_therapy">Terapia Individual</option>
+                                            <option value="chronic_pain">Terapia de Pareja</option>
+                                            <option value="hand_therapy">Terapia Infantil o Adolescente</option>
+                                            <option value="sports_therapy">Ansiedad, depresion, estres, ira</option>
+                                            <option value="cupping_therapy">Evaluaciones Periciales</option>
+                                            <option value="laser_therapy">mindfulness y meditación</option>
+                                        </select>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-6 mb-5">
+                                        <input type="date" name="date" class="form-control" id="date" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="contact-form-btn">
+                                            <button type="submit" class="btn-default">Agenda tu cita</button>
+                                            <div id="msgSubmit" class="h3 hidden"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Contact Us Form End -->
+                        </div>
+                        <!-- Appointment Form Start -->
+
+                        <!-- Our Appointment Content Start -->
+                        <div class="our-appointment-content">
+                            <!-- Section Title Start -->
+                            <div class="section-title">
+                                <h3 class="wow fadeInUp">citas</h3>
+                                <h2 class="text-anime-style-2" data-cursor="-opaque">Agenda tu cita</h2>
+                                <p class="wow fadeInUp" data-wow-delay="0.2s"> Elige el día y horario que mejor se adapte a ti y comienza tu proceso de bienestar emocional.</p>
+                            </div>
+                            <!-- Section Title End -->
+
+                            <!-- Appointment Content Body Start -->
+                            <div class="appointment-content-body">
+                                <!-- Appointment Item Start -->
+                                <div class="appointment-item wow fadeInUp" data-wow-delay="0.4s">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-appointment-item-1.svg' %}" alt="">
+                                    </div>
+                                    <div class="appointment-item-content">
+                                        <h3>Atención al paciente</h3>
+                                        <p>+593 - 992 840 994</p>
+                                    </div>
+                                </div>
+                                <!-- Appointment Item End -->
+
+                                <!-- Appointment Item Start -->
+                                <div class="appointment-item wow fadeInUp" data-wow-delay="0.6s">
+                                    <div class="icon-box">
+                                        <img src="{% static '/img/icon-appointment-item-24h.svg' %}" alt="" height="60px">
+                                    </div>
+                                    <div class="appointment-item-content">
+                                        <h3>Horarios de atención Presencial/Virtual</h3>
+                                        <p>Lun - Dom (08:00 - 22:00)</p>
+                                    </div>
+                                </div>
+                                <!-- Appointment Item End -->
+                            </div>
+                            <!-- Appointment Content Body End -->
+                        </div>
+                        <!-- Our Appointment Content End -->
+                    </div>
+                    <!-- Our Appointment Box End -->
+                </div>
+
+                <div class="col-lg-12">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Our Appointment Section End -->
+
+    <!-- Footer CTA Box Start -->
+    <div class="footer-cta-box">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <!-- Footer CTa Content Start -->
+                    <div class="footer-cta-content">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Te acompañamos cuando decidas comenzar</h2>
+                        </div>
+                        <!-- Section Title End -->
+                    </div>
+                    <!-- Footer CTa Content End -->                  
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- Footer CTA Button Start -->
+                    <div class="footer-cta-btn wow fadeInUp">
+                        <a href="https://wa.me/593992840994?text=Quiero%20sabes%20m%C3%A1s%20de%20H-escapa" class="btn-default btn-phone"><i class="fa-brands fa-whatsapp"></i> +593 992 840 994</a>
+                        <a href="mailto:info@h-escapa.com" class="btn-defaultfooter btn-comment"><i class="fa-solid fa-envelope"></i> info@h-escapa.com</a>
+                    </div>
+                    <!-- Footer CTA Button End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer CTA Box End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">                
+                <div class="col-lg-12">
+                    <!-- Footer Logo Start -->
+                    <div class="footer-logo">
+                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
+                    </div>
+                    <!-- Footer Logo End -->                    
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- About Footer Start -->
+                    <div class="about-footer">
+                        <div class="section-title">
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Estamos aquí cuando estés listo/a</h2>
+                        </div>
+
+                        <!-- Footer Contact Box Start -->
+                        <div class="footer-contact-box">
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Número Celular</p>
+                                <h3>0992840994</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Email</p>
+                                <h3>info@h-escapa.com</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+
+                            <!-- Footer Contact Item Start -->
+                            <div class="footer-contact-item">
+                                <p>Dirección</p>
+                                <h3>Francisco Moscoso 5-39 y Av 10 de Agosto</h3>
+                            </div>
+                            <!-- Footer Contact Item End -->
+                        </div>
+                        <!-- Footer Contact Box End -->
+                    </div>
+                    <!-- About Footer End -->
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Footer Social Link Start -->
+                    <div class="footer-social-links">
+                        <h3>Síguenos en redes sociales</h3>
+                        <p>Encuentra recursos, consejos y contenido sobre bienestar emocional.</p>
+                        <ul>
+                            <li><a href="https://www.facebook.com/hesterpalacio.psic.cli"><i class="fa-brands fa-facebook-f"></i></a></li>
+                            <li><a href="https://www.instagram.com/ps.cl.hester_palacio/"><i class="fa-brands fa-instagram"></i></a></li>
+                            <li><a href="https://www.tiktok.com/@psc_hester_palacio"><i class="fa-brands fa-tiktok"></i></a></li>
+                        </ul>
+                    </div>
+                    <!-- Footer Social Link End -->
+                </div>
+            </div>
+
+            <!-- Footer Copyright Section Start -->
+            <div class="footer-copyright">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <!-- Footer Menu Start -->
+                        <div class="footer-menu">
+                            <ul>                            
+                                <li><a href="{% url 'home' %}">Inicio</a></li>
+                                <li><a href="{% url 'about' %}">Acerca de</a></li>
+                                <li><a href="{% url 'services' %}">Servicios</a></li>
+                                <li><a href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li><a href="{% url 'contact' %}">Contáctanos</a></li>
+                            </ul>
+                        </div>
+                        <!-- Footer Menu End -->
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Footer Copyright Start -->
+                        <div class="footer-copyright-text">
+                            <p>Imashuti © 2026 Todos los derechos reservados.</p>
+                        </div>
+                        <!-- Footer Copyright End -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Copyright Section End -->
+        </div>
+     </footer>
+    <!-- Footer End -->
+
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/validator.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'js/SmoothScroll.js' %}"></script>
+    <script src="{% static 'js/parallaxie.js' %}"></script>
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/magiccursor.js' %}"></script>
+    <script src="{% static 'js/SplitText.js' %}"></script>
+    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
+    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <script src="{% static 'js/function.js' %}"></script>
+</body>
+</html>

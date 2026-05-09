@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+
+{% block title %}H-escapa - Nuevo Paciente{% endblock %}
+
+
+{% block content %}
+        <main class="main-content">
+            <div class="dashboard" id="nuevopaciente">
+                <div class="dashboard-workspace">                    
+
+
+                    <h4 style="text-align: center; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">Nuevo Paciente</h4>
+
+                    <form id="nuevopacienteForm" action="#" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.25s">
+                        <div class="row">
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="tel" name="idced" class="form-control" id="cedula" placeholder="Cédula" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="text" name="fname" class="form-control" id="fname" placeholder="Nombres" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="text" name="lname" class="form-control" id="lname" placeholder="Apellidos" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="gender" class="form-control form-select" id="gender" required>
+                                    <option value="" disabled selected>Sexo</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="date" name="fecnac" class="form-control" id="bdaydate" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="text" name="age" class="form-control" id="age" placeholder="Edad Actual" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-3 mb-4">
+                                <select name="gender" class="form-control form-select" id="gender" required>
+                                    <option value="" disabled selected>Instrucción </option>
+                                    <option value="NA">Ninguno</option>
+                                    <option value="educacion_inicial">Educación Inicial</option>
+                                    <option value="educacion_general_basica">Educación General Básica</option>
+                                    <option value="bachillerato">Bachillerato</option>
+                                    <option value="tecnico">Técnico / Tecnológico</option>
+                                    <option value="universitario">Universitario</option>
+                                    <option value="maestria">Maestría</option>
+                                    <option value="doctorado">Doctorado</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="text" name="ocupacion" class="form-control" id="ocupacion" placeholder="Ocupación">
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="gender" class="form-control form-select" id="gender" required>
+                                    <option value="" disabled selected>Estado Civil </option>
+                                    <option value="soltero">Soltero/a</option>
+                                    <option value="casado">Casado/a</option>
+                                    <option value="divorciado">Divorciado/a</option>
+                                    <option value="viudo">Viudo/a</option>
+                                    <option value="union_libre">Unión de hecho</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-5 mb-4">
+                                <input type="text" name="address" class="form-control" id="address" placeholder="Dirección Domicilio" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="text" name="phone" class="form-control" id="phone" placeholder="Número de Celular" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            
+                            <div class="form-group col-md-3 mb-4">
+                                <input type="email" name ="email" class="form-control" id="email" placeholder="Email" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="religion" name ="religion" class="form-control" id="religion" placeholder="Religión" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-center">
+                                <hr class="form-divider-white">
+                            </div>
+
+                            <div class="form-group col-md-4 mb-4">
+                                <input type="nomfam" name ="nomfam" class="form-control" id="nomfam" placeholder="Nombre Familiar" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <input type="telfam" name ="telfam" class="form-control" id="telfam" placeholder="Contacto Familiar" required>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-center">
+                                <hr class="form-divider">
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="tipoconsulta" class="form-control form-select" id="tipoconsulta" required>
+                                    <option value="" disabled selected>Tipo de Consulta </option>
+                                    <option value="acogida">Acogida</option>
+                                    <option value="ambulatoria">Ambulatoria</option>
+                                    <option value="consultaprivada">Consulta Privada</option>
+                                    <option value="domiciliaria">Domiciliaria</option>
+                                    <option value="hospitalizado">Hospitalizado</option>
+                                    <option value="preso">Privado de la libertad</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="demanda" class="form-control demanda-textarea" id="demanda" rows="8"  placeholder="Demanda" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="antecedentesdisfuncionales" class="form-control demanda-textarea" id="antecedentesdisfuncionales" rows="8"  placeholder="Antecedentes Disfuncionales" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="biografiapsicologicapersonal" class="form-control demanda-textarea" id="biografiapsicologicapersonal" rows="8"  placeholder="Biografía Psicológica Personal y Familiar(Genograma)" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="pruebaspsicologicasseleccionadas" class="form-control demanda-textarea" id="pruebaspsicologicasseleccionadas" rows="8"  placeholder="Pruebas Psicológicas Seleccionadas" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="resultadodepruebasaplicadas" class="form-control demanda-textarea" id="resultadodepruebasaplicadas" rows="8"  placeholder="Resultado de Pruebas Aplicadas" required></textarea>
+                            </div>
+                            
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="descripciondiagnostica" class="form-control demanda-textarea" id="descripciondiagnostica" rows="8"  placeholder="Descripción Diagnóstica" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="criteriossobrepronosticos" class="form-control demanda-textarea" id="criteriossobrepronosticos" rows="8"  placeholder="Criterios sobre Pronósticos" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="recomendaciones" class="form-control demanda-textarea" id="recomendaciones" rows="8"  placeholder="Recomendaciones" required></textarea>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-center">
+                                <hr class="form-divider">
+                            </div>
+                            
+                            <h4 style="text-align: center; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">Planificación del Proceso</h4>
+
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">1. Formulación dinámica del Trastorno y Problema</h4>
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">2. Formulación dinámica de la Personalidad</h4>
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">3. Señalamiento de Objetivos</h4>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="3_1" class="form-control demanda-textarea" id="3_1" rows="8"  placeholder="3.1 Con relación a la problemática" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="3_2" class="form-control demanda-textarea" id="3_2" rows="8"  placeholder="3.2 Con relación a la sintomatología o trastorno" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="3_3" class="form-control demanda-textarea" id="3_3" rows="8"  placeholder="3.3 Con relación al conocimiento de su personalidad y generación de cambios" required></textarea>
+                            </div>
+
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">4. Señalamiento de técnicas</h4>
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">4.1 Con relación a la problemática</h4>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="4_1TI" class="form-control demanda-textarea" id="4_1TI" rows="8"  placeholder="- Terapia individual" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="4_1TF" class="form-control demanda-textarea" id="4_1TF" rows="8"  placeholder="- Terapia Familiar" required></textarea>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
+                                <textarea name="4_2" class="form-control demanda-textarea" id="4_2" rows="8"  placeholder="4.2 Con relación al conocimiento de su personalidad y generación de cambios" required></textarea>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-center">
+                                <hr class="form-divider">
+                            </div>
+
+                            <h4 style="text-align: center; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">ANALISIS DE DEMANDA, EXPECTATIVAS Y MOTIVACIONES PREVIAS AL INICIO DEL PROCESO</h4>
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">Demanda Psicológica</h4>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="DPOrigen" class="form-control form-select" id="DPOrigen" required>
+                                    <option value="" disabled selected>Orígen</option>
+                                    <option value="O_pac">Paciente</option>
+                                    <option value="O_fam">Familiar</option>
+                                    <option value="O_pro">Profesional</option>
+                                    <option value="O_ots">Otros</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="DPDemanda" class="form-control form-select" id="DPDemanda" required>
+                                    <option value="" disabled selected>Demanda</option>
+                                    <option value="D_exp">Explícita</option>
+                                    <option value="D_imp">Implícita</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-2 mb-4">
+                                <select name="DPTipDem" class="form-control form-select" id="DPTipDem" required>
+                                    <option value="" disabled selected>Tipo de Demanda</option>
+                                    <option value="TD_ase">Asesoramiento</option>
+                                    <option value="TD_psi">Psicoterapia</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">Expectativas y Motivaciones</h4>
+
+                            <div class="form-group col-md-5 mb-4">
+                                <table class="table table-bordered escala-table ">
+                                    <thead>
+                                        <tr>
+                                            <th>PACIENTE</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                            <th>4</th>
+                                            <th>5</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <!-- FILA 1 -->
+                                        <tr>
+                                            <td>Búsqueda de ayuda o supresión de síntomas</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="busqueda"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 2 -->
+                                        <tr>
+                                            <td>Complacencia a familiares o allegados</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="complacencia"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 3 -->
+                                        <tr>
+                                            <td>Remisión de otros profesionales</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="remision"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 4 -->
+                                        <tr>
+                                            <td>Exigencia de status</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="status"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 5 -->
+                                        <tr>
+                                            <td>Curiosidad</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="curiosidad"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 6 -->
+                                        <tr>
+                                            <td>Otras</td>
+                                            {% for i in "12345" %}
+                                            <td class="text-center">
+                                                <input type="radio"
+                                                    name="otras"
+                                                    value="{{ i }}"
+                                                    required>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <div class="form-group col-md-5 mb-4">
+                                <table class="table table-bordered escala-table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-start">FAMILIARES, AMIGOS, INSTITUCIONES</th>
+                                            {% for i in "12345" %}
+                                                <th>{{ i }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <!-- FILA 1 -->
+                                        <tr>
+                                            <td class="text-start">Afán de ayuda de familiares</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="afan_ayuda"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 2 -->
+                                        <tr>
+                                            <td class="text-start">Sentimiento de culpa</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="culpa"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 3 -->
+                                        <tr>
+                                            <td class="text-start">Experiencia previa</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="experiencia_previa"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 4 -->
+                                        <tr>
+                                            <td class="text-start">Exigencia de familiares</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="exigencia_familia"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 5 -->
+                                        <tr>
+                                            <td class="text-start">Engaño por parte de familiares</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="engano_familia"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                        <!-- FILA 6 -->
+                                        <tr>
+                                            <td class="text-start">Exigencias institucionales</td>
+                                            {% for i in "12345" %}
+                                                <td>
+                                                    <input type="radio"
+                                                        name="exigencias_inst"
+                                                        value="{{ i }}"
+                                                        required>
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="form-group col-md-3 mx-auto mb-4">
+                                <select name="DPTipDem" class="form-control form-select" id="DPTipDem" required>
+                                    <option value="" disabled selected>Tipos de Primera Entrevista</option>
+                                    <option value="TD_ase">Entrevista de psicodiagnóstico</option>
+                                    <option value="TD_ase">Entrevista de consulta</option>
+                                    <option value="TD_psi">Entrevista única</option>
+                                    <option value="TD_psi">Inicio de proceso terapéutico</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <h4 style="text-align: center; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">INTERROGANTES AL FINALIZAR LA PRIMERA ENTREVISTA</h4>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">1. ¿Logré que el paciente hable son libertad sobre su problemática?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question1" class="form-control form-select" id="Question1" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">2.¿Tengo claridad en la conepción del trastorno y las posibilidades del trataimiento?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">3. ¿He llegado a conclusiones diagnósticas de personalidad apropiadas?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">4.¿He identificado las facilidades y dificultades en el tratamiento?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">5.¿Percibí su problema desde su propio punto de vista?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">6.¿Se sintió comprendido en su problemática?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">7. ¿Se produjo desinhibición emocional?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">8.¿Terminó convencido sobre las posiblidades y objetivos de la psicoterapia?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">9.¿Se logró establecer un rapport apropiado?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">10. ¿Se identificaron componenetes de resistencia?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">11. ¿Se identificaron componentes de transaferencia?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+                            <div class="form-group col-md-9 mb-4">
+                                <h4 style="text-align: left; margin-bottom: 30px; margin-top: 10px;" class="wow fadeInUp" data-wow-delay="0.25s">12. ¿Se identificaron componenetes de contra transferencia?</h4>
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group col-md-1 mb-4">
+                                <select name="Question2" class="form-control form-select" id="Question2" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="TD_ase">SI</option>
+                                    <option value="TD_ase">NO</option>
+                                </select>
+                                <div class="help-block with-errors"></div>
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <div class="col-12 d-flex justify-content-center">
+                                <hr class="form-divider-white">
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="contact-form-btn">
+                                    <button type="submit" class="btn-default" style="justify-self: center;">Guardar Nuevo Paciente</button>
+                                    <div id="msgSubmit" class="h3 hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Contact Us Form End -->
+                </div>
+
+
+            </div>
+        </main>
+{% endblock %}

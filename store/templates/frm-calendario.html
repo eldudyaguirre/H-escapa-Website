@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}H-escapa - Agenda{% endblock %}
+
+
+{% block content %}
+        <main class="main-content">
+            <div class="dashboard" id="calendario">
+                <div class="dashboard-workspace">
+                    <div class="calendar-container">
+
+                        <h4 style="text-align: center; margin-bottom: 30px; margin-top: 10px;">Agenda de consultas</h4>
+
+                        
+                        <!-- Header del calendario -->
+                        <div class="calendar-header">
+                            <div class="calendar-nav">
+
+                                <a href="?week={{ week_offset|add:"-1" }}" class="nav-btn">
+                                    ‹
+                                </a>
+
+                                <h4>{{ rango }}</h4>
+
+                                <a href="?week={{ week_offset|add:"1" }}" class="nav-btn">
+                                    ›
+                                </a>
+
+                            </div>
+
+                            <div class="calendar-views">
+                                <span class="active">Semana</span>
+                                <span>Día</span>
+                                <span>Lista</span>
+                            </div>
+                        </div>
+
+                        <!-- Calendario -->
+                        <div class="calendar-grid">
+
+                            <!-- Celda vacía arriba izquierda -->
+                            <div class="calendar-header"></div>
+
+                            <!-- Headers días -->
+                            {% for dia in dias %}
+                                <div class="calendar-header">
+                                    {{ dia.nombre }} {{ dia.numero }} {{ dia.mes }}
+                                </div>
+                            {% endfor %}
+
+                            <!-- Horas + celdas -->
+                            {% for h in horas %}
+                                <div class="hour">{{ h }}</div>
+
+                                {% for dia in dias %}
+                                    <div class="calendar-cell"></div>
+                                {% endfor %}
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+{% endblock %}
