@@ -117,12 +117,12 @@
                         <div class="service-catagery-list wow fadeInUp">
                             <h3>Categoria de Servicios</h3>
                             <ul>
-                                <li><a href="Individual-therapy.html">Terapia Individual Personalizada</a></li>
-                                <li><a href="Kids-therapy.html">Terapia de Pareja</a></li>
-                                <li><a href="Depansi-therapy.html">Terapia Infantil y Adolescente</a></li>
-                                <li><a href="Depansi-therapy.html">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
-                                <li><a href="Judge{% url 'services' %}">Evaluaciones Periciales</a></li>
-                                <li><a href="Meditation.html">Mindfulness y Meditación</a></li>
+                                <li><a href="{% url 'individualtherapy' %}">Terapia Individual Personalizada</a></li>
+                                <li><a href="{% url 'coupletherapy' %}">Terapia de Pareja</a></li>
+                                <li><a href="{% url 'kidstherapy' %}">Terapia Infantil y Adolescente</a></li>
+                                <li><a href="{% url 'depansitherapy' %}">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
+                                <li><a href="{% url 'judgeservices' %}">Evaluaciones Periciales</a></li>
+                                <li><a href="{% url 'meditation' %}">Mindfulness y Meditación</a></li>
                             </ul>
                         </div>
                         <!-- Service Category List End -->
@@ -132,22 +132,22 @@
                             <div class="customer-images">
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-1.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-1.jpg' %}" alt="">
                                     </figure>
                                 </div>                                    
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-2.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-2.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-3.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-3.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-4.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-4.jpg' %}" alt="">
                                     </figure>
                                 </div>
                             </div>
@@ -166,7 +166,7 @@
                         <!-- Service Feature Image Start -->
                         <div class="service-feature-image">
                             <figure class="image-anime reveal">
-                                <img src="static/img/service-image-7.jpg" alt="">
+                                <img src="{% static 'img/service-image-7.jpg' %}" alt="">
                             </figure>
                         </div>
                         <!-- Service Feature Image End -->
@@ -206,7 +206,7 @@
                                 <!-- Therapy Benefits Start -->
                                 <div class="therapy-benefits-image">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/our-benefit-img-4.jpg" alt="">
+                                        <img src="{% static 'img/our-benefit-img-4.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <!-- Therapy Benefits End -->
@@ -218,7 +218,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-service-benefit-12.svg" alt="">
+                                        <img src="{% static 'img/icon-service-benefit-12.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -234,7 +234,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp" data-wow-delay="0.2s">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-service-benefit-4.svg" alt="">
+                                        <img src="{% static 'img/icon-service-benefit-4.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -316,7 +316,7 @@
                                 <div class="video-image">
                                     <a href="https://www.youtube.com/watch?v=Y-x0efG1seA" class="popup-video" data-cursor-text="Play">
                                         <figure class="image-anime">
-                                            <img src="static/img/service-entry-video-bg4.jpg" alt="">
+                                            <img src="{% static 'img/service-entry-video-bg4.jpg' %}" alt="">
                                         </figure>
                                     </a>
                                 </div>
@@ -447,18 +447,18 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="case-study-item wow fadeInUp">
                         <div class="case-study-image">
-                            <a href="Guerrero-Valiente.html" data-cursor-text="Ver">
+                            <a href="{% url 'guerrerovaliente' %}" data-cursor-text="Ver">
                                 <figure>
-                                    <img src="static/img/group-img-1.jpg" alt="">
+                                    <img src="{% static 'img/group-img-1.jpg' %}" alt="">
                                 </figure>
                             </a>
                         </div>
                         <div class="case-study-content">
-                            <h3><a href="Guerrero-Valiente.html">Guerrer@ Valiente</a></h3>
+                            <h3><a href="{% url 'guerrerovaliente' %}">Guerrer@ Valiente</a></h3>
                             <p>Espacio de apoyo para familiares de personas con problemas de adicción. Un grupo seguro donde compartir experiencias, fortalecer resiliencia y aprender herramientas para acompañar sin perder tu propio bienestar.</p>
                         </div>
                         <div class="case-study-btn">
-                            <a href="Guerrero-Valiente.html" class="readmore-btn">Conoce más</a>
+                            <a href="{% url 'guerrerovaliente' %}" class="readmore-btn">Conoce más</a>
                         </div>
                     </div>
                 </div>
@@ -468,18 +468,18 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="case-study-item wow fadeInUp" data-wow-delay="0.2s">
                         <div class="case-study-image">
-                            <a href="Ayuda-sos.html" data-cursor-text="Ver">
+                            <a href="{% url 'ayudasos' %}" data-cursor-text="Ver">
                                 <figure>
-                                    <img src="static/img/group-img-2.jpg" alt="">
+                                    <img src="{% static 'img/group-img-2.jpg' %}" alt="">
                                 </figure>
                             </a>
                         </div>
                         <div class="case-study-content">
-                            <h3><a href="Ayuda-sos.html">Ayuda SOS</a></h3>
+                            <h3><a href="{% url 'ayudasos' %}">Ayuda SOS</a></h3>
                             <p>Grupo terapéutico dirigido a mujeres que han vivido violencia en el hogar. Un espacio de contención emocional, orientación psicológica y fortalecimiento personal para reconstruir la seguridad y la autoestima.</p>
                         </div>
                         <div class="case-study-btn">
-                            <a href="Ayuda-sos.html" class="readmore-btn">Conoce más</a>
+                            <a href="{% url 'ayudasos' %}" class="readmore-btn">Conoce más</a>
                         </div>
                     </div>
                 </div>
@@ -489,18 +489,18 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="case-study-item wow fadeInUp" data-wow-delay="0.4s">
                         <div class="case-study-image">
-                            <a href="Kchetazo-mental.html" data-cursor-text="Ver">
+                            <a href="{% url 'kchetazomental' %}" data-cursor-text="Ver">
                                 <figure>
-                                    <img src="static/img/group-img-3.jpg" alt="">
+                                    <img src="{% static 'img/group-img-3.jpg' %}" alt="">
                                 </figure>
                             </a>
                         </div>
                         <div class="case-study-content">
-                            <h3><a href="Kchetazo-mental.html">K'Che-tazo Mental</a></h3>
+                            <h3><a href="{% url 'kchetazomental' %}">K'Che-tazo Mental</a></h3>
                             <p>Podcast terapéutico donde abordamos temas de salud mental, relaciones, autoestima y crecimiento personal. Aquí encontrarás los episodios semanales y acceso directo a Spotify.</p>
                         </div>
                         <div class="case-study-btn">
-                            <a href="Kchetazo-mental.html" class="readmore-btn">Conoce más</a>
+                            <a href="{% url 'kchetazomental' %}" class="readmore-btn">Conoce más</a>
                         </div>
                     </div>
                 </div>
@@ -514,7 +514,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-1.svg" alt="">
+                                        <img src="{% static 'img/company-logo-1.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -522,7 +522,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-2.svg" alt="">
+                                        <img src="{% static 'img/company-logo-2.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -530,7 +530,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-3.svg" alt="">
+                                        <img src="{% static 'img/company-logo-3.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -538,7 +538,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-4.svg" alt="">
+                                        <img src="{% static 'img/company-logo-4.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -546,7 +546,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-5.svg" alt="">
+                                        <img src="{% static 'img/company-logo-5.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -554,7 +554,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-1.svg" alt="">
+                                        <img src="{% static 'img/company-logo-1.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -562,7 +562,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-2.svg" alt="">
+                                        <img src="{% static 'img/company-logo-2.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -570,7 +570,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-3.svg" alt="">
+                                        <img src="{% static 'img/company-logo-3.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -578,7 +578,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-4.svg" alt="">
+                                        <img src="{% static 'img/company-logo-4.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->
@@ -586,7 +586,7 @@
                                 <!-- Agency Support Logo Start -->
                                 <div class="swiper-slide">
                                     <div class="company-logo">
-                                        <img src="static/img/company-logo-5.svg" alt="">
+                                        <img src="{% static 'img/company-logo-5.svg' %}" alt="">
                                     </div>
                                 </div>
                                 <!-- Agency Support Logo End -->                                
@@ -637,7 +637,7 @@
                 <div class="col-lg-12">
                     <!-- Footer Logo Start -->
                     <div class="footer-logo">
-                        <img src="static/img/footer-logo.svg" alt="">
+                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
                     </div>
                     <!-- Footer Logo End -->                    
                 </div>

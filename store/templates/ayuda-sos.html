@@ -40,7 +40,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="static/img/loader.svg" alt=""></div>
+			<div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -52,7 +52,7 @@
 				<div class="container" >
 					<!-- Logo Start -->
 					<a class="navbar-brand">
-						<img src="static/img/logo.svg" alt="Logo">
+						<img src="{% static 'img/logo.svg' %}" alt="Logo">
 					</a>
 					<!-- Logo End -->
 
@@ -159,7 +159,7 @@
                         <!-- Case Study Featured Image Start -->
                         <div class="case-study-featured-image">
                             <figure class="image-anime reveal">
-                                <img src="static/img/ayudasos-img-1.jpg" alt="">
+                                <img src="{% static 'img/ayudasos-img-1.jpg' %}" alt="">
                             </figure>
                         </div>
                         <!-- Case Study Featured Image End -->
@@ -185,7 +185,7 @@
                                 <!-- Therapeutic Approch Item Start -->
                                 <div class="therapeutic-approach-item2">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-why-choose-8.svg" alt="">
+                                        <img src="{% static 'img/icon-why-choose-8.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapeutic-approach-content">
@@ -198,7 +198,7 @@
                                 <!-- Therapeutic Approch Item Start -->
                                 <div class="therapeutic-approach-item2">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-why-choose-1.svg" alt="">
+                                        <img src="{% static 'img/icon-why-choose-1.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapeutic-approach-content">
@@ -211,7 +211,7 @@
                                 <!-- Therapeutic Approch Item Start -->
                                 <div class="therapeutic-approach-item2">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-why-choose-7.svg" alt="">
+                                        <img src="{% static 'img/icon-why-choose-7.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapeutic-approach-content">
@@ -224,7 +224,7 @@
                                 <!-- Therapeutic Approch Item Start -->
                                 <div class="therapeutic-approach-item2">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-service-benefit-4.svg" alt="">
+                                        <img src="{% static 'img/icon-service-benefit-4.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapeutic-approach-content">
@@ -257,7 +257,7 @@
                                 <!-- Case Study Image Start -->
                                 <div class="case-study-entry-image">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/case-study-entry-img.jpg" alt="">
+                                        <img src="{% static 'img/case-study-entry-img.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <!-- Case Study Image End -->
@@ -380,7 +380,7 @@
                     <!-- Footer CTA Button Start -->
                     <div class="footer-cta-btn wow fadeInUp">
                         <a href="https://wa.me/593992840994?text=Quiero%20m%C3%A1s%20informaci%C3%B3n%20de:%20Ayuda%20SOS" class="btn-default btn-phone2"><i class="fa-brands fa-whatsapp"></i> Saber más</a>
-                        <a href="Grupal-therapy.html" class="btn-defaultfooter btn-comment"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+                        <a href="{% url 'grupaltherapy' %}" class="btn-defaultfooter btn-comment"><i class="fa-solid fa-arrow-left"></i> Volver</a>
                     </div>
                     <!-- Footer CTA Button End -->
                 </div>
@@ -396,7 +396,7 @@
                 <div class="col-lg-12">
                     <!-- Footer Logo Start -->
                     <div class="footer-logo">
-                        <img src="static/img/footer-logo.svg" alt="">
+                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
                     </div>
                     <!-- Footer Logo End -->                    
                 </div>

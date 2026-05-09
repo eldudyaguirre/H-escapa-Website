@@ -40,7 +40,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="static/img/loader.svg" alt=""></div>
+			<div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -52,7 +52,7 @@
 				<div class="container" >
 					<!-- Logo Start -->
 					<a class="navbar-brand">
-						<img src="static/img/logo.svg" alt="Logo">
+						<img src="{% static 'img/logo.svg' %}" alt="Logo">
 					</a>
 					<!-- Logo End -->
 
@@ -120,12 +120,12 @@
                         <div class="service-catagery-list wow fadeInUp">
                             <h3>Categoria de Servicios</h3>
                             <ul>
-                                <li><a href="Individual-therapy.html">Terapia Individual Personalizada</a></li>
-                                <li><a href="Kids-therapy.html">Terapia de Pareja</a></li>
-                                <li><a href="Depansi-therapy.html">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
-                                <li><a href="Judge{% url 'services' %}">Evaluaciones Periciales</a></li>
-                                <li><a href="Meditation.html">Mindfulness y meditación</a></li>
-                                <li><a href="Grupal-therapy.html">Terapia Grupal</a></li>
+                                <li><a href="{% url 'individualtherapy' %}">Terapia Individual Personalizada</a></li>
+                                <li><a href="{% url 'coupletherapy' %}">Terapia de Pareja</a></li>
+                                <li><a href="{% url 'depansitherapy' %}">Acompañamiento en ansiedad, depresión, estres e ira</a></li>
+                                <li><a href="{% url 'judgeservices' %}">Evaluaciones Periciales</a></li>
+                                <li><a href="{% url 'meditation' %}">Mindfulness y meditación</a></li>
+                                <li><a href="{% url 'grupaltherapy' %}">Terapia Grupal</a></li>
                             </ul>
                         </div>
                         <!-- Service Category List End -->
@@ -135,22 +135,22 @@
                             <div class="customer-images">
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-1.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-1.jpg' %}" alt="">
                                     </figure>
                                 </div>                                    
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-2.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-2.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-3.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-3.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <div class="customer-img">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/customer-img-4.jpg" alt="">
+                                        <img src="{% static 'img/customer-img-4.jpg' %}" alt="">
                                     </figure>
                                 </div>
                             </div>
@@ -169,7 +169,7 @@
                         <!-- Service Feature Image Start -->
                         <div class="service-feature-image">
                             <figure class="image-anime reveal">
-                                <img src="static/img/service-image-3.jpg" alt="">
+                                <img src="{% static 'img/service-image-3.jpg' %}" alt="">
                             </figure>
                         </div>
                         <!-- Service Feature Image End -->
@@ -200,7 +200,7 @@
                                 <!-- Therapy Benefits Start -->
                                 <div class="therapy-benefits-image">
                                     <figure class="image-anime reveal">
-                                        <img src="static/img/our-benefit-img.jpg" alt="">
+                                        <img src="{% static 'img/our-benefit-img.jpg' %}" alt="">
                                     </figure>
                                 </div>
                                 <!-- Therapy Benefits End -->
@@ -212,7 +212,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-service-benefit-5.svg" alt="">
+                                        <img src="{% static 'img/icon-service-benefit-5.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -225,7 +225,7 @@
                                 <!-- Therapy Benefits Item Start -->
                                 <div class="therapy-benefits-item wow fadeInUp" data-wow-delay="0.2s">
                                     <div class="icon-box">
-                                        <img src="static/img/icon-service-benefit-6.svg" alt="">
+                                        <img src="{% static 'img/icon-service-benefit-6.svg' %}" alt="">
                                     </div>
 
                                     <div class="therapy-benefits-item-content">
@@ -298,7 +298,7 @@
                                 <div class="video-image">
                                     <a href="https://www.youtube.com/watch?v=Y-x0efG1seA" class="popup-video" data-cursor-text="Play">
                                         <figure class="image-anime">
-                                            <img src="static/img/service-entry-video-bg2.jpg" alt="">
+                                            <img src="{% static 'img/service-entry-video-bg2.jpg' %}" alt="">
                                         </figure>
                                     </a>
                                 </div>
@@ -445,7 +445,7 @@
                 <div class="col-lg-12">
                     <!-- Footer Logo Start -->
                     <div class="footer-logo">
-                        <img src="static/img/footer-logo.svg" alt="">
+                        <img src="{% static 'img/footer-logo.svg' %}" alt="">
                     </div>
                     <!-- Footer Logo End -->                    
                 </div>
