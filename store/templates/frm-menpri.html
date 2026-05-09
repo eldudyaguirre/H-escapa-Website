@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -9,29 +11,29 @@
 	<!-- Page Title -->
     <title>H-escapa - Menu Principal</title>
 	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
 	<!-- Google Fonts Css-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
 	<!-- Bootstrap Css -->
-	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
 	<!-- SlickNav Css -->
-	<link href="static/css/slicknav.min.css" rel="stylesheet">
+	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
 	<!-- Swiper Css -->
-	<link rel="stylesheet" href="static/css/swiper-bundle.min.css">
+	<link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
 	<!-- Font Awesome Icon Css-->
-	<link href="static/css/all.min.css" rel="stylesheet" media="screen">
+	<link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
 	<!-- Animated Css -->
-	<link href="static/css/animate.css" rel="stylesheet">
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
     <!-- Magnific Popup Core Css File -->
-	<link rel="stylesheet" href="static/css/magnific-popup.css">
+	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
 	<!-- Mouse Cursor Css File -->
-	<link rel="stylesheet" href="static/css/mousecursor.css">
+	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
 	<!-- Main Custom Css -->
-    <link rel="stylesheet" href="static/css/styles-frmmenprinci.css">
-	<link href="static/css/custom.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
+	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
 </head>
 <body>
 
@@ -39,7 +41,7 @@
 	<div class="preloader">
 		<div class="loading-container">
 			<div class="loading"></div>
-			<div id="loading-icon"><img src="static/img/loader.svg" alt=""></div>
+			<div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div>
 		</div>
 	</div>
 	<!-- Preloader End -->
@@ -58,8 +60,8 @@
         <nav class="nav__container">
             <div>
                 <a class="nav__link nav__logo">
-                    <img src="static/img/favicon.png" alt="H-escapa" class="nav__logo-img logo-default">
-                    <img src="static/img/logo.svg" alt="H-escapa" class="nav__logo-img logo-hover">
+                    <img src="{% static 'img/favicon.png' %}" alt="H-escapa" class="nav__logo-img logo-default">
+                    <img src="{% static 'img/logo.svg' %}" alt="H-escapa" class="nav__logo-img logo-hover">
                 </a>
 
                 <div class="nav__list">
@@ -225,37 +227,23 @@
         </main>
 
 
-    <!-- Jquery Library File -->
-    <script src="static/js/jquery-3.7.1.min.js"></script>
-    <!-- Bootstrap js file -->
-    <script src="static/js/bootstrap.min.js"></script>
-    <!-- Validator js file -->
-    <script src="static/js/validator.min.js"></script>
-    <!-- SlickNav js file -->
-    <script src="static/js/jquery.slicknav.js"></script>
-    <!-- Swiper js file -->
-    <script src="static/js/swiper-bundle.min.js"></script>
-    <!-- Counter js file -->
-    <script src="static/js/jquery.waypoints.min.js"></script>
-    <script src="static/js/jquery.counterup.min.js"></script>
-    <!-- Magnific js file -->
-    <script src="static/js/jquery.magnific-popup.min.js"></script>
-    <!-- SmoothScroll -->
-    <script src="static/js/SmoothScroll.js"></script>
-    <!-- Parallax js -->
-    <script src="static/js/parallaxie.js"></script>
-    <!-- MagicCursor js file -->
-    <script src="static/js/gsap.min.js"></script>
-    <script src="static/js/magiccursor.js"></script>
-    <!-- Text Effect js file -->
-    <script src="static/js/SplitText.js"></script>
-    <script src="static/js/ScrollTrigger.min.js"></script>
-    <!-- YTPlayer js File -->
-    <script src="static/js/jquery.mb.YTPlayer.min.js"></script>
-    <!-- Wow js file -->
-    <script src="static/js/wow.min.js"></script>
-    <!-- Main Custom js file -->
-    <script src="static/js/function.js"></script>
-    <script src="static/js/mainfrmmenprinci.js"></script>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/validator.min.js' %}"></script>
+<script src="{% static 'js/jquery.slicknav.js' %}"></script>
+<script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/SmoothScroll.js' %}"></script>
+<script src="{% static 'js/parallaxie.js' %}"></script>
+<script src="{% static 'js/gsap.min.js' %}"></script>
+<script src="{% static 'js/magiccursor.js' %}"></script>
+<script src="{% static 'js/SplitText.js' %}"></script>
+<script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
+<script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
+<script src="{% static 'js/wow.min.js' %}"></script>
+<script src="{% static 'js/function.js' %}"></script>
+<script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
 </body>
 </html>

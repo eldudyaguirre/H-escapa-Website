@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -11,27 +13,27 @@
 	<!-- Page Title -->
     <title>Hipno - Psychology and Counseling HTML Template</title>
 	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="static/img/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
 	<!-- Google Fonts Css-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
 	<!-- Bootstrap Css -->
-	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
 	<!-- SlickNav Css -->
-	<link href="static/css/slicknav.min.css" rel="stylesheet">
+	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
 	<!-- Swiper Css -->
-	<link rel="stylesheet" href="static/css/swiper-bundle.min.css">
+	<link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
 	<!-- Font Awesome Icon Css-->
-	<link href="static/css/all.min.css" rel="stylesheet" media="screen">
+	<link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
 	<!-- Animated Css -->
-	<link href="static/css/animate.css" rel="stylesheet">
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
     <!-- Magnific Popup Core Css File -->
-	<link rel="stylesheet" href="static/css/magnific-popup.css">
+	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
 	<!-- Mouse Cursor Css File -->
-	<link rel="stylesheet" href="static/css/mousecursor.css">
+	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
 	<!-- Main Custom Css -->
-	<link href="static/css/custom.css" rel="stylesheet" media="screen">
+	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
 </head>
 <body>
 
@@ -50,7 +52,7 @@
 			<nav class="navbar navbar-expand-lg">
 				<div class="container">
 					<!-- Logo Start -->
-					<a class="navbar-brand" href="./">
+					<a class="navbar-brand" href="{% url 'home' %}">
 						<img src="static/img/logo.svg" alt="Logo">
 					</a>
 					<!-- Logo End -->
@@ -59,20 +61,20 @@
 					<div class="collapse navbar-collapse main-menu">
                         <div class="nav-menu-wrapper">
                             <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item submenu"><a class="nav-link" href="./">Home</a>
+                                <li class="nav-item submenu"><a class="nav-link" href="{% url 'home' %}">Home</a>
                                     <ul>
-                                        <li class="nav-item"><a class="nav-link" href="index.html">Home - Image</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home - Image</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-video.html">Home - Video</a></li>
                                         <li class="nav-item"><a class="nav-link" href="index-slider.html">Home - Slider</a></li>
                                     </ul>
                                 </li>                                
-                                <li class="nav-item"><a class="nav-link" href="about.html">About Us</a>
-                                <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Services</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
                                 <li class="nav-item submenu"><a class="nav-link" href="#">Pages</a>
                                     <ul>                                        
                                         <li class="nav-item"><a class="nav-link" href="service-single.html">Service Details</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="blog-single.html">Blog Details</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="{% url 'blogdetalle' %}">Blog Details</a></li>
                                         <li class="nav-item"><a class="nav-link" href="case-study.html">Case Study</a></li>
                                         <li class="nav-item"><a class="nav-link" href="case-study-single.html">Case Study Details</a></li>
                                         <li class="nav-item"><a class="nav-link" href="team.html">Our Team</a></li>
@@ -85,13 +87,13 @@
                                         <li class="nav-item"><a class="nav-link" href="404.html">404</a></li>
                                     </ul>
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
-                                <li class="nav-item highlighted-menu"><a class="nav-link" href="book-appointment.html">book appointment</a></li>                           
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="{% url 'agendamiento' %}">book appointment</a></li>                           
                             </ul>
                         </div>
                         <!-- Header Btn Start -->
                         <div class="header-btn d-inline-flex">
-                            <a href="book-appointment.html" class="btn-default">book an appointment</a>
+                            <a href="{% url 'agendamiento' %}" class="btn-default">book an appointment</a>
                         </div>
                         <!-- Header Btn End -->
 					</div>
@@ -114,7 +116,7 @@
 						<h1 class="text-anime-style-2" data-cursor="-opaque">Social anxiety breakthrough</h1>
 						<nav class="wow fadeInUp">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="./">home</a></li>
+								<li class="breadcrumb-item"><a href="{% url 'home' %}">home</a></li>
 								<li class="breadcrumb-item"><a href="case-study.html">case study</a></li>
 								<li class="breadcrumb-item active" aria-current="page">social anxiety breakthrough</li>
 							</ol>
@@ -511,11 +513,11 @@
                         <!-- Footer Menu Start -->
                         <div class="footer-menu">
                             <ul>                            
-                                <li><a href="index.html">home</a></li>
-                                <li><a href="about.html">about us</a></li>
-                                <li><a href="services.html">services</a></li>
-                                <li><a href="blog.html">blog</a></li>
-                                <li><a href="contact.html">contact us</a></li>
+                                <li><a href="{% url 'home' %}">home</a></li>
+                                <li><a href="{% url 'about' %}">about us</a></li>
+                                <li><a href="{% url 'services' %}">services</a></li>
+                                <li><a href="{% url 'bloggeneral' %}">blog</a></li>
+                                <li><a href="{% url 'contact' %}">contact us</a></li>
                             </ul>
                         </div>
                         <!-- Footer Menu End -->
@@ -535,36 +537,22 @@
      </footer>
     <!-- Footer End -->
 
-    <!-- Jquery Library File -->
-    <script src="static/js/jquery-3.7.1.min.js"></script>
-    <!-- Bootstrap js file -->
-    <script src="static/js/bootstrap.min.js"></script>
-    <!-- Validator js file -->
-    <script src="static/js/validator.min.js"></script>
-    <!-- SlickNav js file -->
-    <script src="static/js/jquery.slicknav.js"></script>
-    <!-- Swiper js file -->
-    <script src="static/js/swiper-bundle.min.js"></script>
-    <!-- Counter js file -->
-    <script src="static/js/jquery.waypoints.min.js"></script>
-    <script src="static/js/jquery.counterup.min.js"></script>
-    <!-- Magnific js file -->
-    <script src="static/js/jquery.magnific-popup.min.js"></script>
-    <!-- SmoothScroll -->
-    <script src="static/js/SmoothScroll.js"></script>
-    <!-- Parallax js -->
-    <script src="static/js/parallaxie.js"></script>
-    <!-- MagicCursor js file -->
-    <script src="static/js/gsap.min.js"></script>
-    <script src="static/js/magiccursor.js"></script>
-    <!-- Text Effect js file -->
-    <script src="static/js/SplitText.js"></script>
-    <script src="static/js/ScrollTrigger.min.js"></script>
-    <!-- YTPlayer js File -->
-    <script src="static/js/jquery.mb.YTPlayer.min.js"></script>
-    <!-- Wow js file -->
-    <script src="static/js/wow.min.js"></script>
-    <!-- Main Custom js file -->
-    <script src="static/js/function.js"></script>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/validator.min.js' %}"></script>
+<script src="{% static 'js/jquery.slicknav.js' %}"></script>
+<script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'js/SmoothScroll.js' %}"></script>
+<script src="{% static 'js/parallaxie.js' %}"></script>
+<script src="{% static 'js/gsap.min.js' %}"></script>
+<script src="{% static 'js/magiccursor.js' %}"></script>
+<script src="{% static 'js/SplitText.js' %}"></script>
+<script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
+<script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
+<script src="{% static 'js/wow.min.js' %}"></script>
+<script src="{% static 'js/function.js' %}"></script>
 </body>
 </html>
