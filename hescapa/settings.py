@@ -27,6 +27,7 @@ SECRET_KEY =  os.getenv("SECRET_KEY", "django-local-dev-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 #DEBUG = True
+
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
@@ -36,16 +37,22 @@ ALLOWED_HOSTS = [
 
 ]
 
+
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
     "https://h-escapa.up.railway.app",
+    "https://h-escapa.com",
+    "https://www.h-escapa.com",
 ]
+
 
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = True
+PREPEND_WWW = False
 
 # Application definition
 
