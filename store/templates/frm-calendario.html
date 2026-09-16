@@ -53,21 +53,23 @@
     const today = new Date();
     today.setHours(12, 0, 0, 0);
     
-    const start = new Date(today);
-    
-    if (view === 'day') {
-        start.setDate(start.getDate() + offset);
-    } else if (view === 'week') {
-        start.setDate(start.getDate() + offset * 7);
-    } else if (view === 'month') {
-        start.setMonth(start.getMonth() + offset);
-    }
+    let start = new Date(today);
     const fmt=(d,opt)=>new Intl.DateTimeFormat('es-EC',opt).format(d);
     function appt(a,compact){return `<div class="appointment ${classes[a.status]}"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">${names[a.name]}</span><span class="appointment-status">${statuses[a.status]}</span></div>`}
     function dayView(){dateLabel.textContent=fmt(start,{weekday:'long',day:'numeric',month:'long',year:'numeric'});let html='<div class="calendar-grid" aria-label="Agenda diaria"><div class="time-column">';for(let h=8;h<=22;h++)html+=`<div class="time-slot">${String(h).padStart(2,'0')}:00</div>`;html+='</div><div class="events-column">';for(let h=8;h<=22;h++){const a=samples.find(x=>x.day===((start.getDay()+6)%7)+1&&x.hour===h);html+=`<div class="event-slot">${a?appt(a):''}</div>`}content.innerHTML=html+'</div></div>'}
     function weekView(){const monday=new Date(start);monday.setDate(monday.getDate()-((monday.getDay()+6)%7));const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);dateLabel.textContent=`${fmt(monday,{day:'numeric',month:'short'})} – ${fmt(sunday,{day:'numeric',month:'short',year:'numeric'})}`;let html='<div class="week-view">';for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(d.getDate()+i);const dayNo=((d.getDay()+6)%7)+1;html+=`<div class="week-day"><div class="week-day-head">${fmt(d,{weekday:'short'})}<strong>${d.getDate()}</strong></div><div class="week-day-body">`;samples.filter(a=>a.day===dayNo).forEach(a=>html+=appt(a,true));html+='</div></div>'}content.innerHTML=html+'</div>'}
     function monthView(){const first=new Date(start.getFullYear(),start.getMonth(),1);const monthStart=new Date(first);monthStart.setDate(1-((first.getDay()+6)%7));dateLabel.textContent=fmt(first,{month:'long',year:'numeric'});let html='<div class="month-view">';['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(x=>html+=`<div class="month-weekday">${x}</div>`);for(let i=0;i<42;i++){const d=new Date(monthStart);d.setDate(monthStart.getDate()+i);const dayNo=((d.getDay()+6)%7)+1;let cls='month-day'+(d.getMonth()!==first.getMonth()?' outside':'')+(d.toDateString()===today.toDateString()?' today':'');html+=`<div class="${cls}"><div class="month-number">${d.getDate()}</div>`;samples.filter(a=>a.day===dayNo&&d.getMonth()===first.getMonth()).slice(0,3).forEach(a=>html+=`<div class="month-event ${classes[a.status]}" title="${names[a.name]} · ${statuses[a.status]}">${String(a.hour).padStart(2,'0')}:00 ${names[a.name]}</div>`);html+='</div>'}content.innerHTML=html+'</div>'}
-    function render(){document.querySelectorAll('[data-view]').forEach(a=>{a.classList.toggle('active',a.dataset.view===view);if(a.dataset.view===view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');a.href=`?view=${a.dataset.view}&week=${offset}`});document.getElementById('today-link').href='?view='+view+'&week=0';document.getElementById('prev-link').href='?view='+view+'&week='+(offset-1);document.getElementById('next-link').href='?view='+view+'&week='+(offset+1);if(view==='week')weekView();else if(view==='month')monthView();else dayView()}
+    function render(){
+      start = new Date(today);
+      if(view==='day') start.setDate(start.getDate()+offset);
+      else if(view==='week') start.setDate(start.getDate()+offset*7);
+      else if(view==='month') start.setMonth(start.getMonth()+offset);
+      document.querySelectorAll('[data-view]').forEach(a=>{a.classList.toggle('active',a.dataset.view===view);if(a.dataset.view===view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');a.href=`?view=${a.dataset.view}&week=${offset}`});
+      document.getElementById('today-link').href='?view='+view+'&week=0';
+      document.getElementById('prev-link').href='?view='+view+'&week='+(offset-1);
+      document.getElementById('next-link').href='?view='+view+'&week='+(offset+1);
+      if(view==='week')weekView();else if(view==='month')monthView();else dayView();
+    }
     document.querySelectorAll('[data-view]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();view=a.dataset.view;history.pushState({},'',`?view=${view}&week=${offset}`);render()}));document.getElementById('today-link').addEventListener('click',e=>{e.preventDefault();offset=0;history.pushState({},'',`?view=${view}&week=0`);render()});['prev-link','next-link'].forEach((id,i)=>document.getElementById(id).addEventListener('click',e=>{e.preventDefault();offset+=i?1:-1;history.pushState({},'',`?view=${view}&week=${offset}`);render()}));window.addEventListener('popstate',()=>{const p=new URLSearchParams(location.search);view=p.get('view')||'day';offset=parseInt(p.get('week')||'0',10)||0;render()});render();
   })();
   </script>
