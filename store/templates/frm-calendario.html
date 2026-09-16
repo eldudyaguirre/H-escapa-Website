@@ -3,42 +3,66 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>H-Escapa | Calendario</title>
-  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+  <link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
+  <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
+  <link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
   <style>
-    :root{--sidebar-width:219px;--teal:#419b94;--ink:#253b3a;--line:#e5e9e8;--soft:#f5f8f7}
-    *{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:Arial,sans-serif;background:#f7f9f8}
-    .sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-width);padding:26px 24px;background:var(--teal);color:#fff}
-    .sidebar h2{font-size:20px;letter-spacing:2px;margin:0 0 30px}.sidebar a{display:block;color:#fff;text-decoration:none;padding:12px 0}
-    .main{margin-left:var(--sidebar-width);padding:28px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-    h1{font-size:30px;margin:0 0 6px;font-family:Georgia,serif}.muted{color:#788583}.week-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    :root{--line:#e5e9e8;--soft:#f5f8f7;--ink:#253b3a}
+    *{box-sizing:border-box}
+    body{margin:0;color:var(--ink);font-family:Sora,Arial,sans-serif;background:#f7f9f8}
+    .calendar-page{min-width:0;padding:28px}
+    .calendar-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+    .calendar-top h1{font-size:30px;margin:0 0 6px;font-family:Marcellus,Georgia,serif}
+    .calendar-muted{color:#788583}
+    .week-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .btn-week{display:inline-block;padding:9px 13px;border:1px solid #d6dfdc;border-radius:8px;background:#fff;color:var(--ink);text-decoration:none}
-    .calendar{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-    .days{display:grid;grid-template-columns:64px repeat(7,minmax(90px,1fr));overflow-x:auto}
+    .btn-week:hover{background:var(--soft);color:var(--ink)}
+    .calendar-grid{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:auto}
+    .days{display:grid;grid-template-columns:64px repeat(7,minmax(90px,1fr));min-width:694px}
     .day-head{padding:13px 8px;text-align:center;border-bottom:1px solid var(--line);border-left:1px solid var(--line);font-weight:600;background:var(--soft)}
     .hour{padding:14px 8px;text-align:center;color:#778481;border-bottom:1px solid var(--line);font-size:13px}
     .slot{height:52px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
     .day-head:first-child,.slot:first-child{border-left:0}
-    .hint{margin-top:14px;color:#7a8582;font-size:13px}
-    @media(max-width:767px){.sidebar{position:relative;width:100%;height:auto;padding:15px 20px}.sidebar h2{margin-bottom:8px}.sidebar a{display:inline-block;margin-right:14px;padding:7px 0}.main{margin-left:0;padding:18px 12px}.days{grid-template-columns:52px repeat(7,minmax(82px,1fr))}.top{align-items:flex-start}}
+    .calendar-hint{margin-top:14px;color:#7a8582;font-size:13px}
+    @media(max-width:767px){.calendar-page{padding:18px 12px}.calendar-top{align-items:flex-start}}
   </style>
 </head>
 <body>
-  <aside class="sidebar"><h2>CONSULTORIO</h2><a href="{% url 'homein' %}">Inicio</a><a href="{% url 'homeincalendario' %}">Calendario</a><a href="{% url 'homeinnuevopaciente' %}">Nuevo paciente</a></aside>
-  <main class="main">
-    <div class="top">
-      <div><h1>Calendario</h1><div class="muted">Vista semanal · citas aún no conectadas</div></div>
+  <header class="header"><div class="header__container"><div class="header__toggle"><button type="button" id="header-toggle" aria-label="Abrir o cerrar menú" style="border:0;background:transparent"><i class="bx bx-menu" aria-hidden="true"></i></button></div></div></header>
+  <div class="nav" id="navbar"><nav class="nav__container"><div>
+    <a class="nav__link nav__logo" href="{% url 'homein' %}" aria-label="H-Escapa, inicio"><img src="{% static 'img/favicon.png' %}" alt="H-Escapa" class="nav__logo-img logo-default"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa" class="nav__logo-img logo-hover"></a>
+    <div class="nav__list">
+      <div class="nav__items"><h3 class="nav__subtitle">Consultorio</h3>
+        <a href="{% url 'homein' %}" class="nav__link"><i class="bx bx-home nav__icon" aria-hidden="true"></i><span class="nav__name">Inicio</span></a>
+        <a href="{% url 'homeincalendario' %}" class="nav__link active" aria-current="page"><i class="bx bx-calendar nav__icon" aria-hidden="true"></i><span class="nav__name">Calendario</span></a>
+        <div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-user nav__icon" aria-hidden="true"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">General</a><a href="#" class="nav__dropdown-item">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Video-consulta</a></div></div></div>
+        <a href="#" class="nav__link"><i class="bx bx-calendar-event nav__icon" aria-hidden="true"></i><span class="nav__name">Agendar cita</span></a>
+      </div>
+      <div class="nav__items"><h3 class="nav__subtitle">Tests</h3><div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-file nav__icon" aria-hidden="true"></i><span class="nav__name">Generar</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">Test 1</a><a href="#" class="nav__dropdown-item">Test 2</a><a href="#" class="nav__dropdown-item">Test 3</a><a href="#" class="nav__dropdown-item">Test 4</a></div></div></div><a href="#" class="nav__link"><i class="bx bx-history nav__icon" aria-hidden="true"></i><span class="nav__name">Historial</span></a></div>
+      <div class="nav__items"><h3 class="nav__subtitle">Blog</h3><a href="#" class="nav__link"><i class="bx bx-edit-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Nuevo post</span></a><a href="#" class="nav__link"><i class="bx bx-grid-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Revisar posts</span></a></div>
+    </div>
+  </div><a href="#" class="nav__link nav__logout" aria-label="Salir (pendiente de conectar)" title="Salir: función pendiente"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Salir</span></a></nav></div>
+  <main class="home calendar-page">
+    <div class="calendar-top">
+      <div><h1>Calendario</h1><div class="calendar-muted">Vista semanal · citas aún no conectadas</div></div>
       <div class="week-nav"><a class="btn-week" href="?week={{ week_offset|add:'-1' }}">← Semana anterior</a><strong>{{ rango }}</strong><a class="btn-week" href="?week={{ week_offset|add:'1' }}">Semana siguiente →</a><a class="btn-week" href="?week=0">Hoy</a></div>
     </div>
-    <section class="calendar" aria-label="Calendario semanal">
-      <div class="days">
-        <div class="day-head">Hora</div>
-        {% for dia in dias %}<div class="day-head">{{ dia.nombre }}<br><span class="muted">{{ dia.numero }} {{ dia.mes }}</span></div>{% endfor %}
-        {% for hora in horas %}<div class="hour">{{ hora }}</div>{% for dia in dias %}<div class="slot" aria-label="{{ dia.nombre }} {{ dia.numero }} a las {{ hora }}"></div>{% endfor %}{% endfor %}
-      </div>
-    </section>
-    <p class="hint">Esta es una estructura visual de calendario. La creación y visualización de citas se conectará en una siguiente etapa.</p>
+    <section class="calendar-grid" aria-label="Calendario semanal"><div class="days">
+      <div class="day-head">Hora</div>
+      {% for dia in dias %}<div class="day-head">{{ dia.nombre }}<br><span class="calendar-muted">{{ dia.numero }} {{ dia.mes }}</span></div>{% endfor %}
+      {% for hora in horas %}<div class="hour">{{ hora }}</div>{% for dia in dias %}<div class="slot" aria-label="{{ dia.nombre }} {{ dia.numero }} a las {{ hora }}"></div>{% endfor %}{% endfor %}
+    </div></section>
+    <p class="calendar-hint">Esta es una estructura visual de calendario. La creación y visualización de citas se conectará en una siguiente etapa.</p>
   </main>
+  <script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
 </body>
 </html>
