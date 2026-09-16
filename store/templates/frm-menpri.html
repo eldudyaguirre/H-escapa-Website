@@ -1,249 +1,79 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="es">
 <head>
-	<!-- Meta -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-	<meta name="author" content="Imashuti">
-	<!-- Page Title -->
-    <title>H-escapa - Menu Principal</title>
-	<!-- Favicon Icon -->
-	<link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
-	<!-- Google Fonts Css-->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-	<!-- Bootstrap Css -->
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
-	<!-- SlickNav Css -->
-	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
-	<!-- Swiper Css -->
-	<link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
-	<!-- Font Awesome Icon Css-->
-	<link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
-	<!-- Animated Css -->
-	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
-    <!-- Magnific Popup Core Css File -->
-	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
-	<!-- Mouse Cursor Css File -->
-	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
-	<!-- Main Custom Css -->
-    <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
-	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="H-Escapa">
+  <title>H-Escapa | Panel principal</title>
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+  <link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
+  <link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
+  <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+  <link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
+  <link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+  <style>
+    .dashboard-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+    .dashboard-heading h1{margin:0 0 6px;font-family:Marcellus,serif}
+    .dashboard-heading p{margin:0;opacity:.72}
+    .demo-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:#fff4d6;color:#765515;font-size:.8rem;font-weight:600}
+    .dashboard-card h4{margin-bottom:16px}
+    .agenda-list li,.activity-list li{padding:10px 0;border-bottom:1px solid rgba(120,120,120,.15)}
+    .agenda-list li:last-child,.activity-list li:last-child{border-bottom:0}
+    .agenda-time{font-weight:700;display:inline-block;min-width:62px}
+    .agenda-status{display:inline-block;margin-left:7px;padding:3px 8px;border-radius:999px;font-size:.75rem;background:#e8f5ec;color:#28633b}
+    .agenda-status.pending{background:#fff2d8;color:#805b16}
+    .agenda-status.online{background:#e8f0ff;color:#315a9b}
+    .dashboard-agenda{margin-top:22px}
+    .workspace-card{padding:22px;border-radius:14px;background:#fff;border:1px solid rgba(120,120,120,.18)}
+    .workspace-card p{margin:0;opacity:.75}
+    .workspace-placeholder{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:18px}
+    .workspace-day{padding:12px 5px;text-align:center;border:1px solid rgba(120,120,120,.18);border-radius:9px;font-size:.85rem}
+    .workspace-day strong{display:block;font-size:1.05rem;margin-top:5px}
+    .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
+    @media(max-width:600px){.workspace-placeholder{gap:4px}.workspace-day{padding:9px 2px;font-size:.72rem}.workspace-day strong{font-size:.9rem}}
+  </style>
 </head>
 <body>
-
-    <!-- Preloader Start -->
-	<div class="preloader">
-		<div class="loading-container">
-			<div class="loading"></div>
-			<div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div>
-		</div>
-	</div>
-	<!-- Preloader End -->
-
-    <!--========== HEADER ==========-->
-    <header class="header">
-        <div class="header__container">
-            <div class="header__toggle">
-                <i class='bx bx-menu' id="header-toggle"></i>
-            </div>
-        </div>
-    </header>
-
-    <!--========== NAV ==========-->
-    <div class="nav" id="navbar">
-        <nav class="nav__container">
-            <div>
-                <a class="nav__link nav__logo">
-                    <img src="{% static 'img/favicon.png' %}" alt="H-escapa" class="nav__logo-img logo-default">
-                    <img src="{% static 'img/logo.svg' %}" alt="H-escapa" class="nav__logo-img logo-hover">
-                </a>
-
-                <div class="nav__list">
-                    <div class="nav__items">
-                        <h3 class="nav__subtitle">Consultorio</h3>
-
-                        <a href="home" class="nav__link active">
-                            <i class='bx bx-home nav__icon' ></i>
-                            <span class="nav__name">Inicio</span>
-                        </a>
-                        <a href="calendario" class="nav__link">
-                            <i class='bx bx-calendar nav__icon' ></i>
-                            <span class="nav__name">Calendario</span>
-                        </a>                        
-                        <div class="nav__dropdown">
-                            <a href="#" class="nav__link">
-                                <i class='bx bx-user nav__icon' ></i>
-                                <span class="nav__name">Pacientes</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">General</a>
-                                    <a href="#" class="nav__dropdown-item">Pacientes</a>
-                                    <a href="#" class="nav__dropdown-item">Certificados</a>
-                                    <a href="#" class="nav__dropdown-item">Video-consulta</a>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#" class="nav__link">
-                            <i class='bx bx-calendar-event nav__icon' ></i>
-                            <span class="nav__name">Agendar Cita</span>
-                        </a>
-
-                    </div>
-
-                    <div class="nav__items">
-                        <h3 class="nav__subtitle">Tests</h3>
-
-                        <div class="nav__dropdown">
-                            <a href="#" class="nav__link">
-                                <i class='bx bx-file nav__icon' ></i>
-                                <span class="nav__name">Generar</span>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
-
-                            <div class="nav__dropdown-collapse">
-                                <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">Test1</a>
-                                    <a href="#" class="nav__dropdown-item">Test2</a>
-                                    <a href="#" class="nav__dropdown-item">Test3</a>
-                                    <a href="#" class="nav__dropdown-item">Test4</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <a href="#" class="nav__link">
-                            <i class='bx bx-history nav__icon' ></i>
-                            <span class="nav__name">Historial</span>
-                        </a>
-                    </div>
-
-                    <div class="nav__items">
-                        <h3 class="nav__subtitle">Blog</h3>
-
-                        <a href="#" class="nav__link">
-                            <i class='bx bx-edit-alt nav__icon' ></i>
-                            <span class="nav__name">Nuevo Post</span>
-                        </a>
-                        <a href="#" class="nav__link">
-                            <i class='bx bx-grid-alt nav__icon' ></i>
-                            <span class="nav__name">Revisar Posts</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <a href="#" class="nav__link nav__logout">
-                <i class='bx bx-log-out nav__icon' ></i>
-                <span class="nav__name">Salir</span>
-            </a>
-        </nav>
+  <div class="preloader"><div class="loading-container"><div class="loading"></div><div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div></div></div>
+  <header class="header"><div class="header__container"><div class="header__toggle"><button type="button" id="header-toggle" aria-label="Abrir o cerrar menú" style="border:0;background:transparent"><i class="bx bx-menu" aria-hidden="true"></i></button></div></div></header>
+  <div class="nav" id="navbar"><nav class="nav__container"><div>
+    <a class="nav__link nav__logo" href="{% url 'homein' %}" aria-label="H-Escapa, inicio"><img src="{% static 'img/favicon.png' %}" alt="H-Escapa" class="nav__logo-img logo-default"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa" class="nav__logo-img logo-hover"></a>
+    <div class="nav__list">
+      <div class="nav__items"><h3 class="nav__subtitle">Consultorio</h3>
+        <a href="{% url 'homein' %}" class="nav__link active"><i class="bx bx-home nav__icon" aria-hidden="true"></i><span class="nav__name">Inicio</span></a>
+        <a href="{% url 'calendario' %}" class="nav__link"><i class="bx bx-calendar nav__icon" aria-hidden="true"></i><span class="nav__name">Calendario</span></a>
+        <div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-user nav__icon" aria-hidden="true"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">General</a><a href="#" class="nav__dropdown-item">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Video-consulta</a></div></div></div>
+        <a href="#" class="nav__link"><i class="bx bx-calendar-event nav__icon" aria-hidden="true"></i><span class="nav__name">Agendar cita</span></a>
+      </div>
+      <div class="nav__items"><h3 class="nav__subtitle">Tests</h3><div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-file nav__icon" aria-hidden="true"></i><span class="nav__name">Generar</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">Test 1</a><a href="#" class="nav__dropdown-item">Test 2</a><a href="#" class="nav__dropdown-item">Test 3</a><a href="#" class="nav__dropdown-item">Test 4</a></div></div></div><a href="#" class="nav__link"><i class="bx bx-history nav__icon" aria-hidden="true"></i><span class="nav__name">Historial</span></a></div>
+      <div class="nav__items"><h3 class="nav__subtitle">Blog</h3><a href="#" class="nav__link"><i class="bx bx-edit-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Nuevo post</span></a><a href="#" class="nav__link"><i class="bx bx-grid-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Revisar posts</span></a></div>
     </div>
-
-        <main class="main-content">
-            <div class="home">
-                <div class="dashboard-home" id="home">
-
-                    <!-- ===== KPI CARDS ===== -->
-                    <div class="kpi-grid">
-
-                        <div class="kpi-card">
-                            <i class='bx bx-calendar-check'></i>
-                            <div>
-                                <h3>5</h3>
-                                <p>Citas hoy</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <i class='bx bx-user'></i>
-                            <div>
-                                <h3>42</h3>
-                                <p>Pacientes activos</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <i class='bx bx-file'></i>
-                            <div>
-                                <h3>3</h3>
-                                <p>Tests pendientes</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <i class='bx bx-edit-alt'></i>
-                            <div>
-                                <h3>8</h3>
-                                <p>Posts publicados</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <!-- ===== MAIN CONTENT GRID ===== -->
-                    <div class="dashboard-grid">
-
-                        <!-- Agenda -->
-                        <div class="dashboard-card">
-                            <h4>Agenda de Hoy</h4>
-                            <ul class="agenda-list">
-                                <li>08:00 - María López - Confirmada</li>
-                                <li>10:00 - Juan Pérez - Pendiente</li>
-                                <li>14:00 - Ana Torres - Online</li>
-                            </ul>
-                        </div>
-
-                        <!-- Actividad -->
-                        <div class="dashboard-card">
-                            <h4>Actividad Reciente</h4>
-                            <ul class="activity-list">
-                                <li>Nuevo paciente registrado</li>
-                                <li>Test1 generado</li>
-                                <li>Post “Mindfulness” publicado</li>
-                            </ul>
-                        </div>
-
-                    </div>
-
-                </div>
-                <div class="dashboard-agenda" id="calendario">
-                    <div class="esapciotrabajo">
-
-                    </div>
-
-                </div>
-            </div>
-
-        </main>
-
-
-<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/validator.min.js' %}"></script>
-<script src="{% static 'js/jquery.slicknav.js' %}"></script>
-<script src="{% static 'js/swiper-bundle.min.js' %}"></script>
-<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-<script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-<script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-<script src="{% static 'js/SmoothScroll.js' %}"></script>
-<script src="{% static 'js/parallaxie.js' %}"></script>
-<script src="{% static 'js/gsap.min.js' %}"></script>
-<script src="{% static 'js/magiccursor.js' %}"></script>
-<script src="{% static 'js/SplitText.js' %}"></script>
-<script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
-<script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
-<script src="{% static 'js/wow.min.js' %}"></script>
-<script src="{% static 'js/function.js' %}"></script>
-<script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
+  </div><a href="#" class="nav__link nav__logout" aria-label="Salir (pendiente de conectar)" title="Salir: función pendiente"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Salir</span></a></nav></div>
+  <main class="main-content"><div class="home"><div class="dashboard-home" id="home">
+    <div class="dashboard-heading"><div><h1>Panel principal</h1><p>Resumen general del consultorio</p></div><span class="demo-badge"><i class="bx bx-info-circle" aria-hidden="true"></i> Datos demostrativos</span></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><i class="bx bx-calendar-check" aria-hidden="true"></i><div><h3>5</h3><p>Citas hoy</p></div></div>
+      <div class="kpi-card"><i class="bx bx-user" aria-hidden="true"></i><div><h3>42</h3><p>Pacientes activos</p></div></div>
+      <div class="kpi-card"><i class="bx bx-file" aria-hidden="true"></i><div><h3>3</h3><p>Tests pendientes</p></div></div>
+      <div class="kpi-card"><i class="bx bx-edit-alt" aria-hidden="true"></i><div><h3>8</h3><p>Posts publicados</p></div></div>
+    </div>
+    <div class="dashboard-grid">
+      <section class="dashboard-card" aria-labelledby="agenda-title"><h4 id="agenda-title">Agenda de hoy <small style="font-weight:400;opacity:.65">· ejemplo</small></h4><ul class="agenda-list"><li><span class="agenda-time">08:00</span> María López <span class="agenda-status">Confirmada</span></li><li><span class="agenda-time">10:00</span> Juan Pérez <span class="agenda-status pending">Pendiente</span></li><li><span class="agenda-time">14:00</span> Ana Torres <span class="agenda-status online">Online</span></li></ul></section>
+      <section class="dashboard-card" aria-labelledby="activity-title"><h4 id="activity-title">Actividad reciente <small style="font-weight:400;opacity:.65">· ejemplo</small></h4><ul class="activity-list"><li><i class="bx bx-user-plus" aria-hidden="true"></i> Nuevo paciente registrado</li><li><i class="bx bx-file" aria-hidden="true"></i> Test 1 generado</li><li><i class="bx bx-edit-alt" aria-hidden="true"></i> Post “Mindfulness” publicado</li></ul></section>
+    </div>
+  </div>
+  <section class="dashboard-agenda" id="calendario" aria-labelledby="workspace-title"><div class="workspace-card"><h4 id="workspace-title">Vista rápida de la semana</h4><p>Espacio visual de ejemplo. El calendario y las citas reales se conectarán en una siguiente etapa.</p><div class="workspace-placeholder" aria-label="Semana demostrativa"><div class="workspace-day">Lun<strong>—</strong></div><div class="workspace-day">Mar<strong>—</strong></div><div class="workspace-day today">Mié<strong>Hoy</strong></div><div class="workspace-day">Jue<strong>—</strong></div><div class="workspace-day">Vie<strong>—</strong></div><div class="workspace-day">Sáb<strong>—</strong></div><div class="workspace-day">Dom<strong>—</strong></div></div></div></section>
+  </div></main>
+  <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script><script src="{% static 'js/bootstrap.min.js' %}"></script><script src="{% static 'js/validator.min.js' %}"></script><script src="{% static 'js/jquery.slicknav.js' %}"></script><script src="{% static 'js/swiper-bundle.min.js' %}"></script><script src="{% static 'js/jquery.waypoints.min.js' %}"></script><script src="{% static 'js/jquery.counterup.min.js' %}"></script><script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script><script src="{% static 'js/SmoothScroll.js' %}"></script><script src="{% static 'js/parallaxie.js' %}"></script><script src="{% static 'js/gsap.min.js' %}"></script><script src="{% static 'js/magiccursor.js' %}"></script><script src="{% static 'js/SplitText.js' %}"></script><script src="{% static 'js/ScrollTrigger.min.js' %}"></script><script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script><script src="{% static 'js/wow.min.js' %}"></script><script src="{% static 'js/function.js' %}"></script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
 </body>
 </html>
