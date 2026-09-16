@@ -16,24 +16,34 @@
   <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
   <link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
   <style>
-    :root{--line:#e5e9e8;--soft:#f5f8f7;--ink:#253b3a}
+    :root{--calendar-line:#e5e9e8;--calendar-soft:#f5f8f7;--calendar-ink:#253b3a;--calendar-muted:#788583;--calendar-accent:#419b94}
     *{box-sizing:border-box}
-    body{margin:0;color:var(--ink);font-family:Sora,Arial,sans-serif;background:#f7f9f8}
+    body{margin:0;color:var(--calendar-ink);font-family:Sora,Arial,sans-serif;background:#f7f9f8}
     .calendar-page{min-width:0;padding:28px}
-    .calendar-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-    .calendar-top h1{font-size:30px;margin:0 0 6px;font-family:Marcellus,Georgia,serif}
-    .calendar-muted{color:#788583}
-    .week-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn-week{display:inline-block;padding:9px 13px;border:1px solid #d6dfdc;border-radius:8px;background:#fff;color:var(--ink);text-decoration:none}
-    .btn-week:hover{background:var(--soft);color:var(--ink)}
-    .calendar-grid{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:auto}
+    .calendar-top{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+    .calendar-eyebrow{margin:0 0 7px;color:var(--calendar-accent);font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase}
+    .calendar-top h1{font-size:clamp(25px,3vw,32px);line-height:1.2;margin:0 0 7px;font-family:Marcellus,Georgia,serif}
+    .calendar-muted{color:var(--calendar-muted);font-size:13px}
+    .week-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .week-range{padding:0 8px;font-size:13px;font-weight:600;white-space:nowrap}
+    .btn-week{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border:1px solid #d6dfdc;border-radius:8px;background:#fff;color:var(--calendar-ink);font-size:12px;text-decoration:none;transition:background .15s,border-color .15s}
+    .btn-week:hover{background:var(--calendar-soft);border-color:#b9cbc6;color:var(--calendar-ink)}
+    .calendar-card{background:#fff;border:1px solid var(--calendar-line);border-radius:14px;box-shadow:0 5px 22px rgba(32,63,59,.035);overflow:hidden}
+    .calendar-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--calendar-line)}
+    .calendar-card-title{margin:0;font-size:13px;font-weight:700}
+    .calendar-legend{display:flex;align-items:center;gap:7px;color:var(--calendar-muted);font-size:11px}
+    .calendar-legend-dot{width:7px;height:7px;border-radius:50%;background:var(--calendar-accent)}
+    .calendar-grid{overflow:auto}
     .days{display:grid;grid-template-columns:64px repeat(7,minmax(90px,1fr));min-width:694px}
-    .day-head{padding:13px 8px;text-align:center;border-bottom:1px solid var(--line);border-left:1px solid var(--line);font-weight:600;background:var(--soft)}
-    .hour{padding:14px 8px;text-align:center;color:#778481;border-bottom:1px solid var(--line);font-size:13px}
-    .slot{height:52px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
-    .day-head:first-child,.slot:first-child{border-left:0}
-    .calendar-hint{margin-top:14px;color:#7a8582;font-size:13px}
-    @media(max-width:767px){.calendar-page{padding:18px 12px}.calendar-top{align-items:flex-start}}
+    .day-head{padding:14px 7px;text-align:center;border-bottom:1px solid var(--calendar-line);border-left:1px solid var(--calendar-line);font-weight:600;background:var(--calendar-soft);font-size:12px}
+    .day-head:first-child{border-left:0;color:var(--calendar-muted);font-size:11px}
+    .day-head .calendar-muted{display:inline-block;margin-top:5px;font-size:11px;font-weight:400}
+    .hour{display:flex;justify-content:center;padding:15px 5px;color:var(--calendar-muted);border-bottom:1px solid var(--calendar-line);font-size:11px;background:#fcfdfc}
+    .slot{height:52px;border-left:1px solid var(--calendar-line);border-bottom:1px solid var(--calendar-line);background:#fff;transition:background .12s}
+    .slot:hover{background:#f7fbfa}
+    .calendar-hint{display:flex;align-items:flex-start;gap:8px;margin:14px 2px 0;color:var(--calendar-muted);font-size:12px;line-height:1.6}
+    .calendar-hint i{font-size:16px;color:var(--calendar-accent);margin-top:1px}
+    @media(max-width:767px){.calendar-page{padding:18px 12px}.calendar-top{align-items:flex-start;margin-bottom:18px}.week-nav{gap:6px}.week-range{order:-1;width:100%;padding:0 0 5px}.btn-week{padding:8px 10px}.calendar-card-head{padding:13px 14px}}
   </style>
 </head>
 <body>
@@ -53,15 +63,18 @@
   </div><a href="#" class="nav__link nav__logout" aria-label="Salir (pendiente de conectar)" title="Salir: función pendiente"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Salir</span></a></nav></div>
   <main class="home calendar-page">
     <div class="calendar-top">
-      <div><h1>Calendario</h1><div class="calendar-muted">Vista semanal · citas aún no conectadas</div></div>
-      <div class="week-nav"><a class="btn-week" href="?week={{ week_offset|add:'-1' }}">← Semana anterior</a><strong>{{ rango }}</strong><a class="btn-week" href="?week={{ week_offset|add:'1' }}">Semana siguiente →</a><a class="btn-week" href="?week=0">Hoy</a></div>
+      <div><p class="calendar-eyebrow">Gestión de citas</p><h1>Calendario</h1><div class="calendar-muted">Organiza y consulta las citas de tu consultorio.</div></div>
+      <div class="week-nav"><a class="btn-week" href="?week={{ week_offset|add:'-1' }}"><i class="bx bx-chevron-left" aria-hidden="true"></i>Anterior</a><strong class="week-range">{{ rango }}</strong><a class="btn-week" href="?week={{ week_offset|add:'1' }}">Siguiente<i class="bx bx-chevron-right" aria-hidden="true"></i></a><a class="btn-week" href="?week=0">Hoy</a></div>
     </div>
-    <section class="calendar-grid" aria-label="Calendario semanal"><div class="days">
-      <div class="day-head">Hora</div>
-      {% for dia in dias %}<div class="day-head">{{ dia.nombre }}<br><span class="calendar-muted">{{ dia.numero }} {{ dia.mes }}</span></div>{% endfor %}
-      {% for hora in horas %}<div class="hour">{{ hora }}</div>{% for dia in dias %}<div class="slot" aria-label="{{ dia.nombre }} {{ dia.numero }} a las {{ hora }}"></div>{% endfor %}{% endfor %}
-    </div></section>
-    <p class="calendar-hint">Esta es una estructura visual de calendario. La creación y visualización de citas se conectará en una siguiente etapa.</p>
+    <section class="calendar-card" aria-label="Calendario semanal">
+      <div class="calendar-card-head"><h2 class="calendar-card-title">Vista semanal</h2><div class="calendar-legend"><span class="calendar-legend-dot" aria-hidden="true"></span>Agenda</div></div>
+      <div class="calendar-grid"><div class="days">
+        <div class="day-head">Hora</div>
+        {% for dia in dias %}<div class="day-head">{{ dia.nombre }}<br><span class="calendar-muted">{{ dia.numero }} {{ dia.mes }}</span></div>{% endfor %}
+        {% for hora in horas %}<div class="hour">{{ hora }}</div>{% for dia in dias %}<div class="slot" aria-label="{{ dia.nombre }} {{ dia.numero }} a las {{ hora }}"></div>{% endfor %}{% endfor %}
+      </div></div>
+    </section>
+    <p class="calendar-hint"><i class="bx bx-info-circle" aria-hidden="true"></i><span>La vista semanal está preparada visualmente. La creación y visualización de citas se conectará en una siguiente etapa.</span></p>
   </main>
   <script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
 </body>
