@@ -26,7 +26,7 @@
     .cal-btn,.cal-select{height:68px;border:1px solid #dfe3e4;border-radius:11px;background:#fff;color:var(--cal-ink);display:inline-flex;align-items:center;justify-content:center;font:inherit;font-size:17px;text-decoration:none;padding:0 22px}
     .cal-btn:hover{background:#f8f9f9;color:var(--cal-ink)}
     .cal-btn.icon-only{width:68px;padding:0;font-size:25px}
-    .cal-date{font-size:18px;font-weight:500;margin-left:3px;white-space:nowrap}
+    .cal-date{font-size:18px;font-weight:500;margin-left:3px;white-space:nowrap;text-transform:capitalize}
     .calendar-view-switch{display:inline-flex;gap:4px;background:#f1f2f2;border-radius:11px;padding:6px;margin-bottom:28px}
     .calendar-view-switch a{padding:13px 23px;border-radius:7px;color:#777d7e;text-decoration:none;font-size:17px}
     .calendar-view-switch a.active{background:#fff;color:#222;box-shadow:0 1px 4px rgba(0,0,0,.06)}
@@ -60,38 +60,50 @@
       <div class="nav__items"><h3 class="nav__subtitle">Consultorio</h3>
         <a href="{% url 'homein' %}" class="nav__link"><i class="bx bx-home nav__icon" aria-hidden="true"></i><span class="nav__name">Inicio</span></a>
         <a href="{% url 'homeincalendario' %}" class="nav__link active" aria-current="page"><i class="bx bx-calendar nav__icon" aria-hidden="true"></i><span class="nav__name">Calendario</span></a>
-        <div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-user nav__icon" aria-hidden="true"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">General</a><a href="#" class="nav__dropdown-item">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Video-consulta</a></div></div></div>
+        <div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-user nav__icon" aria-hidden="true"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">General</a><a href="#" class="nav__dropdown-item">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Videoconsulta</a></div></div></div>
         <a href="#" class="nav__link"><i class="bx bx-calendar-event nav__icon" aria-hidden="true"></i><span class="nav__name">Agendar cita</span></a>
       </div>
-      <div class="nav__items"><h3 class="nav__subtitle">Tests</h3><div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-file nav__icon" aria-hidden="true"></i><span class="nav__name">Generar</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">Test 1</a><a href="#" class="nav__dropdown-item">Test 2</a><a href="#" class="nav__dropdown-item">Test 3</a><a href="#" class="nav__dropdown-item">Test 4</a></div></div></div><a href="#" class="nav__link"><i class="bx bx-history nav__icon" aria-hidden="true"></i><span class="nav__name">Historial</span></a></div>
-      <div class="nav__items"><h3 class="nav__subtitle">Blog</h3><a href="#" class="nav__link"><i class="bx bx-edit-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Nuevo post</span></a><a href="#" class="nav__link"><i class="bx bx-grid-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Revisar posts</span></a></div>
+      <div class="nav__items"><h3 class="nav__subtitle">Pruebas</h3><div class="nav__dropdown"><a href="#" class="nav__link"><i class="bx bx-file nav__icon" aria-hidden="true"></i><span class="nav__name">Generar</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="#" class="nav__dropdown-item">Prueba 1</a><a href="#" class="nav__dropdown-item">Prueba 2</a><a href="#" class="nav__dropdown-item">Prueba 3</a><a href="#" class="nav__dropdown-item">Prueba 4</a></div></div></div><a href="#" class="nav__link"><i class="bx bx-history nav__icon" aria-hidden="true"></i><span class="nav__name">Historial</span></a></div>
+      <div class="nav__items"><h3 class="nav__subtitle">Blog</h3><a href="#" class="nav__link"><i class="bx bx-edit-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Nueva publicación</span></a><a href="#" class="nav__link"><i class="bx bx-grid-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Ver publicaciones</span></a></div>
     </div>
-  </div><a href="#" class="nav__link nav__logout" aria-label="Salir (pendiente de conectar)" title="Salir: función pendiente"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Salir</span></a></nav></div>
+  </div><a href="#" class="nav__link nav__logout" aria-label="Cerrar sesión (pendiente de conectar)" title="Cerrar sesión: función pendiente"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Cerrar sesión</span></a></nav></div>
   <main class="home calendar-page">
     <section class="calendar-shell" aria-label="Agenda del consultorio">
-      <h1 class="calendar-heading">Calendar</h1>
+      <h1 class="calendar-heading">Calendario</h1>
       <div class="calendar-toolbar" aria-label="Navegación del calendario">
-        <a class="cal-btn" href="?week=0">Today</a>
+        <a class="cal-btn" href="?week=0">Hoy</a>
         <a class="cal-btn icon-only" href="?week={{ week_offset|add:'-1' }}" aria-label="Día anterior"><i class="bx bx-chevron-left" aria-hidden="true"></i></a>
         <a class="cal-btn icon-only" href="?week={{ week_offset|add:'1' }}" aria-label="Día siguiente"><i class="bx bx-chevron-right" aria-hidden="true"></i></a>
-        <strong class="cal-date">{{ rango }}</strong>
+        <strong class="cal-date" id="calendar-date">{{ rango }}</strong>
       </div>
-      <nav class="calendar-view-switch" aria-label="Cambiar vista"><a class="active" href="?view=day">Day</a><a href="?view=week">Week</a><a href="?view=month">Month</a></nav>
+      <nav class="calendar-view-switch" aria-label="Cambiar vista"><a class="active" href="?view=day" aria-current="page">Día</a><a href="?view=week">Semana</a><a href="?view=month">Mes</a></nav>
       <div class="calendar-actions">
-        <button class="cal-select" type="button" aria-label="Filtrar por doctor">All Doctors <i class="bx bx-chevron-down" aria-hidden="true"></i></button>
-        <button class="cal-btn cal-new" type="button" aria-label="Nueva cita"><i class="bx bx-plus" aria-hidden="true"></i> New</button>
+        <button class="cal-select" type="button" aria-label="Filtrar por doctor">Todos los doctores <i class="bx bx-chevron-down" aria-hidden="true"></i></button>
+        <button class="cal-btn cal-new" type="button" aria-label="Nueva cita"><i class="bx bx-plus" aria-hidden="true"></i> Nueva cita</button>
       </div>
       <div class="calendar-grid" aria-label="Agenda diaria">
         <div class="time-column">
-          {% for hora in horas %}<div class="time-slot">{{ hora }}</div>{% empty %}<div class="time-slot">08:00 AM</div><div class="time-slot">09:00 AM</div><div class="time-slot">10:00 AM</div><div class="time-slot">11:00 AM</div><div class="time-slot">12:00 PM</div>{% endfor %}
+          {% for hora in horas %}<div class="time-slot">{{ hora }}</div>{% empty %}<div class="time-slot">08:00</div><div class="time-slot">09:00</div><div class="time-slot">10:00</div><div class="time-slot">11:00</div><div class="time-slot">12:00</div>{% endfor %}
         </div>
         <div class="events-column">
-          {% for hora in horas %}<div class="event-slot"></div>{% empty %}<div class="event-slot"></div><div class="event-slot"></div><div class="event-slot"><div class="appointment"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">John Smith</span><span class="appointment-status">Confirmed</span></div></div><div class="event-slot"><div class="appointment progress"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">Emily Davis</span><span class="appointment-status">In Progress</span></div></div><div class="event-slot"></div>{% endfor %}
+          {% for hora in horas %}<div class="event-slot"></div>{% empty %}<div class="event-slot"></div><div class="event-slot"></div><div class="event-slot"><div class="appointment"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">Juan Smith</span><span class="appointment-status">Confirmada</span></div></div><div class="event-slot"><div class="appointment progress"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">Emily Davis</span><span class="appointment-status">En curso</span></div></div><div class="event-slot"></div>{% endfor %}
         </div>
       </div>
-      <p class="calendar-note">Diseño de referencia. Los controles y las citas son demostrativos; la agenda real se conectará en la siguiente etapa.</p>
+      <p class="calendar-note">Vista demostrativa. La agenda real y la gestión de citas se conectarán en la siguiente etapa.</p>
     </section>
   </main>
+  <script>
+    (function(){
+      const dateLabel=document.getElementById('calendar-date');
+      if(!dateLabel)return;
+      const params=new URLSearchParams(window.location.search);
+      const offset=parseInt(params.get('week')||'0',10)||0;
+      const date=new Date();
+      date.setHours(12,0,0,0);
+      date.setDate(date.getDate()+offset*7);
+      dateLabel.textContent=new Intl.DateTimeFormat('es-EC',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(date);
+    })();
+  </script>
   <script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
 </body>
 </html>
