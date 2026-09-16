@@ -116,5 +116,5 @@ def homeinnuevopaciente(request):
     return render(request, 'frm-nuevopaciente.html')
 
 def homeinnuevacita(request):
-    horas_demo = [f"{h:02d}:00" for h in range(8, 18)]
+    horas_demo = [f"{h:02d}:00" for h in range(8, 23)]
     return render(request, 'frm-nuevacita.html', {"horas_demo": horas_demo})
