@@ -35,17 +35,10 @@ urlpatterns = [
 
     path('signin/', views.signin, name='signin'),
     path('logout/', views.do_logout, name='logout'),
-    path('homein/', views.homein, name='homein'),   
+    path('homein/', views.homein, name='homein'),
 
-    path('homein-calendario/', views.homeincalendario, name='homeincalendario'),   
-    path('homein-nuevopaciente/', views.homeinnuevopaciente, name='homeinnuevopaciente'),   
-    path(
-        'sitemap.xml',
-        sitemap,
-        {'sitemaps': sitemaps},
-        name='django.contrib.sitemaps.views.sitemap'
-    ),
+    path('homein-calendario/', views.homeincalendario, name='homeincalendario'),
+    path('homein-nuevopaciente/', views.homeinnuevopaciente, name='homeinnuevopaciente'),
+    path('homein-nuevacita/', views.homeinnuevacita, name='homeinnuevacita'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
-
-
-
