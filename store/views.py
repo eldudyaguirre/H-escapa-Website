@@ -96,45 +96,25 @@ def blogdetalle(request):
     return render(request, 'blog-single.html')
 
 def homeincalendario(request):
-    # Obtener offset de semana (?week=1 o ?week=-1)
     week_offset = int(request.GET.get("week", 0))
-
     hoy = date.today()
-
-    # Encontrar lunes de la semana actual
     inicio_semana = hoy - timedelta(days=hoy.weekday())
     inicio_semana += timedelta(weeks=week_offset)
-
     fin_semana = inicio_semana + timedelta(days=6)
-
     dias_semana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
-    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
-             "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-
+    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
     dias = []
-
     for i in range(7):
         dia = inicio_semana + timedelta(days=i)
-
-        dias.append({
-            "nombre": dias_semana[dia.weekday()],
-            "numero": dia.day,
-            "mes": meses[dia.month - 1],
-            "fecha": dia
-        })
-
+        dias.append({"nombre": dias_semana[dia.weekday()], "numero": dia.day, "mes": meses[dia.month - 1], "fecha": dia})
     horas = [f"{h:02d}:00" for h in range(8, 23)]
-
     rango = f"{inicio_semana.day} {meses[inicio_semana.month-1]} – {fin_semana.day} {meses[fin_semana.month-1]} {fin_semana.year}"
-
-    context = {
-        "dias": dias,
-        "horas": horas,
-        "rango": rango,
-        "week_offset": week_offset
-    }
-
+    context = {"dias": dias, "horas": horas, "rango": rango, "week_offset": week_offset}
     return render(request, "frm-calendario.html", context)
 
 def homeinnuevopaciente(request):
     return render(request, 'frm-nuevopaciente.html')
+
+def homeinnuevacita(request):
+    horas_demo = [f"{h:02d}:00" for h in range(8, 18)]
+    return render(request, 'frm-nuevacita.html', {"horas_demo": horas_demo})
