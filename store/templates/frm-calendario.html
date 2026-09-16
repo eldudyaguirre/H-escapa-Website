@@ -50,7 +50,18 @@
     const names=['Juan Smith','Emily Davis','Carlos Ruiz','Roberta Wilson','David Miller','Sarah Thompson','Jessica Brown','Michael Johnson'];
     const statuses=['Confirmado','En consulta','Cancelado','Completado'];const classes=['','en-consulta','cancelado','completado'];
     const samples=[{day:1,hour:10,name:0,status:0},{day:2,hour:11,name:4,status:0},{day:3,hour:9,name:5,status:2},{day:3,hour:10,name:0,status:0},{day:3,hour:11,name:1,status:1},{day:3,hour:14,name:3,status:3},{day:4,hour:9,name:6,status:0},{day:4,hour:10,name:7,status:1}];
-    const today=new Date();today.setHours(12,0,0,0);const start=new Date(today);start.setDate(start.getDate()+offset*7);
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    
+    const start = new Date(today);
+    
+    if (view === 'day') {
+        start.setDate(start.getDate() + offset);
+    } else if (view === 'week') {
+        start.setDate(start.getDate() + offset * 7);
+    } else if (view === 'month') {
+        start.setMonth(start.getMonth() + offset);
+    }
     const fmt=(d,opt)=>new Intl.DateTimeFormat('es-EC',opt).format(d);
     function appt(a,compact){return `<div class="appointment ${classes[a.status]}"><span class="appointment-avatar"><i class="bx bx-user" aria-hidden="true"></i></span><span class="appointment-name">${names[a.name]}</span><span class="appointment-status">${statuses[a.status]}</span></div>`}
     function dayView(){dateLabel.textContent=fmt(start,{weekday:'long',day:'numeric',month:'long',year:'numeric'});let html='<div class="calendar-grid" aria-label="Agenda diaria"><div class="time-column">';for(let h=8;h<=22;h++)html+=`<div class="time-slot">${String(h).padStart(2,'0')}:00</div>`;html+='</div><div class="events-column">';for(let h=8;h<=22;h++){const a=samples.find(x=>x.day===((start.getDay()+6)%7)+1&&x.hour===h);html+=`<div class="event-slot">${a?appt(a):''}</div>`}content.innerHTML=html+'</div></div>'}
