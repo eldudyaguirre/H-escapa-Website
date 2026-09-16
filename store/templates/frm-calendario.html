@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>H-Escapa | Calendario</title>
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <style>
+    :root{--sidebar-width:219px;--teal:#419b94;--ink:#253b3a;--line:#e5e9e8;--soft:#f5f8f7}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:Arial,sans-serif;background:#f7f9f8}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar-width);padding:26px 24px;background:var(--teal);color:#fff}
+    .sidebar h2{font-size:20px;letter-spacing:2px;margin:0 0 30px}.sidebar a{display:block;color:#fff;text-decoration:none;padding:12px 0}
+    .main{margin-left:var(--sidebar-width);padding:28px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+    h1{font-size:30px;margin:0 0 6px;font-family:Georgia,serif}.muted{color:#788583}.week-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn-week{display:inline-block;padding:9px 13px;border:1px solid #d6dfdc;border-radius:8px;background:#fff;color:var(--ink);text-decoration:none}
+    .calendar{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .days{display:grid;grid-template-columns:64px repeat(7,minmax(90px,1fr));overflow-x:auto}
+    .day-head{padding:13px 8px;text-align:center;border-bottom:1px solid var(--line);border-left:1px solid var(--line);font-weight:600;background:var(--soft)}
+    .hour{padding:14px 8px;text-align:center;color:#778481;border-bottom:1px solid var(--line);font-size:13px}
+    .slot{height:52px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
+    .day-head:first-child,.slot:first-child{border-left:0}
+    .hint{margin-top:14px;color:#7a8582;font-size:13px}
+    @media(max-width:767px){.sidebar{position:relative;width:100%;height:auto;padding:15px 20px}.sidebar h2{margin-bottom:8px}.sidebar a{display:inline-block;margin-right:14px;padding:7px 0}.main{margin-left:0;padding:18px 12px}.days{grid-template-columns:52px repeat(7,minmax(82px,1fr))}.top{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar"><h2>CONSULTORIO</h2><a href="{% url 'homein' %}">Inicio</a><a href="{% url 'homeincalendario' %}">Calendario</a><a href="{% url 'homeinnuevopaciente' %}">Nuevo paciente</a></aside>
+  <main class="main">
+    <div class="top">
+      <div><h1>Calendario</h1><div class="muted">Vista semanal · citas aún no conectadas</div></div>
+      <div class="week-nav"><a class="btn-week" href="?week={{ week_offset|add:'-1' }}">← Semana anterior</a><strong>{{ rango }}</strong><a class="btn-week" href="?week={{ week_offset|add:'1' }}">Semana siguiente →</a><a class="btn-week" href="?week=0">Hoy</a></div>
+    </div>
+    <section class="calendar" aria-label="Calendario semanal">
+      <div class="days">
+        <div class="day-head">Hora</div>
+        {% for dia in dias %}<div class="day-head">{{ dia.nombre }}<br><span class="muted">{{ dia.numero }} {{ dia.mes }}</span></div>{% endfor %}
+        {% for hora in horas %}<div class="hour">{{ hora }}</div>{% for dia in dias %}<div class="slot" aria-label="{{ dia.nombre }} {{ dia.numero }} a las {{ hora }}"></div>{% endfor %}{% endfor %}
+      </div>
+    </section>
+    <p class="hint">Esta es una estructura visual de calendario. La creación y visualización de citas se conectará en una siguiente etapa.</p>
+  </main>
+</body>
+</html>
