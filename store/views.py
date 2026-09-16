@@ -25,20 +25,14 @@ def do_signin(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('homein')
-            else:
-                messages.error(request, 'Usuario o contraseña inválidos.')
-        else:
-            messages.error(request, 'Usuario o contraseña inválidos.')        
-    
-    form = AuthenticationForm()
-    return render(request, 'sign-in.html', {'signin_form': form})
+            user = form.get_user()
+            login(request, user)
+            return redirect('homein')
+        messages.error(request, 'Usuario o contraseña inválidos.')
+        return render(request, 'signin-admin.html', {'signin_form': form})
+
+    form = AuthenticationForm(request)
+    return render(request, 'signin-admin.html', {'signin_form': form})
 
 def do_logout(request):
     logout(request)
@@ -90,7 +84,7 @@ def signinuser(request):
     return render(request, 'signin-user.html')
 
 def signin(request):
-    return render(request, 'signin-admin.html')
+    return do_signin(request)
 
 def teamhp(request):
     return render(request, 'team-hp.html')
