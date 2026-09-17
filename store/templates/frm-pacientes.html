@@ -1,53 +1,78 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>H-Escapa | Pacientes</title>
-  <link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Sora:wght@100..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'css/all.min.css' %}" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/styles-frmmenprinci.css' %}">
-  <link href="{% static 'css/custom.css' %}" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box}body{margin:0;background:#f7f8fa;color:#202326;font-family:Sora,Arial,sans-serif}
-    .patients-page{padding:100px 28px 32px;min-width:0}.heading{font-size:32px;font-weight:600;margin:0 0 12px}.subtitle{font-size:18px;color:#777e83;margin:0 0 28px}
-    .add-wrap{text-align:center;margin-bottom:34px}.add{display:inline-flex;align-items:center;gap:14px;padding:18px 28px;border-radius:11px;background:#191b1e;color:#fff;text-decoration:none;font-size:17px}
-    .patients-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:24px}.patients-card h2{font-size:27px;font-weight:500;margin:0 0 10px}.patients-card>p{color:#777e83;margin:0 0 26px}
-    .tools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;margin-bottom:28px}.search{height:58px;display:flex;align-items:center;gap:12px;padding:0 18px;border:1px solid #e2e5e7;border-radius:10px;color:#777e83}.search input{width:100%;min-width:0;border:0;outline:0;font:inherit}
-    .toolbtn{height:58px;padding:0 22px;border:1px solid #e2e5e7;border-radius:10px;background:#fff;font:inherit;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
-    .table-wrap{overflow-x:auto}.patients-table{width:100%;min-width:680px;border-collapse:collapse}.patients-table th{padding:18px 16px;color:#777e83;font-weight:500;border-bottom:1px solid #e2e5e7;white-space:nowrap}.patients-table td{padding:20px 16px;border-bottom:1px solid #e2e5e7;vertical-align:middle}.patients-table tr:nth-child(even){background:#fafafa}
-    .person{display:flex;align-items:center;gap:14px;min-width:220px}.avatar{width:54px;height:54px;flex:0 0 54px;border-radius:50%;display:grid;place-items:center;background:#e9eeee;color:#687477;font-size:24px}.meta{font-size:13px;color:#777e83;margin-top:5px}.status{display:inline-block;padding:6px 12px;border-radius:20px;background:#e2f7e9;color:#21834a;font-size:13px}.status.inactive{background:#fff2d9;color:#986700}
-    .menu{position:relative}.menu summary{list-style:none;cursor:pointer;width:42px;height:42px;display:grid;place-items:center;font-size:24px}.menu summary::-webkit-details-marker{display:none}.menu-items{position:absolute;right:0;top:40px;z-index:4;width:180px;padding:8px;background:#fff;border:1px solid #e2e5e7;border-radius:10px;box-shadow:0 8px 24px #0002}.menu-items a{display:block;padding:10px 12px;border-radius:7px;text-decoration:none;color:#202326;font-size:14px}.menu-items a:hover{background:#f4f6f6}.menu-items .delete{color:#c43d3d;border-top:1px solid #e2e5e7;margin-top:5px}
-    #empty{display:none;text-align:center;color:#777e83;padding:24px}@media(max-width:767px){.patients-page{padding:88px 12px 24px}.heading{font-size:28px}.subtitle{font-size:16px}.patients-card{padding:18px 14px}.patients-card h2{font-size:24px}.tools{grid-template-columns:1fr}.toolbtn{width:100%}.add{width:100%;max-width:320px;justify-content:center}}
-  </style>
-</head>
-<body>
-<header class="header"><div class="header__container"><div class="header__toggle"><button type="button" id="header-toggle" aria-label="Abrir o cerrar menú" style="border:0;background:transparent"><i class="bx bx-menu" aria-hidden="true"></i></button></div></div></header>
-<div class="nav" id="navbar"><nav class="nav__container"><div>
-<a class="nav__link nav__logo" href="{% url 'homein' %}" aria-label="H-Escapa, inicio"><img src="{% static 'img/favicon.png' %}" alt="H-Escapa" class="nav__logo-img logo-default"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa" class="nav__logo-img logo-hover"></a>
-<div class="nav__list"><div class="nav__items"><h3 class="nav__subtitle">Consultorio</h3>
-<a href="{% url 'homein' %}" class="nav__link"><i class="bx bx-home nav__icon"></i><span class="nav__name">Inicio</span></a>
-<a href="{% url 'homeincalendario' %}" class="nav__link"><i class="bx bx-calendar nav__icon"></i><span class="nav__name">Calendario</span></a>
-<div class="nav__dropdown"><a href="{% url 'homeinpacientes' %}" class="nav__link active" aria-current="page"><i class="bx bx-user nav__icon"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon"></i></a><div class="nav__dropdown-collapse"><div class="nav__dropdown-content"><a href="{% url 'homeinpacientes' %}" class="nav__dropdown-item active" aria-current="page">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Videoconsulta</a></div></div></div>
-<a href="{% url 'homeinnuevacita' %}" class="nav__link"><i class="bx bx-calendar-event nav__icon"></i><span class="nav__name">Agendar cita</span></a></div>
-<div class="nav__items"><h3 class="nav__subtitle">Pruebas</h3><a href="#" class="nav__link">Generar</a><a href="#" class="nav__link">Historial</a></div><div class="nav__items"><h3 class="nav__subtitle">Blog</h3><a href="#" class="nav__link">Nueva publicación</a><a href="#" class="nav__link">Ver publicaciones</a></div></div></div>
-<a href="{% url 'logout' %}" class="nav__link nav__logout"><i class="bx bx-log-out nav__icon"></i><span class="nav__name">Cerrar sesión</span></a></nav></div>
-<main class="home patients-page"><h1 class="heading">Pacientes</h1><p class="subtitle">Administra tus pacientes y sus historias clínicas.</p><div class="add-wrap"><a class="add" href="{% url 'homeinnuevopaciente' %}"><i class="bx bx-plus"></i> Agregar paciente</a></div>
-<section class="patients-card"><h2>Lista de pacientes</h2><p>Consulta los pacientes registrados y accede rápidamente a sus datos.</p>
-<div class="tools"><label class="search"><i class="bx bx-search"></i><input id="search" type="search" placeholder="Buscar pacientes..." aria-label="Buscar pacientes"></label><button class="toolbtn" id="filter-toggle" type="button"><i class="bx bx-filter-alt"></i> Filtros</button><button class="toolbtn" id="export" type="button" aria-label="Exportar CSV"><i class="bx bx-download"></i></button></div>
-<div id="filter-panel" hidden style="margin-bottom:22px"><label for="status-filter">Estado del paciente</label><select id="status-filter" class="form-select" style="max-width:260px"><option value="">Todos</option><option>Activo</option><option>Inactivo</option></select></div>
-<div class="table-wrap"><table class="patients-table"><thead><tr><th>Nombre</th><th>Edad / Género</th><th>Última visita</th><th>Estado</th><th>Doctor</th><th>Acciones</th></tr></thead><tbody id="rows">
-<tr data-name="Juan Smith" data-status="Activo"><td><div class="person"><span class="avatar"><i class="bx bx-user"></i></span><div><strong>Juan Smith</strong><div class="meta">juan.smith@example.com</div></div></div></td><td>45 · Masculino</td><td>15 jun 2026</td><td><span class="status">Activo</span></td><td>Dr. Sarah Johnson</td><td><details class="menu"><summary aria-label="Acciones Juan Smith"><i class="bx bx-dots-horizontal-rounded"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
-<tr data-name="Emily Davis" data-status="Activo"><td><div class="person"><span class="avatar"><i class="bx bx-user"></i></span><div><strong>Emily Davis</strong><div class="meta">emily.davis@example.com</div></div></div></td><td>32 · Femenino</td><td>2 jul 2026</td><td><span class="status">Activo</span></td><td>Dr. Michael Chen</td><td><details class="menu"><summary aria-label="Acciones Emily Davis"><i class="bx bx-dots-horizontal-rounded"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
-<tr data-name="Robert Wilson" data-status="Inactivo"><td><div class="person"><span class="avatar"><i class="bx bx-user"></i></span><div><strong>Robert Wilson</strong><div class="meta">robert.wilson@example.com</div></div></div></td><td>58 · Masculino</td><td>20 may 2026</td><td><span class="status inactive">Inactivo</span></td><td>Dr. Lisa Patel</td><td><details class="menu"><summary aria-label="Acciones Robert Wilson"><i class="bx bx-dots-horizontal-rounded"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
-</tbody></table><div id="empty">No se encontraron pacientes.</div></div></section></main>
+{% extends "frm-menpri.html" %}
+
+{% block title %}H-Escapa | Pacientes{% endblock %}
+
+{% block extra_head %}
+<style>
+  .patients-page{padding:20px 28px 32px;min-width:0}
+  .patients-page .heading{font-size:32px;font-weight:600;margin:0 0 12px}
+  .patients-page .subtitle{font-size:18px;color:#777e83;margin:0 0 28px}
+  .patients-page .add-wrap{text-align:center;margin-bottom:34px}
+  .patients-page .add{display:inline-flex;align-items:center;gap:14px;padding:18px 28px;border-radius:11px;background:#191b1e;color:#fff;text-decoration:none;font-size:17px}
+  .patients-page .patients-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:24px}
+  .patients-page .patients-card h2{font-size:27px;font-weight:500;margin:0 0 10px}
+  .patients-page .patients-card>p{color:#777e83;margin:0 0 26px}
+  .patients-page .tools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;margin-bottom:28px}
+  .patients-page .search{height:58px;display:flex;align-items:center;gap:12px;padding:0 18px;border:1px solid #e2e5e7;border-radius:10px;color:#777e83}
+  .patients-page .search input{width:100%;min-width:0;border:0;outline:0;font:inherit}
+  .patients-page .toolbtn{height:58px;padding:0 22px;border:1px solid #e2e5e7;border-radius:10px;background:#fff;font:inherit;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
+  .patients-page .table-wrap{overflow-x:auto}
+  .patients-page .patients-table{width:100%;min-width:680px;border-collapse:collapse}
+  .patients-page .patients-table th{padding:18px 16px;color:#777e83;font-weight:500;border-bottom:1px solid #e2e5e7;white-space:nowrap}
+  .patients-page .patients-table td{padding:20px 16px;border-bottom:1px solid #e2e5e7;vertical-align:middle}
+  .patients-page .patients-table tr:nth-child(even){background:#fafafa}
+  .patients-page .person{display:flex;align-items:center;gap:14px;min-width:220px}
+  .patients-page .avatar{width:54px;height:54px;flex:0 0 54px;border-radius:50%;display:grid;place-items:center;background:#e9eeee;color:#687477;font-size:24px}
+  .patients-page .meta{font-size:13px;color:#777e83;margin-top:5px}
+  .patients-page .status{display:inline-block;padding:6px 12px;border-radius:20px;background:#e2f7e9;color:#21834a;font-size:13px}
+  .patients-page .status.inactive{background:#fff2d9;color:#986700}
+  .patients-page .menu{position:relative}
+  .patients-page .menu summary{list-style:none;cursor:pointer;width:42px;height:42px;display:grid;place-items:center;font-size:24px}
+  .patients-page .menu summary::-webkit-details-marker{display:none}
+  .patients-page .menu-items{position:absolute;right:0;top:40px;z-index:4;width:180px;padding:8px;background:#fff;border:1px solid #e2e5e7;border-radius:10px;box-shadow:0 8px 24px #0002}
+  .patients-page .menu-items a{display:block;padding:10px 12px;border-radius:7px;text-decoration:none;color:#202326;font-size:14px}
+  .patients-page .menu-items a:hover{background:#f4f6f6}
+  .patients-page .menu-items .delete{color:#c43d3d;border-top:1px solid #e2e5e7;margin-top:5px}
+  .patients-page #empty{display:none;text-align:center;color:#777e83;padding:24px}
+  @media(max-width:767px){.patients-page{padding:16px 12px 24px}.patients-page .heading{font-size:28px}.patients-page .subtitle{font-size:16px}.patients-page .patients-card{padding:18px 14px}.patients-page .patients-card h2{font-size:24px}.patients-page .tools{grid-template-columns:1fr}.patients-page .toolbtn{width:100%}.patients-page .add{width:100%;max-width:320px;justify-content:center}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="patients-page">
+  <h1 class="heading">Pacientes</h1>
+  <p class="subtitle">Administra tus pacientes y sus historias clínicas.</p>
+  <div class="add-wrap"><a class="add" href="{% url 'homeinnuevopaciente' %}"><i class="bx bx-plus" aria-hidden="true"></i> Agregar paciente</a></div>
+  <section class="patients-card" aria-labelledby="patients-list-title">
+    <h2 id="patients-list-title">Lista de pacientes</h2>
+    <p>Consulta los pacientes registrados y accede rápidamente a sus datos.</p>
+    <div class="tools">
+      <label class="search"><i class="bx bx-search" aria-hidden="true"></i><input id="search" type="search" placeholder="Buscar pacientes..." aria-label="Buscar pacientes"></label>
+      <button class="toolbtn" id="filter-toggle" type="button"><i class="bx bx-filter-alt" aria-hidden="true"></i> Filtros</button>
+      <button class="toolbtn" id="export" type="button" aria-label="Exportar CSV"><i class="bx bx-download" aria-hidden="true"></i></button>
+    </div>
+    <div id="filter-panel" hidden style="margin-bottom:22px"><label for="status-filter">Estado del paciente</label><select id="status-filter" class="form-select" style="max-width:260px"><option value="">Todos</option><option>Activo</option><option>Inactivo</option></select></div>
+    <div class="table-wrap"><table class="patients-table"><thead><tr><th>Nombre</th><th>Edad / Género</th><th>Última visita</th><th>Estado</th><th>Doctor</th><th>Acciones</th></tr></thead><tbody id="rows">
+      <tr data-name="Juan Smith" data-status="Activo"><td><div class="person"><span class="avatar"><i class="bx bx-user" aria-hidden="true"></i></span><div><strong>Juan Smith</strong><div class="meta">juan.smith@example.com</div></div></div></td><td>45 · Masculino</td><td>15 jun 2026</td><td><span class="status">Activo</span></td><td>Dr. Sarah Johnson</td><td><details class="menu"><summary aria-label="Acciones Juan Smith"><i class="bx bx-dots-horizontal-rounded" aria-hidden="true"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
+      <tr data-name="Emily Davis" data-status="Activo"><td><div class="person"><span class="avatar"><i class="bx bx-user" aria-hidden="true"></i></span><div><strong>Emily Davis</strong><div class="meta">emily.davis@example.com</div></div></div></td><td>32 · Femenino</td><td>2 jul 2026</td><td><span class="status">Activo</span></td><td>Dr. Michael Chen</td><td><details class="menu"><summary aria-label="Acciones Emily Davis"><i class="bx bx-dots-horizontal-rounded" aria-hidden="true"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
+      <tr data-name="Robert Wilson" data-status="Inactivo"><td><div class="person"><span class="avatar"><i class="bx bx-user" aria-hidden="true"></i></span><div><strong>Robert Wilson</strong><div class="meta">robert.wilson@example.com</div></div></div></td><td>58 · Masculino</td><td>20 may 2026</td><td><span class="status inactive">Inactivo</span></td><td>Dr. Lisa Patel</td><td><details class="menu"><summary aria-label="Acciones Robert Wilson"><i class="bx bx-dots-horizontal-rounded" aria-hidden="true"></i></summary><div class="menu-items"><a href="#">Ver perfil</a><a href="#">Editar datos</a><a href="#">Historia clínica</a><a href="#">Recetas</a><a class="delete" href="#">Eliminar</a></div></details></td></tr>
+    </tbody></table><div id="empty">No se encontraron pacientes.</div></div>
+  </section>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
 <script>
-(function(){const search=document.getElementById('search'),status=document.getElementById('status-filter'),rows=[...document.querySelectorAll('#rows tr')],empty=document.getElementById('empty');function filter(){const q=search.value.trim().toLocaleLowerCase('es');let n=0;rows.forEach(r=>{r.hidden=!(r.dataset.name.toLocaleLowerCase('es').includes(q)&&(!status.value||r.dataset.status===status.value));if(!r.hidden)n++});empty.style.display=n?'none':'block'}search.addEventListener('input',filter);status.addEventListener('change',filter);document.getElementById('filter-toggle').addEventListener('click',()=>{const p=document.getElementById('filter-panel');p.hidden=!p.hidden});document.getElementById('export').addEventListener('click',()=>{const data=[['Nombre','Edad / Género','Última visita','Estado','Doctor']];rows.filter(r=>!r.hidden).forEach(r=>{const c=[...r.querySelectorAll('td')];data.push([r.dataset.name,c[1].innerText,c[2].innerText,r.dataset.status,c[4].innerText])});const csv='\uFEFF'+data.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='pacientes.csv';a.click();URL.revokeObjectURL(url)})})();
-</script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
-</body></html>
+(function(){
+  const search=document.getElementById('search');
+  const status=document.getElementById('status-filter');
+  const rows=[...document.querySelectorAll('#rows tr')];
+  const empty=document.getElementById('empty');
+  function filter(){const q=search.value.trim().toLocaleLowerCase('es');let n=0;rows.forEach(r=>{r.hidden=!(r.dataset.name.toLocaleLowerCase('es').includes(q)&&(!status.value||r.dataset.status===status.value));if(!r.hidden)n++});empty.style.display=n?'none':'block'}
+  search.addEventListener('input',filter);
+  status.addEventListener('change',filter);
+  document.getElementById('filter-toggle').addEventListener('click',()=>{const p=document.getElementById('filter-panel');p.hidden=!p.hidden});
+  document.getElementById('export').addEventListener('click',()=>{const data=[['Nombre','Edad / Género','Última visita','Estado','Doctor']];rows.filter(r=>!r.hidden).forEach(r=>{const c=[...r.querySelectorAll('td')];data.push([r.dataset.name,c[1].innerText,c[2].innerText,r.dataset.status,c[4].innerText])});const csv='\uFEFF'+data.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='pacientes.csv';a.click();URL.revokeObjectURL(url)});
+})();
+</script>
+{% endblock %}
