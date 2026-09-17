@@ -40,6 +40,9 @@
     .workspace-day{padding:12px 5px;text-align:center;border:1px solid rgba(120,120,120,.18);border-radius:9px;font-size:.85rem}
     .workspace-day strong{display:block;font-size:1.05rem;margin-top:5px}
     .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
+    /* El control desplegable conserva el aspecto de los enlaces del menú. */
+    .nav__dropdown > button.nav__link{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer;}
+    .nav__dropdown > button.nav__link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
     @media(max-width:600px){.workspace-placeholder{gap:4px}.workspace-day{padding:9px 2px;font-size:.72rem}.workspace-day strong{font-size:.9rem}}
     @media (min-width: 768px) {.main-content { margin-left: 219px; min-width: 0; }}
     @media (max-width: 767px) {.main-content { margin-left: 0; }}
