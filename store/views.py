@@ -115,6 +115,16 @@ def homeincalendario(request):
 def homeinpacientes(request):
     return render(request, 'frm-pacientes.html')
 
+def homeinperfilpaciente(request):
+    pacientes_demo = {
+        'juan-smith': {'nombre': 'Juan Smith', 'edad': 45, 'genero': 'Masculino', 'correo': 'juan.smith@example.com', 'estado': 'Activo', 'doctor': 'Dr. Sarah Johnson'},
+        'emily-davis': {'nombre': 'Emily Davis', 'edad': 32, 'genero': 'Femenino', 'correo': 'emily.davis@example.com', 'estado': 'Activo', 'doctor': 'Dr. Michael Chen'},
+        'robert-wilson': {'nombre': 'Robert Wilson', 'edad': 58, 'genero': 'Masculino', 'correo': 'robert.wilson@example.com', 'estado': 'Inactivo', 'doctor': 'Dr. Lisa Patel'},
+    }
+    paciente_id = request.GET.get('paciente', 'juan-smith')
+    paciente = pacientes_demo.get(paciente_id, pacientes_demo['juan-smith'])
+    return render(request, 'frm-perfilpaciente.html', {'paciente': paciente})
+
 def homeinnuevopaciente(request):
     return render(request, 'frm-nuevopaciente.html')
 
