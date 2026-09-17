@@ -23,7 +23,6 @@ if (nav) {
             el.removeAttribute('aria-current');
         });
     }
-
     function activateSubmenu(item) {
         clearActiveMenu();
         item.classList.add('active');
@@ -38,18 +37,20 @@ if (nav) {
             }
         }
     }
-
     function activateMain(link) {
         clearActiveMenu();
         link.classList.add('active');
         link.setAttribute('aria-current', 'page');
     }
 
-    // Assign the known Patients destination; other submenu URLs remain as defined in HTML.
+    // Rutas que antes estaban como # en el menú.
     submenuItems.forEach(item => {
-        if (item.textContent.trim().toLocaleLowerCase('es') === 'pacientes') {
-            item.href = '/homein-pacientes/';
-        }
+        const label = item.textContent.trim().toLocaleLowerCase('es');
+        if (label === 'pacientes') item.href = '/homein-pacientes/';
+    });
+    mainLinks.forEach(link => {
+        const label = link.textContent.trim().replace(/\s+/g, ' ').toLocaleLowerCase('es');
+        if (label === 'agendar cita') link.href = '/homein-nuevacita/';
     });
 
     const currentPath = location.pathname.replace(/\/$/, '') || '/';
@@ -58,20 +59,14 @@ if (nav) {
         const href = item.getAttribute('href');
         if (!href || href === '#') return;
         const path = new URL(href, location.origin).pathname.replace(/\/$/, '') || '/';
-        if (path === currentPath) {
-            activateSubmenu(item);
-            found = true;
-        }
+        if (path === currentPath) { activateSubmenu(item); found = true; }
     });
     if (!found) {
         mainLinks.forEach(link => {
             const href = link.getAttribute('href');
             if (!href || href === '#') return;
             const path = new URL(href, location.origin).pathname.replace(/\/$/, '') || '/';
-            if (path === currentPath) {
-                activateMain(link);
-                found = true;
-            }
+            if (path === currentPath) { activateMain(link); found = true; }
         });
     }
 
