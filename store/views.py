@@ -112,6 +112,9 @@ def homeincalendario(request):
     context = {"dias": dias, "horas": horas, "rango": rango, "week_offset": week_offset}
     return render(request, "frm-calendario.html", context)
 
+def homeinpacientes(request):
+    return render(request, 'frm-pacientes.html')
+
 def homeinnuevopaciente(request):
     return render(request, 'frm-nuevopaciente.html')
 
