@@ -3,17 +3,23 @@ const showMenu = (headerToggle, navbarId) => {
     const toggleBtn = document.getElementById(headerToggle);
     const nav = document.getElementById(navbarId);
     if (toggleBtn && nav) {
-        const toggleIcon = toggleBtn.querySelector('i');
+        // El id puede estar en el propio <i> o en el contenedor del botón.
+        // Siempre alternamos las clases en un único icono para evitar duplicados.
+        const toggleIcon = toggleBtn.matches('i') ? toggleBtn : toggleBtn.querySelector('i');
         toggleBtn.setAttribute('aria-expanded', 'false');
+        if (toggleBtn.tagName === 'BUTTON') {
+            toggleBtn.setAttribute('aria-label', 'Abrir menú');
+        }
         toggleBtn.addEventListener('click', () => {
             const opened = nav.classList.toggle('show-menu');
-            // El icono debe cambiar dentro del <i>, no en el botón:
-            // poner bx-x en el botón crea un glifo extra junto al menú.
             if (toggleIcon) {
                 toggleIcon.classList.toggle('bx-menu', !opened);
                 toggleIcon.classList.toggle('bx-x', opened);
             }
             toggleBtn.setAttribute('aria-expanded', String(opened));
+            if (toggleBtn.tagName === 'BUTTON') {
+                toggleBtn.setAttribute('aria-label', opened ? 'Cerrar menú' : 'Abrir menú');
+            }
         });
     }
 };
