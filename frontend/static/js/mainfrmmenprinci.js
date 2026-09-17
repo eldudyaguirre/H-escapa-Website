@@ -22,8 +22,14 @@ if (nav) {
         nav.querySelectorAll('.active, [aria-current="page"]').forEach(el => {
             el.classList.remove('active');
             el.removeAttribute('aria-current');
+        });
+        // Quitar también los estilos inline aplicados a iconos y textos hijos.
+        // Si no se limpian, conservan el color oscuro aunque el enlace ya no esté activo.
+        nav.querySelectorAll('.nav__link, .nav__dropdown-item, .nav__icon, .nav__name').forEach(el => {
             el.style.removeProperty('color');
             el.style.removeProperty('font-weight');
+            el.style.removeProperty('opacity');
+            el.style.removeProperty('background-color');
         });
     }
 
