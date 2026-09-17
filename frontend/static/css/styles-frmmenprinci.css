@@ -67,28 +67,35 @@
 .show-menu { left: 0; }
 .active { color: var(--h-escapa3-color); }
 
-/* El botón Pacientes se comporta y se ve como los enlaces del menú. */
+/* El disparador de Pacientes debe verse exactamente como los demás enlaces. */
 .nav__dropdown > button.nav__link {
   appearance: none;
   -webkit-appearance: none;
   display: flex;
   align-items: center;
   width: 100%;
+  min-height: 21px;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: transparent;
-  color: var(--h-escapa2-color);
-  font-family: var(--body-font);
-  font-size: inherit;
-  font-weight: inherit;
+  background: transparent !important;
+  color: var(--h-escapa2-color) !important;
+  font: inherit;
   line-height: normal;
   text-align: left;
+  opacity: 1 !important;
   cursor: pointer;
 }
-.nav__dropdown > button.nav__link:hover { color: var(--h-escapa4-color); }
-.nav__dropdown > button.nav__link.active { color: var(--h-escapa2-color); }
+.nav__dropdown > button.nav__link.active,
+.nav__dropdown > button.nav__link:hover,
+.nav__dropdown > button.nav__link:focus,
+.nav__dropdown > button.nav__link:active {
+  background: transparent !important;
+  color: var(--h-escapa2-color) !important;
+}
+.nav__dropdown > button.nav__link .nav__icon,
+.nav__dropdown > button.nav__link .nav__name { color: inherit !important; opacity: 1 !important; }
 .nav__dropdown > button.nav__link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 .dashboard-home { padding: .5rem; }
