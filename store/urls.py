@@ -38,6 +38,7 @@ urlpatterns = [
     path('homein/', views.homein, name='homein'),
 
     path('homein-calendario/', views.homeincalendario, name='homeincalendario'),
+    path('homein-pacientes/', views.homeinpacientes, name='homeinpacientes'),
     path('homein-nuevopaciente/', views.homeinnuevopaciente, name='homeinnuevopaciente'),
     path('homein-nuevacita/', views.homeinnuevacita, name='homeinnuevacita'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
