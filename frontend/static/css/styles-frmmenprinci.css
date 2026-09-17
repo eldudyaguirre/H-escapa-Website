@@ -73,7 +73,6 @@
   background-color: rgba(67, 155, 149, .16);
   border-radius: .25rem;
 }
-/* El botón desplegable Pacientes mantiene su estilo de enlace, pero también marca activo. */
 .nav__dropdown > button.nav__link {
   appearance: none; -webkit-appearance: none; display: flex; align-items: center;
   width: 100%; min-height: 21px; margin: 0; padding: 0; border: 0; border-radius: 0;
@@ -89,6 +88,19 @@
 }
 .nav__dropdown > button.nav__link:hover { color: var(--h-escapa4-color) !important; }
 .nav__dropdown > button.nav__link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* Si una página hija está activa, resaltar también el menú padre (Pacientes, Generar, etc.). */
+.nav__dropdown:has(.nav__dropdown-item.active) > .nav__link,
+.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link {
+  color: var(--h-escapa3-color) !important;
+  font-weight: var(--font-semi-bold);
+}
+.nav__dropdown:has(.nav__dropdown-item.active) > .nav__link .nav__icon,
+.nav__dropdown:has(.nav__dropdown-item.active) > .nav__link .nav__name,
+.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link .nav__icon,
+.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link .nav__name {
+  color: var(--h-escapa3-color) !important;
+}
 
 .dashboard-home { padding: .5rem; }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
