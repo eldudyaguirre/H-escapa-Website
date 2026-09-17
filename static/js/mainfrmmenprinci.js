@@ -3,9 +3,29 @@ const showMenu = (headerToggle, navbarId) => {
     const toggleBtn = document.getElementById(headerToggle);
     const nav = document.getElementById(navbarId);
     if (toggleBtn && nav) {
-        toggleBtn.addEventListener('click', () => {
-            nav.classList.toggle('show-menu');
-            toggleBtn.classList.toggle('bx-x');
+        // Use Font Awesome icons already loaded by Frm-MenPri.html.
+        // Avoid mixing Boxicons' bx-menu and bx-x classes, which can render
+        // as a missing-glyph box on some responsive browsers.
+        const setToggleIcon = (isOpen) => {
+            toggleBtn.classList.remove('bx', 'bx-menu', 'bx-x');
+            toggleBtn.classList.add('fa-solid', isOpen ? 'fa-xmark' : 'fa-bars');
+            toggleBtn.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+            toggleBtn.setAttribute('role', 'button');
+            toggleBtn.setAttribute('tabindex', '0');
+            toggleBtn.setAttribute('aria-expanded', String(isOpen));
+        };
+
+        setToggleIcon(nav.classList.contains('show-menu'));
+        const toggleMenu = () => {
+            const isOpen = nav.classList.toggle('show-menu');
+            setToggleIcon(isOpen);
+        };
+        toggleBtn.addEventListener('click', toggleMenu);
+        toggleBtn.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleMenu();
+            }
         });
     }
 };
