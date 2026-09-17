@@ -67,7 +67,7 @@
 .show-menu { left: 0; }
 .active { color: var(--h-escapa3-color); }
 
-/* El disparador de Pacientes debe verse exactamente como los demás enlaces. */
+/* El disparador de Pacientes debe conservar alto contraste en todos sus estados. */
 .nav__dropdown > button.nav__link {
   appearance: none;
   -webkit-appearance: none;
@@ -80,7 +80,7 @@
   border: 0;
   border-radius: 0;
   background: transparent !important;
-  color: var(--h-escapa2-color) !important;
+  color: #ffffff !important;
   font: inherit;
   line-height: normal;
   text-align: left;
@@ -92,10 +92,13 @@
 .nav__dropdown > button.nav__link:focus,
 .nav__dropdown > button.nav__link:active {
   background: transparent !important;
-  color: var(--h-escapa2-color) !important;
+  color: #ffffff !important;
 }
 .nav__dropdown > button.nav__link .nav__icon,
-.nav__dropdown > button.nav__link .nav__name { color: inherit !important; opacity: 1 !important; }
+.nav__dropdown > button.nav__link .nav__name {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
 .nav__dropdown > button.nav__link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 .dashboard-home { padding: .5rem; }
