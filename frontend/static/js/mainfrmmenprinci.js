@@ -3,9 +3,17 @@ const showMenu = (headerToggle, navbarId) => {
     const toggleBtn = document.getElementById(headerToggle);
     const nav = document.getElementById(navbarId);
     if (toggleBtn && nav) {
+        const toggleIcon = toggleBtn.querySelector('i');
+        toggleBtn.setAttribute('aria-expanded', 'false');
         toggleBtn.addEventListener('click', () => {
-            nav.classList.toggle('show-menu');
-            toggleBtn.classList.toggle('bx-x');
+            const opened = nav.classList.toggle('show-menu');
+            // El icono debe cambiar dentro del <i>, no en el botón:
+            // poner bx-x en el botón crea un glifo extra junto al menú.
+            if (toggleIcon) {
+                toggleIcon.classList.toggle('bx-menu', !opened);
+                toggleIcon.classList.toggle('bx-x', opened);
+            }
+            toggleBtn.setAttribute('aria-expanded', String(opened));
         });
     }
 };
