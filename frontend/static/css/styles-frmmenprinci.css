@@ -102,6 +102,14 @@
   color: var(--h-escapa3-color) !important;
 }
 
+/* Fuerza el color claro en desplegables inactivos; conserva el oscuro al estar activos. */
+#navbar .nav__dropdown:not(:has(.nav__dropdown-item.active)):not(:has(.nav__dropdown-item[aria-current="page"])) > .nav__link:not(.active):not([aria-current="page"]),
+#navbar .nav__dropdown:not(:has(.nav__dropdown-item.active)):not(:has(.nav__dropdown-item[aria-current="page"])) > .nav__link:not(.active):not([aria-current="page"]) .nav__icon,
+#navbar .nav__dropdown:not(:has(.nav__dropdown-item.active)):not(:has(.nav__dropdown-item[aria-current="page"])) > .nav__link:not(.active):not([aria-current="page"]) .nav__name {
+  color: var(--h-escapa2-color) !important;
+  opacity: 1 !important;
+}
+
 .dashboard-home { padding: .5rem; }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 .kpi-card { background: #fff; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: row; align-items: center; justify-content: center; text-align: center; gap: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all .3s ease; }
