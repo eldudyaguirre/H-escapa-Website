@@ -30,7 +30,6 @@ def do_signin(request):
             return redirect('homein')
         messages.error(request, 'Usuario o contraseña inválidos.')
         return render(request, 'signin-admin.html', {'signin_form': form})
-
     form = AuthenticationForm(request)
     return render(request, 'signin-admin.html', {'signin_form': form})
 
@@ -124,6 +123,19 @@ def homeinperfilpaciente(request):
     paciente_id = request.GET.get('paciente', 'juan-smith')
     paciente = pacientes_demo.get(paciente_id, pacientes_demo['juan-smith'])
     return render(request, 'frm-perfilpaciente.html', {'paciente': paciente})
+
+def homeineditarpaciente(request):
+    pacientes_demo = {
+        'juan-smith': {'nombre': 'Juan Smith', 'correo': 'juan.smith@example.com', 'genero': 'Masculino', 'estado': 'Activo', 'doctor': 'Dr. Sarah Johnson'},
+        'emily-davis': {'nombre': 'Emily Davis', 'correo': 'emily.davis@example.com', 'genero': 'Femenino', 'estado': 'Activo', 'doctor': 'Dr. Michael Chen'},
+        'robert-wilson': {'nombre': 'Robert Wilson', 'correo': 'robert.wilson@example.com', 'genero': 'Masculino', 'estado': 'Inactivo', 'doctor': 'Dr. Lisa Patel'},
+    }
+    paciente_id = request.GET.get('paciente', 'juan-smith')
+    paciente = pacientes_demo.get(paciente_id, pacientes_demo['juan-smith'])
+    return render(request, 'frm-editarpaciente.html', {
+        'paciente': paciente,
+        'tipos_sangre': ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    })
 
 def homeinnuevopaciente(request):
     return render(request, 'frm-nuevopaciente.html')
