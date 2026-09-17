@@ -25,15 +25,9 @@
   --font-semi-bold: 600;
   --z-fixed: 100;
 }
-
 @media screen and (min-width: 1024px) {
-  :root {
-    --normal-font-size: 1rem;
-    --small-font-size: .875rem;
-    --smaller-font-size: .813rem;
-  }
+  :root { --normal-font-size: 1rem; --small-font-size: .875rem; --smaller-font-size: .813rem; }
 }
-
 *, ::before, ::after { box-sizing: border-box; }
 .main-content { margin-top: calc(var(--header-height) + 1.5rem); margin-left: 50px; }
 .areatrabajo { position: fixed; bottom: 2px; background: rgba(66, 165, 158, 0.8); padding: 285px 10px; width: 100%; }
@@ -59,46 +53,41 @@
 .nav__dropdown { overflow: hidden; max-height: 21px; transition: .4s ease-in-out; }
 .nav__dropdown-collapse { background-color: var(--first-color-light); border-radius: .25rem; margin-top: 1rem; }
 .nav__dropdown-content { display: grid; row-gap: .5rem; padding: .75rem 2.5rem .75rem 1.8rem; }
-.nav__dropdown-item { font-size: var(--smaller-font-size); font-weight: var(--font-medium); color: var(--text-color); }
+.nav__dropdown-item { display: block; font-size: var(--smaller-font-size); font-weight: var(--font-medium); color: var(--text-color); }
 .nav__dropdown-item:hover { color: var(--h-escapa3-color); }
 .nav__dropdown-icon { margin-left: auto; transition: .4s; }
 .nav__dropdown:hover, .nav__dropdown.show-dropdown { max-height: 100rem; }
 .nav__dropdown:hover .nav__dropdown-icon, .nav__dropdown.show-dropdown .nav__dropdown-icon { transform: rotate(180deg); }
 .show-menu { left: 0; }
-.active { color: var(--h-escapa3-color); }
 
-/* El disparador de Pacientes debe conservar alto contraste en todos sus estados. */
-.nav__dropdown > button.nav__link {
-  appearance: none;
-  -webkit-appearance: none;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: 21px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent !important;
-  color: #ffffff !important;
-  font: inherit;
-  line-height: normal;
-  text-align: left;
-  opacity: 1 !important;
-  cursor: pointer;
+/* Estado activo compartido por enlaces principales, desplegables y submenús. */
+.nav .nav__link.active,
+.nav .nav__link[aria-current="page"] {
+  color: var(--h-escapa3-color) !important;
+  font-weight: var(--font-semi-bold);
 }
-.nav__dropdown > button.nav__link.active,
-.nav__dropdown > button.nav__link:hover,
-.nav__dropdown > button.nav__link:focus,
-.nav__dropdown > button.nav__link:active {
-  background: transparent !important;
-  color: #ffffff !important;
+.nav .nav__dropdown-item.active,
+.nav .nav__dropdown-item[aria-current="page"] {
+  color: var(--h-escapa3-color) !important;
+  font-weight: var(--font-semi-bold);
+  background-color: rgba(67, 155, 149, .16);
+  border-radius: .25rem;
+}
+/* El botón desplegable Pacientes mantiene su estilo de enlace, pero también marca activo. */
+.nav__dropdown > button.nav__link {
+  appearance: none; -webkit-appearance: none; display: flex; align-items: center;
+  width: 100%; min-height: 21px; margin: 0; padding: 0; border: 0; border-radius: 0;
+  background: transparent !important; color: var(--h-escapa2-color) !important;
+  font: inherit; line-height: normal; text-align: left; opacity: 1 !important; cursor: pointer;
 }
 .nav__dropdown > button.nav__link .nav__icon,
-.nav__dropdown > button.nav__link .nav__name {
-  color: #ffffff !important;
-  opacity: 1 !important;
+.nav__dropdown > button.nav__link .nav__name { color: inherit !important; opacity: 1 !important; }
+.nav__dropdown > button.nav__link.active,
+.nav__dropdown > button.nav__link[aria-current="page"] {
+  color: var(--h-escapa3-color) !important;
+  font-weight: var(--font-semi-bold);
 }
+.nav__dropdown > button.nav__link:hover { color: var(--h-escapa4-color) !important; }
 .nav__dropdown > button.nav__link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 .dashboard-home { padding: .5rem; }
