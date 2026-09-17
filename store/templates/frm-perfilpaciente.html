@@ -8,21 +8,28 @@
   .profile-page .back{display:inline-flex;align-items:center;gap:9px;color:var(--h-escapa3-color,#005855);text-decoration:none;margin-bottom:22px}
   .profile-page h1{font-size:32px;font-weight:600;margin:0 0 8px}
   .profile-page .subtitle{font-size:17px;color:#777e83;margin:0 0 24px}
-  .profile-page .profile-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:24px;margin-bottom:20px}
-  .profile-page .identity{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-  .profile-page .avatar{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#e8f3f2;color:var(--h-escapa3-color,#005855);font-size:34px}
+  .profile-layout{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);gap:22px;align-items:start}
+  .profile-page .profile-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:24px;margin-bottom:20px;min-width:0}
+  .profile-page .identity{text-align:center;padding:8px 0 20px}
+  .profile-page .avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#e8f3f2;color:var(--h-escapa3-color,#005855);font-size:40px}
   .profile-page .name{font-size:25px;font-weight:600;margin:0 0 6px}
   .profile-page .muted{color:#777e83}
-  .profile-page .status{display:inline-block;background:#e2f7e9;color:#21834a;border-radius:20px;padding:6px 12px;font-size:13px}
+  .profile-page .status{display:inline-block;background:#e2f7e9;color:#21834a;border-radius:20px;padding:6px 12px;font-size:13px;margin-top:12px}
   .profile-page .status.inactive{background:#fff2d9;color:#986700}
   .profile-page .section-title{font-size:22px;font-weight:500;margin:0 0 18px}
-  .profile-page .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px}
+  .profile-page .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px}
   .profile-page .field-label{display:block;color:#777e83;font-size:14px;margin-bottom:5px}
   .profile-page .field-value{font-size:16px;overflow-wrap:anywhere}
-  .profile-page .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
-  .profile-page .action{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:9px;text-decoration:none;border:1px solid #dce3e3;color:var(--h-escapa3-color,#005855);background:#fff}
+  .profile-page .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .profile-page .action{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;border-radius:9px;text-decoration:none;border:1px solid #dce3e3;color:var(--h-escapa3-color,#005855);background:#fff}
   .profile-page .action.primary{background:var(--h-escapa1-color,#439b95);border-color:var(--h-escapa1-color,#439b95);color:#fff}
-  @media(max-width:767px){.profile-page{padding:18px 12px 28px}.profile-page h1{font-size:28px}.profile-page .profile-card{padding:18px 14px}.profile-page .details{grid-template-columns:1fr}}
+  .profile-page .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .profile-page .tab{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border:1px solid #dce3e3;border-radius:9px;background:#fff;color:var(--h-escapa3-color,#005855);text-decoration:none}
+  .profile-page .tab.active{background:var(--h-escapa1-color,#439b95);border-color:var(--h-escapa1-color,#439b95);color:#fff}
+  .profile-page .info-row{padding:13px 0;border-bottom:1px solid #edf0f0}
+  .profile-page .info-row:last-child{border-bottom:0}
+  @media(max-width:900px){.profile-layout{grid-template-columns:minmax(230px,290px) minmax(0,1fr);gap:16px}.profile-page{padding:22px 18px}}
+  @media(max-width:680px){.profile-page{padding:18px 12px 28px}.profile-page h1{font-size:28px}.profile-layout{grid-template-columns:minmax(0,1fr);gap:0}.profile-page .profile-card{padding:18px 14px}.profile-page .details{grid-template-columns:1fr}.profile-page .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.profile-page .tab:last-child{grid-column:1/-1}}
 </style>
 {% endblock %}
 
@@ -32,42 +39,44 @@
   <h1>Perfil del paciente</h1>
   <p class="subtitle">Información de ejemplo; más adelante conectaremos estos campos con la base de datos.</p>
 
-  <section class="profile-card">
-    <div class="identity">
-      <div class="avatar"><i class="bx bx-user" aria-hidden="true"></i></div>
-      <div>
+  <div class="profile-layout">
+    <aside class="profile-card">
+      <div class="identity">
+        <div class="avatar"><i class="bx bx-user" aria-hidden="true"></i></div>
         <h2 class="name">{{ paciente.nombre }}</h2>
         <div class="muted">{{ paciente.edad }} años · {{ paciente.genero }}</div>
-        <div style="margin-top:10px"><span class="status{% if paciente.estado == 'Inactivo' %} inactive{% endif %}">{{ paciente.estado }}</span></div>
+        <span class="status{% if paciente.estado == 'Inactivo' %} inactive{% endif %}">{{ paciente.estado }}</span>
       </div>
-    </div>
-    <div class="actions">
-      <a class="action primary" href="#informacion">Información personal</a>
-      <a class="action" href="#historial">Historia clínica</a>
-      <a class="action" href="#citas">Citas</a>
-    </div>
-  </section>
+      <div class="actions">
+        <a class="action primary" href="#informacion">Información personal</a>
+        <a class="action" href="#historial">Historia clínica</a>
+        <a class="action" href="#citas">Citas</a>
+      </div>
+    </aside>
 
-  <section class="profile-card" id="informacion">
-    <h2 class="section-title">Información personal</h2>
-    <div class="details">
-      <div><span class="field-label">Nombre completo</span><div class="field-value">{{ paciente.nombre }}</div></div>
-      <div><span class="field-label">Correo electrónico</span><div class="field-value">{{ paciente.correo }}</div></div>
-      <div><span class="field-label">Edad</span><div class="field-value">{{ paciente.edad }} años</div></div>
-      <div><span class="field-label">Género</span><div class="field-value">{{ paciente.genero }}</div></div>
-      <div><span class="field-label">Doctor asignado</span><div class="field-value">{{ paciente.doctor }}</div></div>
-      <div><span class="field-label">Estado</span><div class="field-value">{{ paciente.estado }}</div></div>
+    <div class="profile-main">
+      <section class="profile-card" id="informacion">
+        <h2 class="section-title">Información personal</h2>
+        <div class="details">
+          <div><span class="field-label">Nombre completo</span><div class="field-value">{{ paciente.nombre }}</div></div>
+          <div><span class="field-label">Correo electrónico</span><div class="field-value">{{ paciente.correo }}</div></div>
+          <div><span class="field-label">Edad</span><div class="field-value">{{ paciente.edad }} años</div></div>
+          <div><span class="field-label">Género</span><div class="field-value">{{ paciente.genero }}</div></div>
+          <div><span class="field-label">Doctor asignado</span><div class="field-value">{{ paciente.doctor }}</div></div>
+          <div><span class="field-label">Estado</span><div class="field-value">{{ paciente.estado }}</div></div>
+        </div>
+      </section>
+
+      <section class="profile-card" id="historial">
+        <h2 class="section-title">Historia clínica</h2>
+        <p class="muted">Todavía no hay información clínica conectada para este paciente.</p>
+      </section>
+
+      <section class="profile-card" id="citas">
+        <h2 class="section-title">Citas</h2>
+        <p class="muted">Aquí se mostrarán las citas del paciente cuando conectemos la base de datos.</p>
+      </section>
     </div>
-  </section>
-
-  <section class="profile-card" id="historial">
-    <h2 class="section-title">Historia clínica</h2>
-    <p class="muted">Todavía no hay información clínica conectada para este paciente.</p>
-  </section>
-
-  <section class="profile-card" id="citas">
-    <h2 class="section-title">Citas</h2>
-    <p class="muted">Aquí se mostrarán las citas del paciente cuando conectemos la base de datos.</p>
-  </section>
+  </div>
 </section>
 {% endblock %}
