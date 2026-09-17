@@ -40,18 +40,22 @@
     .workspace-day{padding:12px 5px;text-align:center;border:1px solid rgba(120,120,120,.18);border-radius:9px;font-size:.85rem}
     .workspace-day strong{display:block;font-size:1.05rem;margin-top:5px}
     .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
-    /* El control desplegable conserva el aspecto de los enlaces del menú. */
-    .nav__dropdown > button.nav__link{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer;}
+    .nav__dropdown > button.nav__link{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer}
     .nav__dropdown > button.nav__link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+    /* Un solo control visible en móvil; el icono se dibuja en CSS, sin fuentes ni glifos duplicados. */
+    .header__toggle{display:flex;align-items:center;justify-content:center}
+    #header-toggle{position:relative;display:block;width:42px;height:42px;padding:0;border:0;background:transparent;cursor:pointer;font-size:0;line-height:0}
+    #header-toggle::before{content:"";position:absolute;left:10px;top:12px;width:22px;height:18px;background:linear-gradient(currentColor,currentColor) top/22px 3px no-repeat,linear-gradient(currentColor,currentColor) center/22px 3px no-repeat,linear-gradient(currentColor,currentColor) bottom/22px 3px no-repeat}
+    #header-toggle[aria-expanded="true"]::before{left:11px;top:11px;width:20px;height:20px;background:linear-gradient(45deg,transparent 46%,currentColor 47%,currentColor 54%,transparent 55%),linear-gradient(-45deg,transparent 46%,currentColor 47%,currentColor 54%,transparent 55%)}
     @media(max-width:600px){.workspace-placeholder{gap:4px}.workspace-day{padding:9px 2px;font-size:.72rem}.workspace-day strong{font-size:.9rem}}
-    @media (min-width: 768px) {.main-content { margin-left: 219px; min-width: 0; }}
-    @media (max-width: 767px) {.main-content { margin-left: 0; }}
+    @media (min-width:768px){.main-content{margin-left:219px;min-width:0}}
+    @media (max-width:767px){.main-content{margin-left:0}}
   </style>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <div class="preloader"><div class="loading-container"><div class="loading"></div><div id="loading-icon"><img src="{% static 'img/loader.svg' %}" alt=""></div></div></div>
-  <header class="header"><div class="header__container"><div class="header__toggle"><button type="button" id="header-toggle" aria-label="Abrir o cerrar menú" style="border:0;background:transparent"><i class="bx bx-menu" aria-hidden="true"></i></button></div></div></header>
+  <header class="header"><div class="header__container"><div class="header__toggle"><button type="button" id="header-toggle" aria-label="Abrir menú" aria-expanded="false"><span class="visually-hidden">Abrir o cerrar menú</span></button></div></div></header>
   <div class="nav" id="navbar"><nav class="nav__container"><div>
     <a class="nav__link nav__logo" href="{% url 'homein' %}" aria-label="H-Escapa, inicio"><img src="{% static 'img/favicon.png' %}" alt="H-Escapa" class="nav__logo-img logo-default"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa" class="nav__logo-img logo-hover"></a>
     <div class="nav__list">
