@@ -18,15 +18,15 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY =  os.getenv("SECRET_KEY", "django-local-dev-key")
+SECRET_KEY = os.getenv("SECRET_KEY", "django-local-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
-#DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -34,9 +34,7 @@ ALLOWED_HOSTS = [
     "h-escapa.up.railway.app",
     "h-escapa.com",
     "www.h-escapa.com",
-
 ]
-
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
@@ -46,12 +44,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.h-escapa.com",
 ]
 
-
-
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-USE_X_FORWARDED_HOST = True
-SECURE_SSL_REDIRECT = True
+USE_X_FORWARDED_HOST = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
 PREPEND_WWW = False
 
 # Application definition
@@ -111,11 +106,17 @@ WSGI_APPLICATION = 'hescapa.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+#
+# Local credentials are read from .env. The .env file is excluded from Git.
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'BdHescapa'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -155,7 +156,6 @@ ACCOUNT_UNIQUE_EMAIL = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -165,7 +165,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
 
 
 # Internationalization
@@ -203,7 +202,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGOUT_REDIRECT_URL = 'home'
 
-# Log Django request errors and tracebacks to the process console (Railway Deploy Logs).
+# Log Django request errors and tracebacks to the process console.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
