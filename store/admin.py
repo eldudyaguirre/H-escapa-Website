@@ -90,3 +90,8 @@ class PostAdmin(admin.ModelAdmin):
     filter_horizontal = ("etiquetas",)
     date_hierarchy = "fecha_publicacion"
     list_select_related = ("categoria", "autor")
+
+    def save_model(self, request, obj, form, change):
+        if not obj.autor_id:
+            obj.autor = request.user
+        super().save_model(request, obj, form, change)
