@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "servert",
+    "servert.tail351cbd.ts.net",
     "h-escapa.up.railway.app",
     "h-escapa.com",
     "www.h-escapa.com",
