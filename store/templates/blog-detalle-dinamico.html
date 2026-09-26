@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ post.titulo }} - H-Escapa</title>
+<link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+</head>
+<body>
+<header class="main-header"><div class="header-sticky"><nav class="navbar navbar-expand-lg"><div class="container">
+<a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa"></a>
+<div class="collapse navbar-collapse main-menu"><div class="nav-menu-wrapper"><ul class="navbar-nav mr-auto">
+<li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio de Sesión</a></li>
+</ul></div></div><div class="navbar-toggle"></div></div></nav><div class="responsive-menu"></div></div></header>
+<main class="page-single-post"><div class="container"><div class="row justify-content-center"><div class="col-lg-9">
+<div class="section-title mt-5"><h1>{{ post.titulo }}</h1><p>{% if post.fecha_publicacion %}{{ post.fecha_publicacion|date:"d/m/Y" }}{% endif %}{% if post.autor %} · {{ post.autor.get_full_name|default:post.autor.username }}{% endif %}</p></div>
+{% if post.imagen_destacada %}<div class="post-image mb-4"><img src="{{ post.imagen_destacada.url }}" class="img-fluid" alt="{{ post.titulo }}"></div>{% endif %}
+{% if post.resumen %}<p class="lead">{{ post.resumen }}</p>{% endif %}
+<div class="post-content">{{ post.contenido|linebreaks }}</div>
+{% if post.etiquetas.all %}<div class="mt-4">{% for etiqueta in post.etiquetas.all %}<span class="badge bg-light text-dark me-1">{{ etiqueta.nombre }}</span>{% endfor %}</div>{% endif %}
+<div class="mt-5"><a href="{% url 'bloggeneral' %}" class="btn-default">Volver al blog</a></div>
+</div></div></div></main>
+</body></html>
