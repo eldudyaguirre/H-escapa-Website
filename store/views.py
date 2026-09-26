@@ -2,10 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
+from django.db import models
 from django.urls import reverse
 from datetime import date, timedelta
 
-from .models import Post
+from .forms import CitaForm, PacienteForm
+from .models import Cita, Paciente, Post
 from functools import wraps
 
 
@@ -92,55 +94,71 @@ def homein(request):
 
 @staff_required
 def homeincalendario(request):
-    week_offset = int(request.GET.get("week", 0))
-    hoy = date.today()
-    inicio_semana = hoy - timedelta(days=hoy.weekday()) + timedelta(weeks=week_offset)
-    fin_semana = inicio_semana + timedelta(days=6)
-    dias_semana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
-    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-    dias = []
-    for i in range(7):
-        dia = inicio_semana + timedelta(days=i)
-        dias.append({"nombre": dias_semana[dia.weekday()], "numero": dia.day, "mes": meses[dia.month - 1], "fecha": dia})
-    horas = [f"{h:02d}:00" for h in range(8, 23)]
-    rango = f"{inicio_semana.day} {meses[inicio_semana.month-1]} – {fin_semana.day} {meses[fin_semana.month-1]} {fin_semana.year}"
-    return render(request, "frm-calendario.html", {"dias": dias, "horas": horas, "rango": rango, "week_offset": week_offset})
+    citas = Cita.objects.select_related("paciente", "profesional").order_by("fecha_hora")
+    return render(request, "frm-calendario.html", {"citas": citas})
 
 
-@login_required(login_url="signin")
+@staff_required
 def homeinpacientes(request):
-    return render(request, "frm-pacientes.html")
+    pacientes = Paciente.objects.select_related("profesional").all()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    if q:
+        pacientes = pacientes.filter(
+            models.Q(nombres__icontains=q) |
+            models.Q(apellidos__icontains=q) |
+            models.Q(correo__icontains=q) |
+            models.Q(telefono__icontains=q)
+        )
+    if estado in {"ACTIVO", "INACTIVO"}:
+        pacientes = pacientes.filter(estado=estado)
+    return render(request, "frm-pacientes.html", {"pacientes": pacientes, "q": q, "estado": estado})
 
 
-@login_required(login_url="signin")
-def homeinperfilpaciente(request):
-    pacientes_demo = {
-        "juan-smith": {"nombre": "Juan Smith", "edad": 45, "genero": "Masculino", "correo": "juan.smith@example.com", "estado": "Activo", "doctor": "Dr. Sarah Johnson"},
-        "emily-davis": {"nombre": "Emily Davis", "edad": 32, "genero": "Femenino", "correo": "emily.davis@example.com", "estado": "Activo", "doctor": "Dr. Michael Chen"},
-        "robert-wilson": {"nombre": "Robert Wilson", "edad": 58, "genero": "Masculino", "correo": "robert.wilson@example.com", "estado": "Inactivo", "doctor": "Dr. Lisa Patel"},
-    }
-    paciente_id = request.GET.get("paciente", "juan-smith")
-    paciente = pacientes_demo.get(paciente_id, pacientes_demo["juan-smith"])
-    return render(request, "frm-perfilpaciente.html", {"paciente": paciente})
+@staff_required
+def homeinperfilpaciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente.objects.select_related("profesional"), pk=paciente_id)
+    citas = paciente.citas.select_related("profesional").order_by("-fecha_hora")
+    historias = paciente.historias_clinicas.select_related("profesional").order_by("-fecha")
+    return render(request, "frm-perfilpaciente.html", {"paciente": paciente, "citas": citas, "historias": historias})
 
 
-@login_required(login_url="signin")
-def homeineditarpaciente(request):
-    pacientes_demo = {
-        "juan-smith": {"nombre": "Juan Smith", "correo": "juan.smith@example.com", "genero": "Masculino", "estado": "Activo", "doctor": "Dr. Sarah Johnson"},
-        "emily-davis": {"nombre": "Emily Davis", "correo": "emily.davis@example.com", "genero": "Femenino", "estado": "Activo", "doctor": "Dr. Michael Chen"},
-        "robert-wilson": {"nombre": "Robert Wilson", "correo": "robert.wilson@example.com", "genero": "Masculino", "estado": "Inactivo", "doctor": "Dr. Lisa Patel"},
-    }
-    paciente_id = request.GET.get("paciente", "juan-smith")
-    paciente = pacientes_demo.get(paciente_id, pacientes_demo["juan-smith"])
-    return render(request, "frm-editarpaciente.html", {"paciente": paciente, "tipos_sangre": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]})
+@staff_required
+def homeineditarpaciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, pk=paciente_id)
+    if request.method == "POST":
+        form = PacienteForm(request.POST, instance=paciente)
+        if form.is_valid():
+            form.save()
+            return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+    else:
+        form = PacienteForm(instance=paciente)
+    return render(request, "frm-editarpaciente.html", {"form": form, "paciente": paciente})
 
 
-@login_required(login_url="signin")
+@staff_required
 def homeinnuevopaciente(request):
-    return render(request, "frm-nuevopaciente.html")
+    if request.method == "POST":
+        form = PacienteForm(request.POST)
+        if form.is_valid():
+            paciente = form.save()
+            return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+    else:
+        form = PacienteForm()
+    return render(request, "frm-nuevopaciente.html", {"form": form})
 
 
-@login_required(login_url="signin")
+@staff_required
 def homeinnuevacita(request):
-    return render(request, "frm-nuevacita.html", {"horas_demo": [f"{h:02d}:00" for h in range(8, 23)]})
+    if request.method == "POST":
+        form = CitaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("homeincalendario")
+    else:
+        initial = {}
+        paciente_id = request.GET.get("paciente")
+        if paciente_id:
+            initial["paciente"] = paciente_id
+        form = CitaForm(initial=initial)
+    return render(request, "frm-nuevacita.html", {"form": form})
