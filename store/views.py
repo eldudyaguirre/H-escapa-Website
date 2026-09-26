@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from datetime import date, timedelta
 
 from .models import Post
+from functools import wraps
 
 
 def home(request):
@@ -71,12 +73,25 @@ def blogdetalle(request, slug):
     return render(request, "blog-detalle-dinamico.html", {"post": post})
 
 
-@login_required(login_url="signin")
+
+def staff_required(view_func):
+    """Permite el acceso al panel interno únicamente a usuarios activos del personal."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('signin')}?next={request.path}")
+        if not request.user.is_active or not request.user.is_staff:
+            return redirect("home")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+@staff_required
 def homein(request):
     return render(request, "frm-menpri.html")
 
 
-@login_required(login_url="signin")
+@staff_required
 def homeincalendario(request):
     week_offset = int(request.GET.get("week", 0))
     hoy = date.today()
