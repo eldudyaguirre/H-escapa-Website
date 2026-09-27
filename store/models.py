@@ -65,6 +65,7 @@ class Paciente(models.Model):
     ]
 
     cedula = models.CharField(max_length=10, primary_key=True)
+    foto_perfil = models.ImageField(upload_to="pacientes/fotos/", blank=True, null=True)
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField(blank=True, null=True)
