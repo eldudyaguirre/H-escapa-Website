@@ -147,14 +147,3 @@
 }
 
 /* Corrección definitiva: el botón padre de Pacientes no activo debe conservar el color claro del menú. */
-@media screen and (min-width: 768px) {
-  #navbar.nav, #navbar { display: none !important; visibility: hidden !important; width: 0 !important; }
-  .header, .header__container, .header__toggle { display: none !important; }
-  .main-content { margin-left: 0 !important; margin-top: 0 !important; }
-}
-@media screen and (max-width: 767px) {
-  .header { display: block; }
-  .header__toggle { display: flex !important; }
-  .nav { display: block; }
-  .main-content { margin-left: 0; }
-}
