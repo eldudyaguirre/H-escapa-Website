@@ -12,7 +12,7 @@
 <body>
 <div class="actions"><button onclick="window.print()">Imprimir</button><a href="{% url 'homeinperfilpaciente' paciente_id=paciente.pk %}">Volver</a></div>
 <main class="sheet">
-<header class="top"><div class="brand"><img class="brand-logo" src="{% static 'img/logo.svg' %}" alt="H-Escapa"></div><div class="date">Documento generado<br>{{ fecha|date:"d/m/Y" }}</div></header>
+<header class="top"><div class="brand"><img class="brand-logo" src="{% static 'img/logo_cert.svg' %}" alt="H-Escapa"></div><div class="date">Documento generado<br>{{ fecha|date:"d/m/Y" }}</div></header>
 <h1 class="title">{% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}CONSENTIMIENTO PARA TRATAMIENTO{% elif tipo == "AUTORIZACION_INFORMACION" %}AUTORIZACIÓN PARA MANEJO DE INFORMACIÓN{% elif tipo == "FICHA_ADMISION" %}FICHA DE ADMISIÓN DEL PACIENTE{% elif tipo == "CONFIDENCIALIDAD" %}COMPROMISO DE CONFIDENCIALIDAD{% else %}AUTORIZACIÓN DE CONTACTO{% endif %}</h1>
 <div class="data"><div class="data-grid">
 <div><b>Paciente:</b> {{ paciente.nombres }} {{ paciente.apellidos }}</div>
