@@ -1,38 +1,52 @@
 {% extends "frm-menpri.html" %}
 {% block title %}H-Escapa | Editar paciente{% endblock %}
-{% block extra_head %}<style>
-.profile-upload{display:flex;align-items:center;gap:18px;padding:14px 16px;margin:0 0 20px;border:1px solid #e3e8e6;border-radius:10px;background:#fafcfc}.profile-preview{width:76px;height:76px;min-width:76px;border-radius:50%;background:#eef3f2;display:grid;place-items:center;overflow:hidden;color:#439b95;font-size:30px}.profile-preview img{width:100%;height:100%;object-fit:cover;display:block}.profile-upload-info{display:flex;flex-direction:column;gap:5px}.profile-upload-title{font-weight:600;color:#303735;font-size:.9rem}.profile-upload-help{color:#7b8381;font-size:.78rem}.profile-file{display:none!important}.profile-upload-btn{display:inline-flex;align-items:center;justify-content:center;width:max-content;padding:8px 14px;border:1px solid #439b95;border-radius:7px;background:#fff;color:#287d77;cursor:pointer;font-size:.82rem;font-weight:600}.profile-upload-btn:hover{background:#eef8f7}
-@media(max-width:700px){.profile-upload{padding:12px;gap:13px}.profile-preview{width:64px;height:64px;min-width:64px}.profile-upload-btn{padding:7px 11px;font-size:.76rem}}
-.form-page{padding:24px 28px}.form-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:28px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.field.full{grid-column:1/-1}.field label{display:block;margin-bottom:7px;font-size:14px}.field input,.field select,.field textarea{width:100%;box-sizing:border-box;border:1px solid #dfe3e5;border-radius:9px;padding:12px;font:inherit}.field textarea{min-height:100px}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}.btn{padding:12px 20px;border:1px solid #dfe3e5;border-radius:9px;text-decoration:none;background:#fff;color:#222}.btn.primary{background:#419b94;border-color:#419b94;color:#fff}@media(max-width:700px){.form-page{padding:16px 12px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
-</style>{% endblock %}
-{% block content %}<section class="form-page"><a href="{% url 'homeinperfilpaciente' paciente.cedula %}">← Volver al perfil</a><h1>Editar paciente</h1><p>{{ paciente }}</p><form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}<div class="profile-upload">
-  <div class="profile-preview" id="profile-preview">
-    {% if paciente.foto_perfil %}
-      <img src="{% url 'homein_foto_paciente' paciente.cedula %}" alt="Foto de {{ paciente.nombres }} {{ paciente.apellidos }}">
-    {% else %}
-      <i class="bx bx-user" aria-hidden="true"></i>
-    {% endif %}
-  </div>
-  <div class="profile-upload-info">
-    <div class="profile-upload-title">Foto de perfil</div>
-    <label class="profile-upload-btn" for="{{ form.foto_perfil.id_for_label }}">Cambiar foto</label>
-    {{ form.foto_perfil }}
-    <div class="profile-upload-help">JPG, PNG o GIF · máximo recomendado 2 MB</div>
-  </div>
-</div><div class="form-grid">{% for field in form %}<div class="field{% if field.name == 'observaciones' %} full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small style="color:#c33">{{ error }}</small>{% endfor %}</div>{% endfor %}</div><div class="actions"><a class="btn" href="{% url 'homeinperfilpaciente' paciente.cedula %}">Cancelar</a><button class="btn primary" type="submit">Guardar cambios</button></div></form></section>
+{% block extra_head %}
+<style>
+.ep{padding:28px 36px 44px;max-width:1450px;margin:auto}.ep-head{display:flex;gap:15px;align-items:center;margin-bottom:24px}.ep-back{width:42px;height:42px;border-radius:8px;background:#439b95;color:#fff!important;display:grid;place-items:center;text-decoration:none;font-size:23px}.ep h1{margin:0 0 5px;font:2rem Marcellus,serif;color:#19181b}.ep-head p{margin:0;color:#747c80}.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:5px;background:#f1f4f3;border-radius:9px;margin-bottom:16px}.tab{flex:1 1 190px;border:0;background:transparent;padding:11px 14px;border-radius:7px;color:#747b7a;font:inherit;cursor:pointer}.tab[aria-selected=true]{background:#fff;color:#005855;box-shadow:0 1px 5px #0001}.panel[hidden]{display:none}.card{background:#fff;border:1px solid #e2e7e5;border-radius:10px;box-shadow:0 4px 16px #1e37350d}.head{padding:21px 24px 17px;border-bottom:1px solid #e8eceb}.head h2{margin:0 0 5px;font-size:1.25rem}.head p{margin:0;color:#7b8381;font-size:.9rem}.body{padding:24px}.section{padding:0 0 24px;margin-bottom:24px;border-bottom:1px solid #e5e9e8}.section:last-child{padding:0;margin:0;border:0}.section h3{font-size:1.05rem;margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:.86rem;font-weight:600;color:#454d4b}.field input:not([type=checkbox]),.field select,.field textarea{width:100%;box-sizing:border-box;min-height:42px;border:1px solid #dfe5e3;border-radius:7px;padding:9px 11px;background:#fff;color:#202625;font:inherit;outline:0}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#439b95;box-shadow:0 0 0 3px #439b951f}.choices,.checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}.checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.checks input{width:17px;height:17px;accent-color:#439b95}.profile-upload{display:flex;align-items:center;gap:18px;padding:14px 16px;margin:0 0 20px;border:1px solid #e3e8e6;border-radius:10px;background:#fafcfc}.profile-preview{width:76px;height:76px;min-width:76px;border-radius:50%;background:#eef3f2;display:grid;place-items:center;overflow:hidden;color:#439b95;font-size:30px}.profile-preview img{width:100%;height:100%;object-fit:cover;display:block}.profile-upload-info{display:flex;flex-direction:column;gap:5px}.profile-upload-title{font-weight:600;color:#303735;font-size:.9rem}.profile-upload-help{color:#7b8381;font-size:.78rem}.profile-file{display:none!important}.profile-upload-btn{display:inline-flex;align-items:center;justify-content:center;width:max-content;padding:8px 14px;border:1px solid #439b95;border-radius:7px;background:#fff;color:#287d77;cursor:pointer;font-size:.82rem;font-weight:600}.error-box{margin:0 0 16px;padding:13px 16px;border:1px solid #e7b6b6;border-radius:8px;background:#fff5f5;color:#8a3030}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid #e5e9e8}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #dfe5e3;border-radius:7px;padding:10px 17px;background:#fff;color:#333;text-decoration:none;cursor:pointer}.btn.primary{background:#439b95;border-color:#439b95;color:#fff}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.ep{padding:20px 13px 30px}.ep h1{font-size:1.75rem}.tabs{flex-direction:column}.grid,.grid.two,.checks{grid-template-columns:1fr}.body,.head{padding:17px 15px}.profile-upload{padding:12px;gap:13px}.profile-preview{width:64px;height:64px;min-width:64px}.actions{flex-direction:column}.btn{width:100%}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="ep">
+<div class="ep-head"><a class="ep-back" href="{% url 'homeinperfilpaciente' paciente.cedula %}">←</a><div><h1>Editar paciente</h1><p>Actualiza la información del paciente. Los campos están organizados igual que en Nuevo paciente.</p></div></div>
+{% if form.errors %}<div class="error-box"><strong>No se pudo guardar el paciente.</strong> Revisa los campos marcados.</div>{% endif %}
+<form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+<div class="tabs" role="tablist">
+<button class="tab" type="button" aria-selected="true" data-tab="personal">Información personal</button>
+<button class="tab" type="button" aria-selected="false" data-tab="medical">Información médica</button>
+<button class="tab" type="button" aria-selected="false" data-tab="billing">Seguro y facturación</button>
+<button class="tab" type="button" aria-selected="false" data-tab="communication">Comunicación y estado</button>
+</div>
+
+<section class="panel" id="personal"><div class="card"><div class="head"><h2>Información personal</h2><p>Actualiza los datos personales y de contacto.</p></div><div class="body">
+<div class="section"><h3>Datos personales</h3>
+<div class="profile-upload"><div class="profile-preview" id="profile-preview">{% if paciente.foto_perfil %}<img src="{% url 'homein_foto_paciente' paciente.cedula %}" alt="Foto de {{ paciente.nombres }} {{ paciente.apellidos }}">{% else %}<i class="bx bx-user" aria-hidden="true"></i>{% endif %}</div><div class="profile-upload-info"><div class="profile-upload-title">Foto de perfil</div><label class="profile-upload-btn" for="{{ form.foto_perfil.id_for_label }}">Cambiar foto</label>{{ form.foto_perfil }}<div class="profile-upload-help">JPG, PNG o GIF · máximo recomendado 2 MB</div></div></div>
+<div class="grid"><div class="field"><label>Número de cédula</label>{{ form.cedula }}</div><div class="field"><label>Nombres</label>{{ form.nombres }}</div><div class="field"><label>Apellidos</label>{{ form.apellidos }}</div><div class="field"><label>Fecha de nacimiento</label>{{ form.fecha_nacimiento }}</div><div class="field"><label>Género</label>{{ form.genero }}</div><div class="field"><label>Estado civil</label>{{ form.estado_civil }}</div><div class="field full"><label>Dirección</label>{{ form.direccion }}</div><div class="field"><label>Ciudad</label>{{ form.ciudad }}</div><div class="field"><label>Provincia</label>{{ form.provincia }}</div></div></div>
+<div class="section"><h3>Información de contacto</h3><div class="grid"><div class="field"><label>Correo electrónico</label>{{ form.correo }}</div><div class="field"><label>Número de teléfono</label>{{ form.telefono }}</div><div class="field"><label>Teléfono alternativo</label>{{ form.telefono_alternativo }}</div><div class="field full"><label>Método de contacto preferido</label>{{ form.contacto_preferido }}</div></div></div>
+<div class="section"><h3>Contacto de emergencia</h3><div class="grid two"><div class="field"><label>Nombre del contacto</label>{{ form.contacto_emergencia }}</div><div class="field"><label>Relación</label>{{ form.relacion_emergencia }}</div><div class="field"><label>Teléfono</label>{{ form.telefono_emergencia }}</div><div class="field"><label>Correo</label>{{ form.correo_emergencia }}</div></div></div>
+</div></div></section>
+
+<section class="panel" id="medical" hidden><div class="card"><div class="head"><h2>Información médica</h2><p>Actualiza historia clínica, antecedentes y estilo de vida.</p></div><div class="body">
+<div class="section"><h3>Información médica</h3><div class="grid"><div class="field"><label>Tipo de sangre</label>{{ form.tipo_sangre }}</div><div class="field"><label>Altura (cm)</label>{{ form.altura_cm }}</div><div class="field"><label>Peso (kg)</label>{{ form.peso_kg }}</div><div class="field full"><label>Alergias</label>{{ form.alergias }}</div><div class="field full"><label>Medicamentos actuales</label>{{ form.medicamentos_actuales }}</div><div class="field full"><label>Condiciones crónicas</label>{{ form.condiciones_cronicas }}</div></div></div>
+<div class="section"><h3>Historia familiar</h3><div class="checks"><label>{{ form.family_diabetes }} <span>Diabetes</span></label><label>{{ form.family_hypertension }} <span>Hipertensión</span></label><label>{{ form.family_asthma }} <span>Asma</span></label><label>{{ form.family_heart_disease }} <span>Enfermedad cardíaca</span></label><label>{{ form.family_cancer }} <span>Cáncer</span></label><label>{{ form.family_mental_health }} <span>Condiciones de salud mental</span></label></div><div class="field full"><label>Notas adicionales de antecedentes familiares</label>{{ form.antecedentes_familiares }}</div></div>
+<div class="section"><h3>Historia médica</h3><div class="grid"><div class="field full"><label>Cirugías previas</label>{{ form.cirugias_previas }}</div><div class="field full"><label>Hospitalizaciones anteriores</label>{{ form.hospitalizaciones }}</div></div></div>
+<div class="section"><h3>Estilo de vida</h3><div class="grid"><div class="field"><label>Tabaquismo</label>{{ form.tabaquismo }}</div><div class="field"><label>Consumo de alcohol</label>{{ form.consumo_alcohol }}</div><div class="field"><label>Consumo de drogas</label>{{ form.consumo_drogas }}</div><div class="field"><label>Frecuencia de ejercicio</label>{{ form.frecuencia_ejercicio }}</div><div class="field full"><label>Hábitos alimenticios</label>{{ form.habitos_dieteticos }}</div><div class="field full"><label>Observaciones</label>{{ form.observaciones }}</div></div></div>
+</div></div></section>
+
+<section class="panel" id="billing" hidden><div class="card"><div class="head"><h2>Seguro y facturación</h2><p>Los datos de facturación siguen el mismo esquema utilizado en Nuevo paciente.</p></div><div class="body">
+<div class="section"><h3>Datos tributarios</h3><div class="grid two"><div class="field"><label>Tipo de identificación</label>{{ form.tipo_identificacion_facturacion }}</div><div class="field"><label>Número de identificación</label>{{ form.identificacion_facturacion }}</div><div class="field full"><label>Nombre o razón social para facturación</label>{{ form.nombre_facturacion }}</div><div class="field full"><label>Correo para recibir factura</label>{{ form.correo_facturacion }}</div></div></div>
+<div class="section"><h3>Preferencias de facturación</h3><div class="field full"><label>Preferencia de facturación</label>{{ form.metodo_facturacion }}</div><div class="field full"><label>Formas de pago preferidas</label><div class="checks"><label>{{ form.pago_efectivo }} <span>Efectivo</span></label><label>{{ form.pago_tarjeta }} <span>Tarjeta de crédito / débito</span></label><label>{{ form.pago_transferencia }} <span>Transferencia bancaria</span></label><label>{{ form.pago_deposito }} <span>Depósito</span></label><label>{{ form.pago_cheque }} <span>Cheque</span></label><label>{{ form.pago_otros }} <span>Otros</span></label><label>{{ form.pago_online }} <span>Pago online</span></label></div></div></div>
+</div></div></section>
+
+<section class="panel" id="communication" hidden><div class="card"><div class="head"><h2>Comunicación y estado</h2><p>Actualiza preferencias de comunicación, profesional responsable y estado.</p></div><div class="body">
+<div class="section"><h3>Preferencias de comunicación</h3><div class="checks"><label>{{ form.recibir_recordatorios_citas }} <span>Recibir recordatorios de citas</span></label><label>{{ form.recibir_notificaciones_resultados }} <span>Recibir notificaciones de resultados de laboratorio</span></label><label>{{ form.recibir_notificaciones_recetas }} <span>Recibir notificaciones de recetas</span></label><label>{{ form.recibir_boletin_novedades }} <span>Recibir boletín y novedades de la clínica</span></label></div></div>
+<div class="section"><div class="grid two"><div class="field"><label>Profesional</label>{{ form.profesional }}</div><div class="field"><label>Estado</label>{{ form.estado }}</div></div></div>
+</div></div></section>
+
+<div class="actions"><a class="btn" href="{% url 'homeinperfilpaciente' paciente.cedula %}">Cancelar</a><button class="btn primary" type="submit"><i class="bx bx-save"></i> Guardar cambios</button></div>
+</form>
+</section>
 <script>
-(function(){
-  const input=document.getElementById('{{ form.foto_perfil.id_for_label }}');
-  const preview=document.getElementById('profile-preview');
-  if(input&&preview){
-    input.addEventListener('change',function(){
-      const file=input.files&&input.files[0];
-      if(!file)return;
-      const reader=new FileReader();
-      reader.onload=function(e){preview.innerHTML='<img src="'+e.target.result+'" alt="Vista previa de foto de perfil">';};
-      reader.readAsDataURL(file);
-    });
-  }
-})();
+(()=>{const tabs=document.querySelectorAll('.tab'),panels=document.querySelectorAll('.panel');const show=id=>{tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.tab===id?'true':'false'));panels.forEach(p=>p.hidden=p.id!==id)};tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.tab)));const input=document.getElementById('{{ form.foto_perfil.id_for_label }}'),preview=document.getElementById('profile-preview');if(input&&preview){input.addEventListener('change',()=>{const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>preview.innerHTML='<img src="'+e.target.result+'" alt="Vista previa de foto de perfil">';reader.readAsDataURL(file)})}})();
 </script>
 {% endblock %}
