@@ -149,7 +149,10 @@ class PacienteForm(forms.ModelForm):
         ]
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
-            "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
+            "fecha_nacimiento": forms.DateInput(
+                format="%Y-%m-%d",
+                attrs={"type": "date"},
+            ),
             "direccion": forms.Textarea(attrs={"rows": 3}),
             "identificacion_facturacion": forms.TextInput(attrs={
                 "placeholder": "Ingrese el número de identificación",
@@ -205,6 +208,7 @@ class PacienteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields["cedula"].disabled = True
+        self.fields["fecha_nacimiento"].input_formats = ["%Y-%m-%d"]
         self.fields["profesional"].queryset = Profesional.objects.filter(
             activo=True
         ).order_by("apellido", "nombre")
