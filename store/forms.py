@@ -86,6 +86,33 @@ class PacienteForm(forms.ModelForm):
         label="Tabaquismo",
     )
 
+    TIPO_IDENTIFICACION_FACTURACION = [
+        ("", "Seleccione identificación"),
+        ("CEDULA", "Cédula"),
+        ("RUC", "RUC"),
+        ("PASAPORTE", "Pasaporte"),
+        ("CONSUMIDOR_FINAL", "Consumidor final"),
+    ]
+
+    tipo_identificacion_facturacion = forms.ChoiceField(
+        choices=TIPO_IDENTIFICACION_FACTURACION,
+        required=False,
+        label="Tipo de identificación",
+    )
+
+    METODO_FACTURACION_OPCIONES = [
+        ("", "Seleccione método"),
+        ("ELECTRONICA_EMAIL", "Factura electrónica por correo"),
+        ("ELECTRONICA_WHATSAPP", "Factura electrónica por WhatsApp"),
+        ("IMPRESA", "Factura impresa"),
+    ]
+
+    metodo_facturacion = forms.ChoiceField(
+        choices=METODO_FACTURACION_OPCIONES,
+        required=False,
+        label="Preferencia de facturación",
+    )
+
     estado_civil = forms.ChoiceField(
         choices=ESTADOS_CIVILES,
         required=False,
