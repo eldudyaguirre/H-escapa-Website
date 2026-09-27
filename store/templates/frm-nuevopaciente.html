@@ -3,50 +3,224 @@
 
 {% block extra_head %}
 <style>
-.nuevo-paciente{padding:30px 36px 42px;max-width:1450px;margin:0 auto}
-.nuevo-paciente .page-heading{display:flex;align-items:center;gap:16px;margin-bottom:26px}
-.nuevo-paciente .back{display:grid;place-items:center;width:46px;height:46px;border-radius:10px;background:#439b95;color:#fff!important;text-decoration:none;font-size:25px;transition:.2s}
-.nuevo-paciente .back:hover{background:#347f7a;transform:translateY(-1px)}
-.nuevo-paciente h1{font-family:Marcellus,serif;font-size:2.2rem;margin:0;color:#19181b}
-.nuevo-paciente .subtitle{margin:6px 0 0;color:#747c80;font-size:.95rem}
-.nuevo-paciente .form-card{background:#fff;border:1px solid #e3e8e7;border-radius:14px;padding:24px;box-shadow:0 5px 20px rgba(30,55,53,.06)}
-.nuevo-paciente .tabs{display:flex;flex-wrap:wrap;gap:5px;padding:6px;background:#f1f4f3;border-radius:11px;margin-bottom:26px}
-.nuevo-paciente .tab{flex:1 1 180px;border:0;border-radius:8px;padding:12px 14px;background:transparent;color:#747b7a;font:inherit;font-weight:500;cursor:pointer}
-.nuevo-paciente .tab[aria-selected=true]{background:#fff;color:#005855;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.nuevo-paciente{
+  padding:30px 36px 42px;
+  max-width:1450px;
+  margin:0 auto;
+}
+.nuevo-paciente .page-heading{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:24px;
+}
+.nuevo-paciente .back{
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border-radius:9px;
+  background:#439b95;
+  color:#fff!important;
+  text-decoration:none;
+  font-size:24px;
+  transition:.2s;
+}
+.nuevo-paciente .back:hover{
+  background:#347f7a;
+  transform:translateY(-1px);
+}
+.nuevo-paciente h1{
+  font-family:Marcellus,serif;
+  font-size:2.2rem;
+  margin:0 0 4px;
+  color:#19181b;
+}
+.nuevo-paciente .subtitle{
+  margin:0;
+  color:#747c80;
+  font-size:.95rem;
+}
+.nuevo-paciente .tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  padding:5px;
+  background:#f1f4f3;
+  border-radius:10px;
+  margin-bottom:18px;
+}
+.nuevo-paciente .tab{
+  flex:1 1 190px;
+  border:0;
+  border-radius:7px;
+  padding:11px 14px;
+  background:transparent;
+  color:#747b7a;
+  font:inherit;
+  font-weight:500;
+  cursor:pointer;
+  transition:.2s;
+}
+.nuevo-paciente .tab:hover{color:#005855}
+.nuevo-paciente .tab[aria-selected=true]{
+  background:#fff;
+  color:#005855;
+  box-shadow:0 1px 5px rgba(0,0,0,.08);
+}
 .nuevo-paciente .tab-section[hidden]{display:none}
-.nuevo-paciente h2{font-size:1.35rem;font-weight:600;color:#202625;margin:0 0 6px}
-.nuevo-paciente .section-note{color:#7b8381;margin:0 0 22px;font-size:.9rem}
-.nuevo-paciente .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px 18px}
-.nuevo-paciente .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.nuevo-paciente .section-card{
+  background:#fff;
+  border:1px solid #e3e8e7;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(30,55,53,.05);
+  overflow:hidden;
+}
+.nuevo-paciente .card-header{
+  padding:22px 24px 18px;
+  border-bottom:1px solid #edf0ef;
+}
+.nuevo-paciente h2{
+  font-size:1.3rem;
+  font-weight:600;
+  color:#202625;
+  margin:0 0 5px;
+}
+.nuevo-paciente .section-note{
+  color:#7b8381;
+  margin:0;
+  font-size:.9rem;
+}
+.nuevo-paciente .card-content{
+  padding:24px;
+}
+.nuevo-paciente .subsection{
+  margin-bottom:26px;
+}
+.nuevo-paciente .subsection:last-child{margin-bottom:0}
+.nuevo-paciente .subsection + .subsection{
+  border-top:1px solid #e7ebea;
+  padding-top:24px;
+}
+.nuevo-paciente .subsection-title{
+  font-size:1.05rem;
+  font-weight:600;
+  color:#343b39;
+  margin:0 0 16px;
+}
+.nuevo-paciente .fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px 18px;
+}
+.nuevo-paciente .fields.three{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.nuevo-paciente .field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  min-width:0;
+}
 .nuevo-paciente .field.full{grid-column:1/-1}
-.nuevo-paciente .field label{font-size:.88rem;font-weight:600;color:#454d4b}
-.nuevo-paciente .field input:not([type=checkbox]):not([type=radio]),.nuevo-paciente .field select,.nuevo-paciente .field textarea{width:100%;min-width:0;min-height:44px;padding:10px 12px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#202625;font:inherit;outline:none}
-.nuevo-paciente .field textarea{min-height:105px;resize:vertical}
-.nuevo-paciente .field input:focus,.nuevo-paciente .field select:focus,.nuevo-paciente .field textarea:focus{border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.12)}
-.nuevo-paciente .field input[type=checkbox],.nuevo-paciente .field input[type=radio]{accent-color:#439b95;width:17px;height:17px}
-.nuevo-paciente .error{color:#c33;font-size:.78rem}
-.nuevo-paciente .form-section{border-top:1px solid #e5e9e8;margin-top:25px;padding-top:22px}
-.nuevo-paciente .check-row{display:flex;align-items:center;gap:9px;color:#555f5d}
-.nuevo-paciente .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid #e5e9e8}
-.nuevo-paciente .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #dfe5e3;border-radius:8px;padding:11px 18px;background:#fff;color:#333;font:inherit;text-decoration:none;cursor:pointer}
-.nuevo-paciente .btn.primary{background:#439b95;border-color:#439b95;color:#fff}
-.nuevo-paciente .btn.primary:hover{background:#347f7a;border-color:#347f7a}
+.nuevo-paciente .field label{
+  font-size:.87rem;
+  font-weight:600;
+  color:#454d4b;
+}
+.nuevo-paciente .field input:not([type=checkbox]):not([type=radio]),
+.nuevo-paciente .field select,
+.nuevo-paciente .field textarea{
+  width:100%;
+  min-width:0;
+  min-height:43px;
+  padding:10px 12px;
+  border:1px solid #dfe5e3;
+  border-radius:8px;
+  background:#fff;
+  color:#202625;
+  font:inherit;
+  outline:none;
+  box-sizing:border-box;
+}
+.nuevo-paciente .field textarea{
+  min-height:110px;
+  resize:vertical;
+}
+.nuevo-paciente .field input:focus,
+.nuevo-paciente .field select:focus,
+.nuevo-paciente .field textarea:focus{
+  border-color:#439b95;
+  box-shadow:0 0 0 3px rgba(67,155,149,.12);
+}
+.nuevo-paciente .field input:disabled{
+  background:#f3f5f4;
+  color:#737a78;
+  cursor:not-allowed;
+}
+.nuevo-paciente .error{
+  color:#c33;
+  font-size:.78rem;
+}
+.nuevo-paciente .actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:18px;
+  padding-top:20px;
+  border-top:1px solid #e5e9e8;
+}
+.nuevo-paciente .btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid #dfe5e3;
+  border-radius:8px;
+  padding:11px 18px;
+  background:#fff;
+  color:#333;
+  font:inherit;
+  text-decoration:none;
+  cursor:pointer;
+}
+.nuevo-paciente .btn.primary{
+  background:#439b95;
+  border-color:#439b95;
+  color:#fff;
+}
+.nuevo-paciente .btn.primary:hover{
+  background:#347f7a;
+  border-color:#347f7a;
+}
+.nuevo-paciente .required-note{
+  margin:0 0 20px;
+  color:#7b8381;
+  font-size:.82rem;
+}
+@media(max-width:900px){
+  .nuevo-paciente .fields.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media(max-width:767px){
- .nuevo-paciente{padding:22px 14px 30px}
- .nuevo-paciente .form-card{padding:16px 13px}
- .nuevo-paciente .page-heading{align-items:flex-start}
- .nuevo-paciente h1{font-size:1.9rem}
- .nuevo-paciente .fields{grid-template-columns:1fr}
- .nuevo-paciente .field.full{grid-column:auto}
- .nuevo-paciente .tabs{flex-direction:column}
- .nuevo-paciente .actions{flex-direction:column}
- .nuevo-paciente .btn{width:100%}
+  .nuevo-paciente{padding:22px 14px 30px}
+  .nuevo-paciente .page-heading{align-items:flex-start}
+  .nuevo-paciente h1{font-size:1.9rem}
+  .nuevo-paciente .card-header,
+  .nuevo-paciente .card-content{padding:18px 16px}
+  .nuevo-paciente .fields,
+  .nuevo-paciente .fields.three{grid-template-columns:1fr}
+  .nuevo-paciente .field.full{grid-column:auto}
+  .nuevo-paciente .tabs{flex-direction:column}
+  .nuevo-paciente .actions{flex-direction:column}
+  .nuevo-paciente .btn{width:100%}
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="nuevo-paciente">
+
   <div class="page-heading">
     <a class="back" href="{% url 'homeinpacientes' %}" aria-label="Volver a pacientes">←</a>
     <div>
@@ -55,7 +229,7 @@
     </div>
   </div>
 
-  <form class="form-card" method="post" novalidate>
+  <form method="post" novalidate>
     {% csrf_token %}
 
     {% if form.non_field_errors %}
@@ -64,113 +238,191 @@
 
     <div class="tabs" role="tablist" aria-label="Secciones del paciente">
       <button class="tab" type="button" role="tab" aria-selected="true" data-tab="personales">Información personal</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="clinica">Información médica</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-tab="contacto">Contacto y emergencia</button>
-      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="clinica">Información clínica</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-tab="gestion">Profesional y estado</button>
     </div>
 
+    <!-- PERSONAL -->
     <section class="tab-section" id="personales">
-      <h2>Información personal</h2>
-      <p class="section-note">Datos básicos de identificación y características del paciente.</p>
-      <div class="fields">
-        <div class="field full">
-          <label for="{{ form.cedula.id_for_label }}">Número de cédula</label>
-          {{ form.cedula }}
-          {% for error in form.cedula.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Información personal</h2>
+          <p class="section-note">Ingresa los datos personales y de identificación del paciente.</p>
         </div>
-        <div class="field">
-          <label for="{{ form.nombres.id_for_label }}">Nombres</label>
-          {{ form.nombres }}
-          {% for error in form.nombres.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.apellidos.id_for_label }}">Apellidos</label>
-          {{ form.apellidos }}
-          {% for error in form.apellidos.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de nacimiento</label>
-          {{ form.fecha_nacimiento }}
-          {% for error in form.fecha_nacimiento.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.genero.id_for_label }}">Género</label>
-          {{ form.genero }}
-          {% for error in form.genero.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.tipo_sangre.id_for_label }}">Tipo de sangre</label>
-          {{ form.tipo_sangre }}
-          {% for error in form.tipo_sangre.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field full">
-          <label for="{{ form.direccion.id_for_label }}">Dirección</label>
-          {{ form.direccion }}
-          {% for error in form.direccion.errors %}<small class="error">{{ error }}</small>{% endfor %}
+
+        <div class="card-content">
+          <p class="required-note">El número de cédula es el identificador principal del paciente.</p>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Datos personales</h3>
+
+            <div class="fields">
+              <div class="field full">
+                <label for="{{ form.cedula.id_for_label }}">Número de cédula</label>
+                {{ form.cedula }}
+                {% for error in form.cedula.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.nombres.id_for_label }}">Nombres</label>
+                {{ form.nombres }}
+                {% for error in form.nombres.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.apellidos.id_for_label }}">Apellidos</label>
+                {{ form.apellidos }}
+                {% for error in form.apellidos.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de nacimiento</label>
+                {{ form.fecha_nacimiento }}
+                {% for error in form.fecha_nacimiento.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.genero.id_for_label }}">Género</label>
+                {{ form.genero }}
+                {% for error in form.genero.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Dirección</h3>
+            <div class="fields">
+              <div class="field full">
+                <label for="{{ form.direccion.id_for_label }}">Dirección</label>
+                {{ form.direccion }}
+                {% for error in form.direccion.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="tab-section" id="contacto" hidden>
-      <h2>Contacto y emergencia</h2>
-      <p class="section-note">Información para comunicación y contacto en caso de emergencia.</p>
-      <div class="fields">
-        <div class="field">
-          <label for="{{ form.correo.id_for_label }}">Correo electrónico</label>
-          {{ form.correo }}
-          {% for error in form.correo.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.telefono.id_for_label }}">Número de teléfono</label>
-          {{ form.telefono }}
-          {% for error in form.telefono.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.contacto_emergencia.id_for_label }}">Contacto de emergencia</label>
-          {{ form.contacto_emergencia }}
-          {% for error in form.contacto_emergencia.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-        <div class="field">
-          <label for="{{ form.telefono_emergencia.id_for_label }}">Teléfono de emergencia</label>
-          {{ form.telefono_emergencia }}
-          {% for error in form.telefono_emergencia.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-      </div>
-    </section>
-
+    <!-- MEDICA -->
     <section class="tab-section" id="clinica" hidden>
-      <h2>Información clínica</h2>
-      <p class="section-note">Registra antecedentes y observaciones relevantes para la atención.</p>
-      <div class="fields">
-        <div class="field full">
-          <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
-          {{ form.observaciones }}
-          {% for error in form.observaciones.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Información médica</h2>
+          <p class="section-note">Registra la información clínica disponible del paciente.</p>
+        </div>
+
+        <div class="card-content">
+          <div class="subsection">
+            <h3 class="subsection-title">Información clínica</h3>
+
+            <div class="fields">
+              <div class="field">
+                <label for="{{ form.tipo_sangre.id_for_label }}">Tipo de sangre</label>
+                {{ form.tipo_sangre }}
+                {% for error in form.tipo_sangre.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field full">
+                <label for="{{ form.observaciones.id_for_label }}">Observaciones</label>
+                {{ form.observaciones }}
+                {% for error in form.observaciones.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- CONTACTO -->
+    <section class="tab-section" id="contacto" hidden>
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Contacto y emergencia</h2>
+          <p class="section-note">Información para comunicación y contacto en caso de emergencia.</p>
+        </div>
+
+        <div class="card-content">
+          <div class="subsection">
+            <h3 class="subsection-title">Información de contacto</h3>
+
+            <div class="fields three">
+              <div class="field">
+                <label for="{{ form.correo.id_for_label }}">Correo electrónico</label>
+                {{ form.correo }}
+                {% for error in form.correo.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.telefono.id_for_label }}">Número de teléfono</label>
+                {{ form.telefono }}
+                {% for error in form.telefono.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label>Identificación</label>
+                <input type="text" value="Cédula: {{ form.cedula.value|default:'' }}" disabled>
+              </div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Contacto de emergencia</h3>
+
+            <div class="fields">
+              <div class="field">
+                <label for="{{ form.contacto_emergencia.id_for_label }}">Nombre del contacto</label>
+                {{ form.contacto_emergencia }}
+                {% for error in form.contacto_emergencia.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+
+              <div class="field">
+                <label for="{{ form.telefono_emergencia.id_for_label }}">Teléfono de emergencia</label>
+                {{ form.telefono_emergencia }}
+                {% for error in form.telefono_emergencia.errors %}<small class="error">{{ error }}</small>{% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GESTION -->
     <section class="tab-section" id="gestion" hidden>
-      <h2>Profesional y estado</h2>
-      <p class="section-note">Asigna el profesional responsable y define el estado del paciente.</p>
-      <div class="fields">
-        <div class="field">
-          <label for="{{ form.profesional.id_for_label }}">Profesional</label>
-          {{ form.profesional }}
-          {% for error in form.profesional.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Profesional y estado</h2>
+          <p class="section-note">Asigna el profesional responsable y define el estado del paciente.</p>
         </div>
-        <div class="field">
-          <label for="{{ form.estado.id_for_label }}">Estado</label>
-          {{ form.estado }}
-          {% for error in form.estado.errors %}<small class="error">{{ error }}</small>{% endfor %}
+
+        <div class="card-content">
+          <div class="fields">
+            <div class="field">
+              <label for="{{ form.profesional.id_for_label }}">Profesional</label>
+              {{ form.profesional }}
+              {% for error in form.profesional.errors %}<small class="error">{{ error }}</small>{% endfor %}
+            </div>
+
+            <div class="field">
+              <label for="{{ form.estado.id_for_label }}">Estado</label>
+              {{ form.estado }}
+              {% for error in form.estado.errors %}<small class="error">{{ error }}</small>{% endfor %}
+            </div>
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="{% url 'homeinpacientes' %}">Cancelar</a>
+            <button class="btn primary" type="submit"><i class="bx bx-save"></i> Guardar paciente</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <div class="actions">
+    <div class="actions" id="main-actions">
       <a class="btn" href="{% url 'homeinpacientes' %}">Cancelar</a>
       <button class="btn primary" type="submit"><i class="bx bx-save"></i> Guardar paciente</button>
     </div>
+
   </form>
 </section>
 {% endblock %}
@@ -180,11 +432,18 @@
 (function(){
   const tabs=document.querySelectorAll('.nuevo-paciente .tab');
   const panels=document.querySelectorAll('.nuevo-paciente .tab-section');
+  const mainActions=document.getElementById('main-actions');
+
+  function showTab(tab){
+    tabs.forEach(t=>t.setAttribute('aria-selected',t===tab?'true':'false'));
+    panels.forEach(p=>p.hidden=p.id!==tab.dataset.tab);
+    if(mainActions){
+      mainActions.style.display=tab.dataset.tab==='gestion'?'none':'flex';
+    }
+  }
+
   tabs.forEach(tab=>{
-    tab.addEventListener('click',()=>{
-      tabs.forEach(t=>t.setAttribute('aria-selected',t===tab?'true':'false'));
-      panels.forEach(p=>p.hidden=p.id!==tab.dataset.tab);
-    });
+    tab.addEventListener('click',()=>showTab(tab));
   });
 })();
 </script>
