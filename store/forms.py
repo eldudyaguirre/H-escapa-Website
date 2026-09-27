@@ -21,6 +21,15 @@ class SignUpForm(forms.Form):
         return cleaned_data
 
 class PacienteForm(forms.ModelForm):
+    ESTADOS_CIVILES = [
+        ("SOLTERO", "Soltero"),
+        ("CASADO", "Casado"),
+        ("DIVORCIADO", "Divorciado"),
+        ("VIUDO", "Viudo"),
+        ("SEPARADO", "Separado"),
+        ("UNION_LIBRE", "Unión libre"),
+    ]
+
     class Meta:
         model = Paciente
         fields = [
@@ -41,6 +50,7 @@ class PacienteForm(forms.ModelForm):
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
+            "estado_civil": forms.Select(choices=ESTADOS_CIVILES),
             "direccion": forms.Textarea(attrs={"rows": 3}),
             "alergias": forms.Textarea(attrs={"rows": 3}),
             "medicamentos_actuales": forms.Textarea(attrs={"rows": 3}),
