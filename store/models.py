@@ -212,6 +212,9 @@ class DocumentoPaciente(models.Model):
     TIPOS = [
         ("CONSENTIMIENTO_TRATAMIENTO", "Consentimiento para tratamiento"),
         ("AUTORIZACION_INFORMACION", "Autorización de información"),
+        ("FICHA_ADMISION", "Ficha de admisión"),
+        ("CONFIDENCIALIDAD", "Compromiso de confidencialidad"),
+        ("AUTORIZACION_CONTACTO", "Autorización de contacto"),
         ("IDENTIFICACION", "Documento de identificación"),
         ("OTRO", "Otros documentos"),
     ]
