@@ -105,6 +105,7 @@ def homeinpacientes(request):
     estado = request.GET.get("estado", "").strip()
     if q:
         pacientes = pacientes.filter(
+            models.Q(cedula__icontains=q) |
             models.Q(nombres__icontains=q) |
             models.Q(apellidos__icontains=q) |
             models.Q(correo__icontains=q) |
