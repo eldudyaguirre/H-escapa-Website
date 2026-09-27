@@ -41,7 +41,7 @@ class PacienteForm(forms.ModelForm):
         model = Paciente
         fields = [
             "cedula", "nombres", "apellidos", "fecha_nacimiento", "genero",
-            "estado_civil", "direccion", "ciudad", "provincia", "codigo_postal",
+            "estado_civil", "direccion", "ciudad", "provincia",
             "correo", "telefono", "telefono_alternativo", "contacto_preferido",
             "contacto_emergencia", "relacion_emergencia", "telefono_emergencia",
             "correo_emergencia", "tipo_sangre", "altura_cm", "peso_kg",
