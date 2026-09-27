@@ -137,16 +137,29 @@ class PacienteForm(forms.ModelForm):
             "alergias", "medicamentos_actuales", "condiciones_cronicas",
             "cirugias_previas", "hospitalizaciones", "antecedentes_familiares",
             "tabaquismo", "consumo_alcohol", "consumo_drogas", "frecuencia_ejercicio",
-            "habitos_dieteticos", "seguro_proveedor", "seguro_poliza",
-            "seguro_grupo", "seguro_titular", "seguro_relacion",
-            "seguro_telefono", "seguro_secundario", "seguro_secundario_proveedor",
-            "seguro_secundario_poliza", "metodo_facturacion", "pago_online",
+            "habitos_dieteticos",
+            "tipo_identificacion_facturacion", "identificacion_facturacion",
+            "nombre_facturacion", "correo_facturacion",
+            "metodo_facturacion",
+            "pago_efectivo", "pago_tarjeta", "pago_transferencia",
+            "pago_deposito", "pago_cheque", "pago_otros", "pago_online",
             "profesional", "estado", "observaciones",
         ]
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
             "direccion": forms.Textarea(attrs={"rows": 3}),
+            "identificacion_facturacion": forms.TextInput(attrs={
+                "placeholder": "Ingrese el número de identificación",
+                "maxlength": "13",
+                "inputmode": "numeric",
+            }),
+            "nombre_facturacion": forms.TextInput(attrs={
+                "placeholder": "Ingrese el nombre o razón social",
+            }),
+            "correo_facturacion": forms.EmailInput(attrs={
+                "placeholder": "Ingrese el correo para recibir la factura",
+            }),
             "alergias": forms.Textarea(attrs={"rows": 3}),
             "medicamentos_actuales": forms.Textarea(attrs={"rows": 3}),
             "condiciones_cronicas": forms.Textarea(attrs={"rows": 3}),
