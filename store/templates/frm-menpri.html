@@ -44,7 +44,7 @@
     .nav__dropdown > button.nav__link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
     /* Un solo control visible en móvil; el icono se dibuja en CSS, sin fuentes ni glifos duplicados. */
     .header__toggle{display:none;align-items:center;justify-content:center}
-    @media (max-width:767px){.header__toggle{display:flex}}
+    @media (min-width:768px){.header__toggle,#header-toggle{display:none !important}}\n    @media (max-width:767px){.header__toggle{display:flex}#header-toggle{display:block !important}}
     #header-toggle{position:relative;display:block;width:42px;height:42px;padding:0;border:0;background:transparent;cursor:pointer;font-size:0;line-height:0}
     #header-toggle::before{content:"";position:absolute;left:10px;top:12px;width:22px;height:18px;background:linear-gradient(currentColor,currentColor) top/22px 3px no-repeat,linear-gradient(currentColor,currentColor) center/22px 3px no-repeat,linear-gradient(currentColor,currentColor) bottom/22px 3px no-repeat}
     #header-toggle[aria-expanded="true"]::before{left:11px;top:11px;width:20px;height:20px;background:linear-gradient(45deg,transparent 46%,currentColor 47%,currentColor 54%,transparent 55%),linear-gradient(-45deg,transparent 46%,currentColor 47%,currentColor 54%,transparent 55%)}
