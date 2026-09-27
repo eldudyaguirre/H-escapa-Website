@@ -34,5 +34,15 @@ urlpatterns = [
     path("homein-pacientes/editar/<str:paciente_id>/", views.homeineditarpaciente, name="homeineditarpaciente"),
     path("homein-nuevopaciente/", views.homeinnuevopaciente, name="homeinnuevopaciente"),
     path("homein-nuevacita/", views.homeinnuevacita, name="homeinnuevacita"),
+    path(
+        "homein-pacientes/<str:paciente_id>/documentos/generar/<str:tipo>/",
+        views.generar_documento_paciente,
+        name="generar_documento_paciente",
+    ),
+    path(
+        "homein-pacientes/<str:paciente_id>/documentos/subir/",
+        views.subir_documento_paciente,
+        name="subir_documento_paciente",
+    ),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 ]
