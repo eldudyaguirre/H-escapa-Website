@@ -140,13 +140,13 @@
     transition:background .2s ease,transform .15s ease,box-shadow .2s ease;
   }
 
-  .patients-search-btn i{
+  .patients-search-button i{
     color:inherit;
     font-size:1rem;
     margin:0;
   }
 
-  .patients-search-btn:hover{
+  .patients-search-button:hover{
     background:#00433f;
     border-color:#00433f;
     color:#fff !important;
@@ -154,12 +154,12 @@
     box-shadow:0 6px 14px rgba(0,88,85,.22);
   }
 
-  .patients-search-btn:focus-visible{
+  .patients-search-button:focus-visible{
     outline:2px solid #439b95;
     outline-offset:2px;
   }
 
-  .patients-search-btn:active{
+  .patients-search-button:active{
     transform:translateY(0);
     box-shadow:0 2px 6px rgba(0,88,85,.18);
   }
@@ -307,7 +307,7 @@
   <div class="patients-header">
     <div>
       <h1 class="patients-title">Pacientes</h1>
-      <p class="patients-subtitle">Gestiona los pacientes registrados en PostgreSQL.</p>
+      <p class="patients-subtitle">Pacientes Registrados en Base de Datos.</p>
     </div>
     <a class="patients-add" href="{% url 'homeinnuevopaciente' %}">
       <i class="bx bx-plus" aria-hidden="true"></i>
@@ -328,7 +328,7 @@
         <option value="INACTIVO" {% if estado == 'INACTIVO' %}selected{% endif %}>Inactivos</option>
       </select>
 
-      <button class="patients-search-btn" type="submit" style="display:inline-flex !important;align-items:center !important;justify-content:center !important;width:104px !important;height:42px !important;padding:0 17px !important;border:1px solid #005855 !important;border-radius:8px !important;background:#005855 !important;color:#fff !important;font-family:inherit !important;font-size:.9rem !important;font-weight:600 !important;line-height:1 !important;cursor:pointer !important;appearance:none !important;-webkit-appearance:none !important;box-shadow:0 4px 10px rgba(0,88,85,.16) !important;">
+      <button class="patients-search-btn patients-search-button" type="submit" style="display:inline-flex !important;align-items:center !important;justify-content:center !important;width:104px !important;height:42px !important;padding:0 17px !important;border:1px solid #005855 !important;border-radius:8px !important;background:#005855 !important;color:#fff !important;font-family:inherit !important;font-size:.9rem !important;font-weight:600 !important;line-height:1 !important;cursor:pointer !important;appearance:none !important;-webkit-appearance:none !important;box-shadow:0 4px 10px rgba(0,88,85,.16) !important;">
         <i class="bx bx-search" aria-hidden="true" style="color:#fff !important;margin:0 7px 0 0 !important;"></i>
         Buscar
       </button>
