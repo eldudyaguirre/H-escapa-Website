@@ -24,14 +24,34 @@ class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
         fields = [
-            "cedula", "nombres", "apellidos", "fecha_nacimiento", "genero", "correo",
-            "telefono", "direccion", "tipo_sangre", "contacto_emergencia",
-            "telefono_emergencia", "profesional", "estado", "observaciones",
+            "cedula", "nombres", "apellidos", "fecha_nacimiento", "genero",
+            "estado_civil", "direccion", "ciudad", "provincia", "codigo_postal",
+            "correo", "telefono", "telefono_alternativo", "contacto_preferido",
+            "contacto_emergencia", "relacion_emergencia", "telefono_emergencia",
+            "correo_emergencia", "tipo_sangre", "altura_cm", "peso_kg",
+            "alergias", "medicamentos_actuales", "condiciones_cronicas",
+            "cirugias_previas", "hospitalizaciones", "antecedentes_familiares",
+            "tabaquismo", "consumo_alcohol", "frecuencia_ejercicio",
+            "habitos_dieteticos", "seguro_proveedor", "seguro_poliza",
+            "seguro_grupo", "seguro_titular", "seguro_relacion",
+            "seguro_telefono", "seguro_secundario", "seguro_secundario_proveedor",
+            "seguro_secundario_poliza", "metodo_facturacion", "pago_online",
+            "profesional", "estado", "observaciones",
         ]
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
+            "direccion": forms.Textarea(attrs={"rows": 3}),
+            "alergias": forms.Textarea(attrs={"rows": 3}),
+            "medicamentos_actuales": forms.Textarea(attrs={"rows": 3}),
+            "condiciones_cronicas": forms.Textarea(attrs={"rows": 3}),
+            "cirugias_previas": forms.Textarea(attrs={"rows": 3}),
+            "hospitalizaciones": forms.Textarea(attrs={"rows": 3}),
+            "antecedentes_familiares": forms.Textarea(attrs={"rows": 3}),
+            "habitos_dieteticos": forms.Textarea(attrs={"rows": 3}),
             "observaciones": forms.Textarea(attrs={"rows": 4}),
+            "altura_cm": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
+            "peso_kg": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
         }
 
     def clean_cedula(self):
@@ -47,7 +67,6 @@ class PacienteForm(forms.ModelForm):
         self.fields["profesional"].queryset = Profesional.objects.filter(
             activo=True
         ).order_by("apellido", "nombre")
-
 
 class CitaForm(forms.ModelForm):
     class Meta:
