@@ -1,14 +1,17 @@
+from datetime import date, timedelta
+from functools import wraps
+from pathlib import Path
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import get_object_or_404, redirect, render
 from django.db import models
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from datetime import date, timedelta
 
 from .forms import CitaForm, PacienteForm
-from .models import Cita, Paciente, Post
-from functools import wraps
+from .models import Cita, DocumentoPaciente, Paciente, Post
 
 
 def home(request):
@@ -74,7 +77,6 @@ def blogdetalle(request, slug):
     return render(request, "blog-detalle-dinamico.html", {"post": post})
 
 
-
 def staff_required(view_func):
     """Permite el acceso al panel interno únicamente a usuarios activos del personal."""
     @wraps(view_func)
@@ -105,30 +107,47 @@ def homeinpacientes(request):
     estado = request.GET.get("estado", "").strip()
     if q:
         pacientes = pacientes.filter(
-            models.Q(cedula__icontains=q) |
-            models.Q(nombres__icontains=q) |
-            models.Q(apellidos__icontains=q) |
-            models.Q(correo__icontains=q) |
-            models.Q(telefono__icontains=q)
+            models.Q(cedula__icontains=q)
+            | models.Q(nombres__icontains=q)
+            | models.Q(apellidos__icontains=q)
+            | models.Q(correo__icontains=q)
+            | models.Q(telefono__icontains=q)
         )
     if estado in {"ACTIVO", "INACTIVO"}:
         pacientes = pacientes.filter(estado=estado)
-    return render(request, "frm-pacientes.html", {"pacientes": pacientes, "q": q, "estado": estado})
+    return render(
+        request,
+        "frm-pacientes.html",
+        {"pacientes": pacientes, "q": q, "estado": estado},
+    )
 
 
 @staff_required
 def homeinperfilpaciente(request, paciente_id):
-    paciente = get_object_or_404(Paciente.objects.select_related("profesional"), pk=paciente_id)
+    paciente = get_object_or_404(
+        Paciente.objects.select_related("profesional"),
+        pk=paciente_id,
+    )
     citas = paciente.citas.select_related("profesional").order_by("-fecha_hora")
     historias = paciente.historias_clinicas.select_related("profesional").order_by("-fecha")
-    return render(request, "frm-perfilpaciente.html", {"paciente": paciente, "citas": citas, "historias": historias})
+    documentos = paciente.documentos.all()
+    return render(
+        request,
+        "frm-perfilpaciente.html",
+        {
+            "paciente": paciente,
+            "citas": citas,
+            "historias": historias,
+            "documentos": documentos,
+        },
+    )
 
 
 @staff_required
 def homeineditarpaciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, pk=paciente_id)
     if request.method == "POST":
-        form = PacienteForm(request.POST, instance=paciente)
+        form = PacienteForm(request.POST, request.FILES, instance=paciente)
         if form.is_valid():
             form.save()
             return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
@@ -138,11 +157,62 @@ def homeineditarpaciente(request, paciente_id):
 
 
 @staff_required
+def _guardar_documentos_subidos(request, paciente):
+    campos_documentos = {
+        "documento_consentimiento": "CONSENTIMIENTO_TRATAMIENTO",
+        "documento_autorizacion": "AUTORIZACION_INFORMACION",
+        "documento_identificacion": "IDENTIFICACION",
+        "documento_otros": "OTRO",
+    }
+
+    for campo, tipo in campos_documentos.items():
+        archivo = request.FILES.get(campo)
+        if not archivo:
+            continue
+
+        extension = Path(archivo.name).suffix.lower()
+        if extension not in {".pdf", ".jpg", ".jpeg", ".png"}:
+            messages.error(
+                request,
+                f"El archivo {archivo.name} no tiene un formato permitido. "
+                "Usa PDF, JPG, JPEG o PNG.",
+            )
+            continue
+
+        if archivo.size > 10 * 1024 * 1024:
+            messages.error(
+                request,
+                f"El archivo {archivo.name} supera el máximo permitido de 10 MB.",
+            )
+            continue
+
+        DocumentoPaciente.objects.create(
+            paciente=paciente,
+            tipo=tipo,
+            archivo=archivo,
+            estado="FIRMADO",
+        )
+
+
+@staff_required
 def homeinnuevopaciente(request):
     if request.method == "POST":
         form = PacienteForm(request.POST, request.FILES)
         if form.is_valid():
             paciente = form.save()
+            _guardar_documentos_subidos(request, paciente)
+
+            accion_documento = request.POST.get("accion_documento")
+            if accion_documento in {
+                "CONSENTIMIENTO_TRATAMIENTO",
+                "AUTORIZACION_INFORMACION",
+            }:
+                return redirect(
+                    "generar_documento_paciente",
+                    paciente_id=paciente.pk,
+                    tipo=accion_documento,
+                )
+
             return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
     else:
         form = PacienteForm()
@@ -163,3 +233,62 @@ def homeinnuevacita(request):
             initial["paciente"] = paciente_id
         form = CitaForm(initial=initial)
     return render(request, "frm-nuevacita.html", {"form": form})
+
+
+@staff_required
+def generar_documento_paciente(request, paciente_id, tipo):
+    if tipo not in {
+        "CONSENTIMIENTO_TRATAMIENTO",
+        "AUTORIZACION_INFORMACION",
+    }:
+        raise Http404("Tipo de documento no válido.")
+
+    paciente = get_object_or_404(Paciente.objects.select_related("profesional"), pk=paciente_id)
+
+    return render(
+        request,
+        "documento-paciente-imprimir.html",
+        {
+            "paciente": paciente,
+            "tipo": tipo,
+            "fecha": date.today(),
+        },
+    )
+
+
+@staff_required
+def subir_documento_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, pk=paciente_id)
+
+    if request.method != "POST":
+        return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+
+    archivo = request.FILES.get("archivo")
+    tipo = request.POST.get("tipo")
+
+    tipos_validos = dict(DocumentoPaciente.TIPOS)
+    if tipo not in tipos_validos:
+        messages.error(request, "Tipo de documento no válido.")
+        return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+
+    if not archivo:
+        messages.error(request, "Selecciona un archivo para cargar.")
+        return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+
+    extension = Path(archivo.name).suffix.lower()
+    if extension not in {".pdf", ".jpg", ".jpeg", ".png"}:
+        messages.error(request, "Solo se permiten archivos PDF, JPG, JPEG o PNG.")
+        return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+
+    if archivo.size > 10 * 1024 * 1024:
+        messages.error(request, "El archivo supera el máximo permitido de 10 MB.")
+        return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+
+    DocumentoPaciente.objects.create(
+        paciente=paciente,
+        tipo=tipo,
+        archivo=archivo,
+        estado="FIRMADO",
+    )
+    messages.success(request, "Documento cargado correctamente.")
+    return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
