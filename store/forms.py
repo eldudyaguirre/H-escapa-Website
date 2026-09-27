@@ -24,14 +24,21 @@ class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
         fields = [
-            "nombres", "apellidos", "fecha_nacimiento", "genero", "correo",
+            "cedula", "nombres", "apellidos", "fecha_nacimiento", "genero", "correo",
             "telefono", "direccion", "tipo_sangre", "contacto_emergencia",
             "telefono_emergencia", "profesional", "estado", "observaciones",
         ]
         widgets = {
+            "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
             "observaciones": forms.Textarea(attrs={"rows": 4}),
         }
+
+    def clean_cedula(self):
+        cedula = self.cleaned_data["cedula"].strip()
+        if not cedula.isdigit() or len(cedula) != 10:
+            raise forms.ValidationError("La cédula debe tener exactamente 10 dígitos.")
+        return cedula
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
