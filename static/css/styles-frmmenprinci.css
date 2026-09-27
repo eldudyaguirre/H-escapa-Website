@@ -147,3 +147,18 @@
 }
 
 /* Corrección definitiva: el botón padre de Pacientes no activo debe conservar el color claro del menú. */
+
+
+/* Pacientes es un botón (no un enlace), por eso recibe estilos de botón distintos en algunos navegadores. */
+.nav .nav__dropdown > button.nav__link:not(.active) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.nav .nav__dropdown > button.nav__link:not(.active) .nav__icon,
+.nav .nav__dropdown > button.nav__link:not(.active) .nav__name,
+.nav .nav__dropdown > button.nav__link:not(.active) .nav__dropdown-icon {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
