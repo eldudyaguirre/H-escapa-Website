@@ -1,12 +1,13 @@
 from datetime import date, timedelta
 from functools import wraps
 from pathlib import Path
+import mimetypes
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
-from django.http import Http404
+from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -120,6 +121,21 @@ def homeinpacientes(request):
         "frm-pacientes.html",
         {"pacientes": pacientes, "q": q, "estado": estado},
     )
+
+
+@staff_required
+def foto_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, pk=paciente_id)
+    if not paciente.foto_perfil:
+        raise Http404("El paciente no tiene una foto de perfil.")
+
+    try:
+        archivo = paciente.foto_perfil.open("rb")
+    except (FileNotFoundError, OSError):
+        raise Http404("La foto de perfil no está disponible.")
+
+    content_type = mimetypes.guess_type(paciente.foto_perfil.name)[0] or "application/octet-stream"
+    return FileResponse(archivo, content_type=content_type)
 
 
 @staff_required
