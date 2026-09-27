@@ -41,7 +41,10 @@
             <a href="{% url 'imprimir_perfil_paciente' paciente.cedula %}" target="_blank"><i class="bx bx-printer"></i> Imprimir ficha</a>
             <button type="button" data-export-profile><i class="bx bx-download"></i> Exportar datos</button>
             <div class="patient-menu-divider"></div>
-            <button type="button" class="danger" data-deactivate-patient><i class="bx bx-user-x"></i> Desactivar paciente</button>
+            <form method="post" action="{% url 'desactivar_paciente' paciente.cedula %}" onsubmit="return confirm('¿Deseas desactivar a {{ paciente.nombre|escapejs }}? El paciente conservará toda su información, pero quedará como inactivo.');">
+              {% csrf_token %}
+              <button type="submit" class="danger"><i class="bx bx-user-x"></i> Desactivar paciente</button>
+            </form>
           </div>
         </details>
         <div class="avatar">
@@ -159,7 +162,7 @@ if(printBtn)printBtn.addEventListener('click',function(){
   setTimeout(()=>window.print(),80);
 });
 const exportBtn=document.querySelector('[data-export-profile]');if(exportBtn)exportBtn.addEventListener('click',()=>{const data={cedula:"{{ paciente.cedula|escapejs }}",nombres:"{{ paciente.nombres|escapejs }}",apellidos:"{{ paciente.apellidos|escapejs }}",fecha_nacimiento:"{% if paciente.fecha_nacimiento %}{{ paciente.fecha_nacimiento|date:'Y-m-d' }}{% endif %}",correo:"{{ paciente.correo|escapejs }}",telefono:"{{ paciente.telefono|escapejs }}",genero:"{{ paciente.get_genero_display|escapejs }}",estado:"{{ paciente.get_estado_display|escapejs }}"};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='paciente-{{ paciente.cedula }}.json';a.click();URL.revokeObjectURL(a.href)});
-const deactivateBtn=document.querySelector('[data-deactivate-patient]');if(deactivateBtn)deactivateBtn.addEventListener('click',()=>{if(confirm('¿Deseas desactivar este paciente? Esta acción puede cambiar su estado y ocultarlo de los pacientes activos.')){const form=document.createElement('form');form.method='post';form.action='{% url 'homeineditarpaciente' paciente.cedula %}';const csrf=document.createElement('input');csrf.type='hidden';csrf.name='csrfmiddlewaretoken';csrf.value='{{ csrf_token }}';form.appendChild(csrf);const state=document.createElement('input');state.type='hidden';state.name='estado';state.value='INACTIVO';form.appendChild(state);document.body.appendChild(form);form.submit();}});
+
 (function(){const root=document.querySelector('.profile-page');if(!root||root.dataset.tabsReady)return;root.dataset.tabsReady='1';const tabs=[...root.querySelectorAll('[role="tab"]')];function show(id){tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.panel===id)));root.querySelectorAll('[role="tabpanel"]').forEach(p=>p.hidden=p.id!==id)}tabs.forEach((tab,i)=>{tab.addEventListener('click',()=>show(tab.dataset.panel));tab.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();tabs[(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length].focus()}})});root.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.goto)));})();
 </script>
 {% endblock %}
