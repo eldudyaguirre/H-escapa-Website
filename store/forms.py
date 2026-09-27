@@ -39,6 +39,19 @@ class PacienteForm(forms.ModelForm):
         ("UNION_LIBRE", "Unión libre"),
     ]
 
+    TABAQUISMO_OPCIONES = [
+        ("", "Seleccione estado"),
+        ("NUNCA", "Nunca fumó"),
+        ("EXFUMADOR", "Exfumador"),
+        ("ACTUAL", "Fumador actual"),
+    ]
+
+    tabaquismo = forms.ChoiceField(
+        choices=TABAQUISMO_OPCIONES,
+        required=False,
+        label="Tabaquismo",
+    )
+
     estado_civil = forms.ChoiceField(
         choices=ESTADOS_CIVILES,
         required=False,
