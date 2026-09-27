@@ -64,8 +64,11 @@
 .doc-actions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 20px}.doc-action{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid #dce3e3;border-radius:8px;background:#fff;color:#005855;text-decoration:none;font-size:13px}.doc-action.primary{background:#439b95;border-color:#439b95;color:#fff}.doc-list{display:grid;gap:10px}.doc-item{border:1px solid #e2e5e7;border-radius:9px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}.doc-item strong{font-size:14px}.doc-item small{display:block;color:#777e83;margin-top:4px}.doc-upload{margin-top:20px;padding-top:18px;border-top:1px solid #e2e5e7}.doc-upload form{display:grid;grid-template-columns:minmax(220px,1fr) minmax(220px,1fr) auto;gap:10px;align-items:end}.doc-upload label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}.doc-upload select,.doc-upload input[type=file]{width:100%;min-height:39px;border:1px solid #dce3e3;border-radius:7px;padding:7px;background:#fff}.doc-upload button{min-height:39px;border:0;border-radius:7px;background:#439b95;color:#fff;padding:0 15px;cursor:pointer}@media(max-width:700px){.doc-item{align-items:flex-start;flex-direction:column}.doc-upload form{grid-template-columns:1fr}.doc-upload button{width:100%}}
 </style>
 <div class="doc-actions">
-<a class="doc-action primary" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='CONSENTIMIENTO_TRATAMIENTO' %}"><i class="bx bx-printer"></i> Generar consentimiento</a>
-<a class="doc-action primary" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='AUTORIZACION_INFORMACION' %}"><i class="bx bx-printer"></i> Generar autorización</a>
+<a class="doc-action primary" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='CONSENTIMIENTO_TRATAMIENTO' %}"><i class="bx bx-printer"></i> Consentimiento</a>
+<a class="doc-action primary" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='AUTORIZACION_INFORMACION' %}"><i class="bx bx-printer"></i> Protección de datos</a>
+<a class="doc-action" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='FICHA_ADMISION' %}"><i class="bx bx-file"></i> Ficha de admisión</a>
+<a class="doc-action" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='CONFIDENCIALIDAD' %}"><i class="bx bx-lock-alt"></i> Confidencialidad</a>
+<a class="doc-action" target="_blank" href="{% url 'generar_documento_paciente' paciente_id=paciente.pk tipo='AUTORIZACION_CONTACTO' %}"><i class="bx bx-phone"></i> Autorización de contacto</a>
 </div>
 {% if documentos %}
 <div class="doc-list">
@@ -79,7 +82,7 @@
 <div class="doc-upload">
 <form method="post" enctype="multipart/form-data" action="{% url 'subir_documento_paciente' paciente_id=paciente.pk %}">
 {% csrf_token %}
-<div><label for="tipo-documento">Tipo de documento</label><select id="tipo-documento" name="tipo" required><option value="">Selecciona...</option><option value="CONSENTIMIENTO_TRATAMIENTO">Consentimiento para tratamiento</option><option value="AUTORIZACION_INFORMACION">Autorización de información</option><option value="IDENTIFICACION">Documento de identificación</option><option value="OTRO">Otros documentos</option></select></div>
+<div><label for="tipo-documento">Tipo de documento</label><select id="tipo-documento" name="tipo" required><option value="">Selecciona...</option><option value="CONSENTIMIENTO_TRATAMIENTO">Consentimiento para tratamiento</option><option value="AUTORIZACION_INFORMACION">Autorización de información</option><option value="FICHA_ADMISION">Ficha de admisión</option><option value="CONFIDENCIALIDAD">Compromiso de confidencialidad</option><option value="AUTORIZACION_CONTACTO">Autorización de contacto</option><option value="IDENTIFICACION">Documento de identificación</option><option value="OTRO">Otros documentos</option></select></div>
 <div><label for="archivo-documento">Archivo escaneado</label><input id="archivo-documento" type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png" required></div>
 <button type="submit"><i class="bx bx-upload"></i> Cargar documento</button>
 </form>
