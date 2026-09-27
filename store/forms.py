@@ -42,6 +42,8 @@ class PacienteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["cedula"].disabled = True
         self.fields["profesional"].queryset = Profesional.objects.filter(
             activo=True
         ).order_by("apellido", "nombre")
