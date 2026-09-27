@@ -157,7 +157,9 @@
 
 .family-checks{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin:4px 0 20px}.family-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.family-checks input{width:17px;height:17px;accent-color:#439b95}.family-notes{margin-top:4px}.family-notes textarea{min-height:90px}
 @media screen and (max-width:767px){.family-checks{gap:11px 18px}.family-checks label{font-size:.78rem}.family-checks input{width:16px;height:16px}.family-notes textarea{min-height:76px}}
-.payment-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:8px}.payment-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.payment-checks input{width:17px;height:17px;accent-color:#439b95}@media screen and (max-width:767px){.payment-checks{gap:10px 14px}.payment-checks label{font-size:.78rem}.payment-checks input{width:16px;height:16px}} </style>
+.payment-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:8px}.payment-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.payment-checks input{width:17px;height:17px;accent-color:#439b95}@media screen and (max-width:767px){.payment-checks{gap:10px 14px}.payment-checks label{font-size:.78rem}.payment-checks input{width:16px;height:16px}} 
+.document-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.document-card{display:flex;gap:14px;border:1px solid #e1e7e5;border-radius:10px;padding:16px;background:#fbfcfc}.document-icon{width:42px;height:42px;min-width:42px;border-radius:9px;display:grid;place-items:center;background:#e8f5f3;color:#287d77;font-size:22px}.document-info h4{margin:0 0 6px;font-size:.95rem;color:#27302e}.document-info p{margin:0 0 12px;color:#747d7b;font-size:.8rem;line-height:1.45}.document-generate{font-size:.8rem!important;padding:8px 11px!important}.document-help{display:flex;gap:8px;align-items:flex-start;margin-top:14px;padding:10px 12px;border-radius:8px;background:#f1f7f6;color:#65716f;font-size:.78rem;line-height:1.4}.document-section-help{margin:-5px 0 15px;color:#7b8381;font-size:.82rem;line-height:1.45}.document-templates{padding-bottom:20px!important}.document-card .btn{width:auto!important}@media(max-width:767px){.document-grid{grid-template-columns:1fr}.document-card{padding:13px}.document-info h4{font-size:.88rem}.document-info p{font-size:.76rem}.document-generate{width:auto!important}.document-section-help{font-size:.76rem}}
+</style>
 {% endblock %}
 {% block content %}
 <section class="np">
@@ -228,9 +230,22 @@
 </div></div>
 </div></div></section>
 
-<section class="panel" id="consent" hidden><div class="card"><div class="head"><h2>Consentimiento y documentos</h2><p>Administra los formularios de consentimiento y documentos del paciente.</p></div><div class="body">
-<div class="section"><h3>Formularios de consentimiento requeridos</h3><div class="grid two"><div class="field"><label>Consentimiento para tratamiento</label><input type="file" disabled><small>Gestión de documentos se implementará en el módulo de archivos.</small></div><div class="field"><label>Autorización de información</label><input type="file" disabled><small>Gestión de documentos se implementará en el módulo de archivos.</small></div></div></div>
-<div class="section"><h3>Documentos del paciente</h3><div class="grid two"><div class="field"><label>Documento de identificación</label><input type="file" disabled></div><div class="field"><label>Otros documentos</label><input type="file" disabled></div></div></div>
+<section class="panel" id="consent" hidden><div class="card"><div class="head"><h2>Consentimiento y documentos</h2><p>Genera los documentos con la información del paciente, imprímelos, hazlos firmar y luego carga el escaneo al sistema.</p></div><div class="body">
+<div class="section document-templates"><h3>Modelos de documentos</h3>
+<div class="document-grid">
+  <article class="document-card"><div class="document-icon"><i class="bx bx-file"></i></div><div class="document-info"><h4>Consentimiento para tratamiento</h4><p>Genera el documento con los datos personales del paciente para imprimir y firmar.</p><button class="btn document-generate" type="submit" name="accion_documento" value="CONSENTIMIENTO_TRATAMIENTO"><i class="bx bx-printer"></i> Guardar y generar</button></div></article>
+  <article class="document-card"><div class="document-icon"><i class="bx bx-file"></i></div><div class="document-info"><h4>Autorización de información</h4><p>Genera la autorización para el manejo y uso de la información del paciente.</p><button class="btn document-generate" type="submit" name="accion_documento" value="AUTORIZACION_INFORMACION"><i class="bx bx-printer"></i> Guardar y generar</button></div></article>
+</div>
+<div class="document-help"><i class="bx bx-info-circle"></i><span>Al generar un documento se guardan primero los datos del paciente y después se abre una versión lista para imprimir.</span></div>
+</div>
+<div class="section"><h3>Cargar documentos firmados</h3><p class="document-section-help">Después de imprimir y firmar, escanea los documentos y selecciónalos aquí. Se almacenarán asociados al paciente.</p>
+<div class="grid two">
+  <div class="field"><label>Consentimiento para tratamiento firmado</label><input type="file" name="documento_consentimiento" accept=".pdf,.jpg,.jpeg,.png"><small>PDF, JPG, JPEG o PNG · máximo 10 MB.</small></div>
+  <div class="field"><label>Autorización de información firmada</label><input type="file" name="documento_autorizacion" accept=".pdf,.jpg,.jpeg,.png"><small>PDF, JPG, JPEG o PNG · máximo 10 MB.</small></div>
+  <div class="field"><label>Documento de identificación</label><input type="file" name="documento_identificacion" accept=".pdf,.jpg,.jpeg,.png"><small>Escaneo o fotografía legible · máximo 10 MB.</small></div>
+  <div class="field"><label>Otros documentos</label><input type="file" name="documento_otros" accept=".pdf,.jpg,.jpeg,.png"><small>PDF, JPG, JPEG o PNG · máximo 10 MB.</small></div>
+</div>
+</div>
 </div></div></section>
 
 <div class="actions"><a class="btn" href="{% url 'homeinpacientes' %}">Cancelar</a><button class="btn primary" type="submit"><i class="bx bx-save"></i> Guardar paciente</button></div>
