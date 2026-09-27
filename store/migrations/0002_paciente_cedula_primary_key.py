@@ -16,6 +16,7 @@ def migrate_patient_pk(apps, schema_editor):
         END IF;
 
         -- Quitar temporalmente todas las FK que apuntan a Paciente.
+        -- Se usa quote_ident() para evitar que psycopg interprete % como placeholders.
         FOR fk_name, fk_table IN
             SELECT c.conname, cl.relname
             FROM pg_constraint c
@@ -23,7 +24,8 @@ def migrate_patient_pk(apps, schema_editor):
             WHERE c.contype = 'f'
               AND c.confrelid = 'store_paciente'::regclass
         LOOP
-            EXECUTE format('ALTER TABLE %I DROP CONSTRAINT %I', fk_table, fk_name);
+            EXECUTE 'ALTER TABLE ' || quote_ident(fk_table)
+                 || ' DROP CONSTRAINT ' || quote_ident(fk_name);
         END LOOP;
 
         ALTER TABLE store_paciente DROP CONSTRAINT IF EXISTS store_paciente_pkey;
