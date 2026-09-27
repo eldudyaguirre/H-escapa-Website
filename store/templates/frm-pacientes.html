@@ -1,6 +1,357 @@
 {% extends "frm-menpri.html" %}
 {% block title %}H-Escapa | Pacientes{% endblock %}
-{% block extra_head %}<style>
-.page{padding:24px 28px}.toolbar{display:flex;gap:10px;margin:20px 0}.toolbar input,.toolbar select{padding:12px;border:1px solid #ddd;border-radius:8px}.btn{padding:12px 18px;background:#419b94;color:#fff;text-decoration:none;border-radius:8px}.table{width:100%;border-collapse:collapse;background:#fff}.table th,.table td{padding:14px;border-bottom:1px solid #eee;text-align:left}.badge{padding:5px 10px;border-radius:15px;background:#e2f7e9}.actions a{margin-right:8px}@media(max-width:700px){.page{padding:16px 12px}.toolbar{flex-wrap:wrap}.table{font-size:13px}}
-</style>{% endblock %}
-{% block content %}<section class="page"><h1>Pacientes</h1><p>Pacientes registrados en PostgreSQL.</p><a class="btn" href="{% url 'homeinnuevopaciente' %}">+ Agregar paciente</a><form class="toolbar" method="get"><input name="q" value="{{ q }}" placeholder="Buscar nombre, correo o teléfono"><select name="estado"><option value="">Todos</option><option value="ACTIVO" {% if estado == 'ACTIVO' %}selected{% endif %}>Activos</option><option value="INACTIVO" {% if estado == 'INACTIVO' %}selected{% endif %}>Inactivos</option></select><button type="submit">Buscar</button></form><div style="overflow:auto"><table class="table"><thead><tr><th>Paciente</th><th>Teléfono</th><th>Profesional</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>{% for paciente in pacientes %}<tr><td><strong>{{ paciente.nombres }} {{ paciente.apellidos }}</strong><br><small>{{ paciente.correo }}</small></td><td>{{ paciente.telefono }}</td><td>{{ paciente.profesional|default:"Sin asignar" }}</td><td><span class="badge">{{ paciente.get_estado_display }}</span></td><td class="actions"><a href="{% url 'homeinperfilpaciente' paciente.id %}">Ver</a><a href="{% url 'homeineditarpaciente' paciente.id %}">Editar</a><a href="{% url 'homeinnuevacita' %}?paciente={{ paciente.id }}">Cita</a></td></tr>{% empty %}<tr><td colspan="5">No hay pacientes registrados.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+
+{% block extra_head %}
+<style>
+  .patients-page{
+    padding:32px 36px 40px;
+    max-width:1500px;
+    margin:0 auto;
+  }
+
+  .patients-header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:24px;
+    margin-bottom:28px;
+  }
+
+  .patients-title{
+    margin:0;
+    color:#19181B;
+    font-family:Marcellus,serif;
+    font-size:2.2rem;
+    line-height:1.1;
+  }
+
+  .patients-subtitle{
+    margin:8px 0 0;
+    color:#6f7478;
+    font-size:.95rem;
+  }
+
+  .patients-add{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 18px;
+    border-radius:9px;
+    background:#439b95;
+    color:#fff !important;
+    text-decoration:none;
+    font-weight:600;
+    white-space:nowrap;
+    box-shadow:0 5px 14px rgba(67,155,149,.20);
+    transition:transform .2s ease,background .2s ease,box-shadow .2s ease;
+  }
+
+  .patients-add:hover{
+    background:#347f7a;
+    transform:translateY(-1px);
+    box-shadow:0 7px 18px rgba(67,155,149,.28);
+  }
+
+  .patients-panel{
+    background:#fff;
+    border:1px solid #e8eceb;
+    border-radius:14px;
+    box-shadow:0 5px 20px rgba(30,55,53,.06);
+    overflow:hidden;
+  }
+
+  .patients-toolbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:18px;
+    border-bottom:1px solid #edf0ef;
+    background:#fbfcfc;
+  }
+
+  .patients-search{
+    position:relative;
+    flex:1;
+    min-width:220px;
+  }
+
+  .patients-search i{
+    position:absolute;
+    left:13px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#8b9694;
+    font-size:1.1rem;
+  }
+
+  .patients-search input,
+  .patients-filter,
+  .patients-search-btn{
+    height:42px;
+    border-radius:8px;
+    font:inherit;
+  }
+
+  .patients-search input{
+    width:100%;
+    padding:0 14px 0 40px;
+    border:1px solid #dfe5e3;
+    background:#fff;
+    color:#333;
+    outline:none;
+  }
+
+  .patients-search input:focus,
+  .patients-filter:focus{
+    border-color:#439b95;
+    box-shadow:0 0 0 3px rgba(67,155,149,.12);
+  }
+
+  .patients-filter{
+    min-width:140px;
+    padding:0 12px;
+    border:1px solid #dfe5e3;
+    background:#fff;
+    color:#444;
+    outline:none;
+  }
+
+  .patients-search-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:0 16px;
+    border:0;
+    background:#005855;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    transition:background .2s ease;
+  }
+
+  .patients-search-btn:hover{background:#00433f}
+
+  .patients-table-wrap{overflow-x:auto}
+
+  .patients-table{
+    width:100%;
+    min-width:760px;
+    border-collapse:collapse;
+  }
+
+  .patients-table th{
+    padding:14px 18px;
+    background:#f7f9f9;
+    color:#5b6563;
+    font-size:.78rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.045em;
+    text-align:left;
+    border-bottom:1px solid #e8eceb;
+  }
+
+  .patients-table td{
+    padding:16px 18px;
+    color:#3e4645;
+    font-size:.9rem;
+    border-bottom:1px solid #eef1f0;
+    vertical-align:middle;
+  }
+
+  .patients-table tbody tr{
+    transition:background .15s ease;
+  }
+
+  .patients-table tbody tr:hover{background:#f8fbfa}
+  .patients-table tbody tr:last-child td{border-bottom:0}
+
+  .patient-name{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    min-width:220px;
+  }
+
+  .patient-avatar{
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:#e7f3f1;
+    color:#006b66;
+    font-size:1rem;
+  }
+
+  .patient-name strong{
+    display:block;
+    color:#202625;
+    font-weight:600;
+  }
+
+  .patient-email{
+    display:block;
+    margin-top:2px;
+    color:#8a9391;
+    font-size:.78rem;
+  }
+
+  .status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 10px;
+    border-radius:999px;
+    background:#e8f6ee;
+    color:#287044;
+    font-size:.76rem;
+    font-weight:700;
+  }
+
+  .status-badge::before{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#43a86b;
+  }
+
+  .patient-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+
+  .patient-action{
+    width:34px;
+    height:34px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:7px;
+    color:#63706e !important;
+    background:#f1f4f3;
+    text-decoration:none;
+    transition:all .18s ease;
+  }
+
+  .patient-action:hover{
+    color:#005855 !important;
+    background:#dfeeed;
+  }
+
+  .patients-empty{
+    padding:48px 20px !important;
+    text-align:center !important;
+    color:#7c8583 !important;
+  }
+
+  .patients-empty i{
+    display:block;
+    margin-bottom:10px;
+    font-size:2.4rem;
+    color:#a5b5b2;
+  }
+
+  @media(max-width:767px){
+    .patients-page{padding:24px 14px 32px}
+    .patients-header{align-items:flex-start;flex-direction:column;gap:18px}
+    .patients-title{font-size:1.85rem}
+    .patients-add{width:100%;justify-content:center}
+    .patients-toolbar{align-items:stretch;flex-direction:column}
+    .patients-search{min-width:0}
+    .patients-filter,.patients-search-btn{width:100%}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="patients-page">
+  <div class="patients-header">
+    <div>
+      <h1 class="patients-title">Pacientes</h1>
+      <p class="patients-subtitle">Gestiona los pacientes registrados en PostgreSQL.</p>
+    </div>
+    <a class="patients-add" href="{% url 'homeinnuevopaciente' %}">
+      <i class="bx bx-plus" aria-hidden="true"></i>
+      Agregar paciente
+    </a>
+  </div>
+
+  <div class="patients-panel">
+    <form class="patients-toolbar" method="get">
+      <div class="patients-search">
+        <i class="bx bx-search" aria-hidden="true"></i>
+        <input name="q" value="{{ q }}" placeholder="Buscar por nombre, correo o teléfono" aria-label="Buscar paciente">
+      </div>
+
+      <select class="patients-filter" name="estado" aria-label="Filtrar por estado">
+        <option value="">Todos</option>
+        <option value="ACTIVO" {% if estado == 'ACTIVO' %}selected{% endif %}>Activos</option>
+        <option value="INACTIVO" {% if estado == 'INACTIVO' %}selected{% endif %}>Inactivos</option>
+      </select>
+
+      <button class="patients-search-btn" type="submit">
+        <i class="bx bx-search" aria-hidden="true"></i>
+        Buscar
+      </button>
+    </form>
+
+    <div class="patients-table-wrap">
+      <table class="patients-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Teléfono</th>
+            <th>Profesional</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for paciente in pacientes %}
+          <tr>
+            <td>
+              <div class="patient-name">
+                <span class="patient-avatar"><i class="bx bx-user" aria-hidden="true"></i></span>
+                <span>
+                  <strong>{{ paciente.nombres }} {{ paciente.apellidos }}</strong>
+                  <small class="patient-email">{{ paciente.correo }}</small>
+                </span>
+              </div>
+            </td>
+            <td>{{ paciente.telefono|default:"—" }}</td>
+            <td>{{ paciente.profesional|default:"Sin asignar" }}</td>
+            <td><span class="status-badge">{{ paciente.get_estado_display }}</span></td>
+            <td>
+              <div class="patient-actions">
+                <a class="patient-action" href="{% url 'homeinperfilpaciente' paciente.id %}" title="Ver paciente" aria-label="Ver paciente">
+                  <i class="bx bx-show"></i>
+                </a>
+                <a class="patient-action" href="{% url 'homeineditarpaciente' paciente.id %}" title="Editar paciente" aria-label="Editar paciente">
+                  <i class="bx bx-edit-alt"></i>
+                </a>
+                <a class="patient-action" href="{% url 'homeinnuevacita' %}?paciente={{ paciente.id }}" title="Agendar cita" aria-label="Agendar cita">
+                  <i class="bx bx-calendar-plus"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td class="patients-empty" colspan="5">
+              <i class="bx bx-user-x" aria-hidden="true"></i>
+              No hay pacientes registrados.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
