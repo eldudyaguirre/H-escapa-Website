@@ -64,6 +64,7 @@ class Paciente(models.Model):
         ("ND", "No determinado"),
     ]
 
+    cedula = models.CharField(max_length=10, primary_key=True)
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField(blank=True, null=True)
