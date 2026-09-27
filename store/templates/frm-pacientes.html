@@ -219,6 +219,8 @@
     font-size:1rem;
   }
 
+  .patient-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+
   .patient-name strong{
     display:block;
     color:#202625;
@@ -350,7 +352,13 @@
           <tr>
             <td>
               <div class="patient-name">
-                <span class="patient-avatar"><i class="bx bx-user" aria-hidden="true"></i></span>
+                <span class="patient-avatar">
+                  {% if paciente.foto_perfil %}
+                    <img src="{% url 'homein_foto_paciente' paciente.cedula %}" alt="Foto de {{ paciente.nombres }} {{ paciente.apellidos }}">
+                  {% else %}
+                    <i class="bx bx-user" aria-hidden="true"></i>
+                  {% endif %}
+                </span>
                 <span>
                   <strong>{{ paciente.nombres }} {{ paciente.apellidos }}</strong>
                   <small class="patient-email">{{ paciente.correo }}</small>
