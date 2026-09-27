@@ -145,7 +145,7 @@ class PacienteForm(forms.ModelForm):
             "metodo_facturacion",
             "pago_efectivo", "pago_tarjeta", "pago_transferencia",
             "pago_deposito", "pago_cheque", "pago_otros", "pago_online",
-            "profesional", "estado", "observaciones",
+            "profesional", "observaciones",
         ]
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
