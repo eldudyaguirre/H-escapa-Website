@@ -2,6 +2,7 @@
 {% block title %}H-Escapa | Nuevo paciente{% endblock %}
 {% block extra_head %}
 <style>
+.np-error{margin:0 0 16px;padding:13px 16px;border:1px solid #e7b6b6;border-radius:8px;background:#fff5f5;color:#8a3030;font-size:.88rem;line-height:1.5}.np-error strong{display:block;margin-bottom:4px}.np-error span{display:block;margin-bottom:4px}.np-error ul{margin:6px 0 0 18px;padding:0}.np-error a{color:#8a3030;text-decoration:underline}.np-error a:focus{outline:2px solid #439b95;outline-offset:2px}
 .np{padding:28px 36px 44px;max-width:1450px;margin:auto}.np-head{display:flex;gap:15px;align-items:center;margin-bottom:24px}.np-back{width:42px;height:42px;border-radius:8px;background:#439b95;color:#fff!important;display:grid;place-items:center;text-decoration:none;font-size:23px}.np h1{margin:0 0 5px;font:2rem Marcellus,serif;color:#19181b}.np-head p{margin:0;color:#747c80}.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:5px;background:#f1f4f3;border-radius:9px;margin-bottom:16px}.tab{flex:1 1 190px;border:0;background:transparent;padding:11px 14px;border-radius:7px;color:#747b7a;font:inherit;cursor:pointer}.tab[aria-selected=true]{background:#fff;color:#005855;box-shadow:0 1px 5px #0001}.panel[hidden]{display:none}.card{background:#fff;border:1px solid #e2e7e5;border-radius:10px;box-shadow:0 4px 16px #1e37350d}.head{padding:21px 24px 17px;border-bottom:1px solid #e8eceb}.head h2{margin:0 0 5px;font-size:1.25rem}.head p{margin:0;color:#7b8381;font-size:.9rem}.body{padding:24px}.section{padding:0 0 24px;margin-bottom:24px;border-bottom:1px solid #e5e9e8}.section:last-child{padding:0;margin:0;border:0}.section h3{font-size:1.05rem;margin:0 0 16px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:.86rem;font-weight:600;color:#454d4b}.field input:not([type=checkbox]),.field select,.field textarea{width:100%;box-sizing:border-box;min-height:42px;border:1px solid #dfe5e3;border-radius:7px;padding:9px 11px;background:#fff;color:#202625;font:inherit;outline:0}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#439b95;box-shadow:0 0 0 3px #439b951f}.choices{display:flex;flex-wrap:wrap;gap:12px 20px;padding-top:5px}.choices label{font-weight:400;display:flex;align-items:center;gap:7px}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid #e5e9e8}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #dfe5e3;border-radius:7px;padding:10px 17px;background:#fff;color:#333;text-decoration:none;cursor:pointer}.btn.primary{background:#439b95;border-color:#439b95;color:#fff}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.np{padding:20px 13px 30px}.grid,.grid.two{grid-template-columns:1fr}.body,.head{padding:17px 15px}.tabs{flex-direction:column}.actions{flex-direction:column}.btn{width:100%}}
 
 /* Ajuste responsive basado en la plantilla de referencia */
@@ -166,7 +167,22 @@
 <section class="np">
 <div class="np-head"><a class="np-back" href="{% url 'homeinpacientes' %}">←</a><div><h1>Nuevo paciente</h1><p>Registra un nuevo paciente en tu consultorio.</p></div></div>
 <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
-{% if form.non_field_errors %}<div class="np-error">{{ form.non_field_errors }}</div>{% endif %}
+{% if form.errors %}
+<div class="np-error">
+  <strong>No se pudo guardar el paciente.</strong>
+  <span>Revisa los siguientes campos:</span>
+  <ul>
+  {% for field in form %}
+    {% if field.errors %}
+      <li><a href="#{{ field.id_for_label }}" data-error-tab>{{ field.label }}: {{ field.errors|striptags }}</a></li>
+    {% endif %}
+  {% endfor %}
+  {% for error in form.non_field_errors %}
+    <li>{{ error }}</li>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
 <div class="tabs" role="tablist">
 <button class="tab" type="button" aria-selected="true" data-tab="personal">Información personal</button><button class="tab" type="button" aria-selected="false" data-tab="medical">Información médica</button><button class="tab" type="button" aria-selected="false" data-tab="insurance">Seguro y facturación</button><button class="tab" type="button" aria-selected="false" data-tab="consent">Consentimiento y documentos</button>
 </div>
@@ -265,5 +281,5 @@
 </section>
 {% endblock %}
 {% block extra_scripts %}<script>
-(()=>{const t=document.querySelectorAll('.tab'),p=document.querySelectorAll('.panel');t.forEach(x=>x.onclick=()=>{t.forEach(y=>y.setAttribute('aria-selected',y===x?'true':'false'));p.forEach(y=>y.hidden=y.id!==x.dataset.tab)});const input=document.getElementById('{{ form.foto_perfil.id_for_label }}'),preview=document.getElementById('profile-preview');if(input&&preview){input.addEventListener('change',()=>{const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{preview.innerHTML='<img src="'+e.target.result+'" alt="Vista previa de foto de perfil">'};reader.readAsDataURL(file)})}})();
+(()=>{const t=document.querySelectorAll('.tab'),p=document.querySelectorAll('.panel');const showTab=id=>{t.forEach(y=>y.setAttribute('aria-selected',y.dataset.tab===id?'true':'false'));p.forEach(y=>y.hidden=y.id!==id)};t.forEach(x=>x.onclick=()=>showTab(x.dataset.tab));document.querySelectorAll('[data-error-tab]').forEach(link=>link.addEventListener('click',e=>{e.preventDefault();const id=link.getAttribute('href').replace('#','');const el=document.getElementById(id);if(!el)return;const panel=el.closest('.panel');if(panel)showTab(panel.id);el.scrollIntoView({behavior:'smooth',block:'center'});el.focus({preventScroll:true})}));{% if form.errors %}const firstError=document.querySelector('.np-error a[data-error-tab]');if(firstError){const id=firstError.getAttribute('href').replace('#',''),el=document.getElementById(id);const panel=el&&el.closest('.panel');if(panel)showTab(panel.id);}{% endif %}const input=document.getElementById('{{ form.foto_perfil.id_for_label }}'),preview=document.getElementById('profile-preview');if(input&&preview){input.addEventListener('change',()=>{const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{preview.innerHTML='<img src="'+e.target.result+'" alt="Vista previa de foto de perfil">'};reader.readAsDataURL(file)})}})();
 </script>{% endblock %}
