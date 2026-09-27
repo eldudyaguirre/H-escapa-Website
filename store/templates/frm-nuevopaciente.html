@@ -157,7 +157,7 @@
 
 .family-checks{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin:4px 0 20px}.family-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.family-checks input{width:17px;height:17px;accent-color:#439b95}.family-notes{margin-top:4px}.family-notes textarea{min-height:90px}
 @media screen and (max-width:767px){.family-checks{gap:11px 18px}.family-checks label{font-size:.78rem}.family-checks input{width:16px;height:16px}.family-notes textarea{min-height:76px}}
-</style>
+.payment-checks{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;margin-top:8px}.payment-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.payment-checks input{width:17px;height:17px;accent-color:#439b95}@media screen and (max-width:767px){.payment-checks{gap:10px 14px}.payment-checks label{font-size:.78rem}.payment-checks input{width:16px;height:16px}} </style>
 {% endblock %}
 {% block content %}
 <section class="np">
@@ -208,10 +208,24 @@
 <div class="section"><h3>Estilo de vida</h3><div class="grid"><div class="field"><label>Tabaquismo</label>{{ form.tabaquismo }}</div><div class="field"><label>Consumo de alcohol</label>{{ form.consumo_alcohol }}</div><div class="field"><label>Consumo de drogas</label>{{ form.consumo_drogas }}</div><div class="field"><label>Frecuencia de ejercicio</label>{{ form.frecuencia_ejercicio }}</div><div class="field full"><label>Hábitos alimenticios</label>{{ form.habitos_dieteticos }}</div><div class="field full"><label>Observaciones</label>{{ form.observaciones }}</div></div></div>
 </div></div></section>
 
-<section class="panel" id="insurance" hidden><div class="card"><div class="head"><h2>Seguro y facturación</h2><p>Ingresa la información de seguro y preferencias de pago.</p></div><div class="body">
-<div class="section"><h3>Seguro principal</h3><div class="grid two"><div class="field"><label>Proveedor de seguro</label>{{ form.seguro_proveedor }}</div><div class="field"><label>Número de póliza</label>{{ form.seguro_poliza }}</div><div class="field"><label>Número de grupo</label>{{ form.seguro_grupo }}</div><div class="field"><label>Nombre del titular</label>{{ form.seguro_titular }}</div><div class="field"><label>Relación con el paciente</label>{{ form.seguro_relacion }}</div><div class="field"><label>Teléfono del seguro</label>{{ form.seguro_telefono }}</div></div></div>
-<div class="section"><h3>Seguro secundario</h3><div class="grid two"><div class="field"><label>¿Tiene seguro secundario?</label>{{ form.seguro_secundario }}</div><div></div><div class="field"><label>Proveedor</label>{{ form.seguro_secundario_proveedor }}</div><div class="field"><label>Número de póliza</label>{{ form.seguro_secundario_poliza }}</div></div></div>
-<div class="section"><h3>Preferencias de facturación</h3><div class="grid two"><div class="field"><label>Método de facturación</label>{{ form.metodo_facturacion }}</div><div class="field"><label>Pago en línea</label>{{ form.pago_online }}</div></div></div>
+<section class="panel" id="insurance" hidden><div class="card"><div class="head"><h2>Facturación</h2><p>Configura los datos tributarios y las preferencias de facturación del paciente.</p></div><div class="body">
+<div class="section"><h3>Datos tributarios</h3><div class="grid two">
+<div class="field"><label>Tipo de identificación</label>{{ form.tipo_identificacion_facturacion }}</div>
+<div class="field"><label>Número de identificación</label>{{ form.identificacion_facturacion }}</div>
+<div class="field full"><label>Nombre o razón social para facturación</label>{{ form.nombre_facturacion }}</div>
+<div class="field full"><label>Correo para recibir factura</label>{{ form.correo_facturacion }}</div>
+</div></div>
+<div class="section billing-preferences"><h3>Preferencias de facturación</h3>
+<div class="field full"><label>Preferencia de facturación</label>{{ form.metodo_facturacion }}</div>
+<div class="field full"><label>Formas de pago preferidas</label>
+<div class="payment-checks">
+<label>{{ form.pago_efectivo }} <span>Efectivo</span></label>
+<label>{{ form.pago_tarjeta }} <span>Tarjeta de crédito / débito</span></label>
+<label>{{ form.pago_transferencia }} <span>Transferencia bancaria</span></label>
+<label>{{ form.pago_deposito }} <span>Depósito</span></label>
+<label>{{ form.pago_cheque }} <span>Cheque</span></label>
+<label>{{ form.pago_otros }} <span>Otros</span></label>
+</div></div>
 </div></div></section>
 
 <section class="panel" id="consent" hidden><div class="card"><div class="head"><h2>Consentimiento y documentos</h2><p>Administra los formularios de consentimiento y documentos del paciente.</p></div><div class="body">
