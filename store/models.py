@@ -143,6 +143,23 @@ class Paciente(models.Model):
             models.Index(fields=["estado"]),
         ]
 
+    @property
+    def nombre(self):
+        return f"{self.nombres} {self.apellidos}"
+
+    @property
+    def edad(self):
+        if not self.fecha_nacimiento:
+            return None
+        hoy = timezone.localdate()
+        return hoy.year - self.fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        )
+
+    @property
+    def doctor(self):
+        return str(self.profesional) if self.profesional else "Sin asignar"
+
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
 
