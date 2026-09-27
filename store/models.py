@@ -110,7 +110,17 @@ class Paciente(models.Model):
     seguro_secundario = models.BooleanField(default=False)
     seguro_secundario_proveedor = models.CharField(max_length=150, blank=True)
     seguro_secundario_poliza = models.CharField(max_length=100, blank=True)
+    tipo_identificacion_facturacion = models.CharField(max_length=20, blank=True)
+    identificacion_facturacion = models.CharField(max_length=13, blank=True)
+    nombre_facturacion = models.CharField(max_length=200, blank=True)
+    correo_facturacion = models.EmailField(blank=True)
     metodo_facturacion = models.CharField(max_length=20, blank=True)
+    pago_efectivo = models.BooleanField(default=False)
+    pago_tarjeta = models.BooleanField(default=False)
+    pago_transferencia = models.BooleanField(default=False)
+    pago_deposito = models.BooleanField(default=False)
+    pago_cheque = models.BooleanField(default=False)
+    pago_otros = models.BooleanField(default=False)
     pago_online = models.BooleanField(default=False)
     profesional = models.ForeignKey(
         Profesional,
