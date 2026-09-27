@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>{% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}Consentimiento para tratamiento{% else %}Autorización de información{% endif %} - {{ paciente.nombres }} {{ paciente.apellidos }}</title>
+<title>{% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}Consentimiento para tratamiento{% elif tipo == "AUTORIZACION_INFORMACION" %}Autorización de información{% elif tipo == "FICHA_ADMISION" %}Ficha de admisión{% elif tipo == "CONFIDENCIALIDAD" %}Compromiso de confidencialidad{% else %}Autorización de contacto{% endif %} - {{ paciente.nombres }} {{ paciente.apellidos }}</title>
 <style>
 @page{size:A4;margin:18mm 17mm}
 *{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#222;margin:0;background:#f3f5f4}.sheet{width:210mm;min-height:297mm;margin:20px auto;background:#fff;padding:18mm 17mm;box-shadow:0 2px 12px #0002}.top{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #439b95;padding-bottom:12px;margin-bottom:22px}.brand{font-size:21px;font-weight:700;color:#005855}.date{font-size:12px;color:#68716f;text-align:right}.title{text-align:center;font-size:21px;margin:18px 0 20px;color:#1e2927}.intro{font-size:13px;line-height:1.65;text-align:justify}.data{border:1px solid #d9dfdd;border-radius:7px;padding:12px 14px;margin:16px 0}.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 20px;font-size:12.5px}.data-grid b{font-weight:700}.body-text{font-size:13px;line-height:1.7;text-align:justify}.body-text p{margin:0 0 11px}.clauses{margin:14px 0 18px;padding-left:22px}.clauses li{font-size:12.7px;line-height:1.6;margin-bottom:8px}.signature{display:grid;grid-template-columns:1fr 1fr;gap:45px;margin-top:55px}.signature-box{border-top:1px solid #333;padding-top:8px;text-align:center;font-size:11.5px;min-height:55px}.actions{position:fixed;top:14px;right:18px;display:flex;gap:8px}.actions button{border:0;border-radius:7px;padding:9px 13px;background:#439b95;color:#fff;cursor:pointer;font-weight:600}.actions a{border-radius:7px;padding:9px 13px;background:#fff;border:1px solid #d6dddb;color:#333;text-decoration:none;font-size:13px}@media print{body{background:#fff}.sheet{margin:0;box-shadow:none}.actions{display:none}}@media(max-width:800px){.sheet{width:100%;margin:0;padding:28px 20px;min-height:100vh}.data-grid,.signature{grid-template-columns:1fr}.actions{position:static;padding:12px;background:#f3f5f4}.actions button,.actions a{flex:1;text-align:center}}
@@ -13,7 +13,7 @@
 <div class="actions"><button onclick="window.print()">Imprimir</button><a href="{% url 'homeinperfilpaciente' paciente_id=paciente.pk %}">Volver</a></div>
 <main class="sheet">
 <header class="top"><div class="brand">H-Escapa</div><div class="date">Documento generado<br>{{ fecha|date:"d/m/Y" }}</div></header>
-<h1 class="title">{% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}CONSENTIMIENTO PARA TRATAMIENTO{% else %}AUTORIZACIÓN PARA MANEJO DE INFORMACIÓN{% endif %}</h1>
+<h1 class="title">{% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}CONSENTIMIENTO PARA TRATAMIENTO{% elif tipo == "AUTORIZACION_INFORMACION" %}AUTORIZACIÓN PARA MANEJO DE INFORMACIÓN{% elif tipo == "FICHA_ADMISION" %}FICHA DE ADMISIÓN DEL PACIENTE{% elif tipo == "CONFIDENCIALIDAD" %}COMPROMISO DE CONFIDENCIALIDAD{% else %}AUTORIZACIÓN DE CONTACTO{% endif %}</h1>
 <div class="data"><div class="data-grid">
 <div><b>Paciente:</b> {{ paciente.nombres }} {{ paciente.apellidos }}</div>
 <div><b>Cédula:</b> {{ paciente.cedula }}</div>
@@ -25,26 +25,41 @@
 
 {% if tipo == "CONSENTIMIENTO_TRATAMIENTO" %}
 <div class="body-text">
-<p>Yo, <b>{{ paciente.nombres }} {{ paciente.apellidos }}</b>, identificado(a) con cédula <b>{{ paciente.cedula }}</b>, manifiesto que he recibido información suficiente sobre el proceso de atención psicológica que se realizará en H-Escapa y que he tenido oportunidad de realizar preguntas y solicitar aclaraciones.</p>
-<p>Declaro que comprendo que la atención psicológica puede incluir entrevistas, evaluación, orientación, intervención y seguimiento de acuerdo con las necesidades identificadas durante el proceso.</p>
-<ol class="clauses">
-<li>Autorizo voluntariamente la atención profesional y el desarrollo del proceso terapéutico acordado.</li>
-<li>Comprendo que la información proporcionada durante la atención será tratada con confidencialidad, dentro de los límites establecidos por la normativa aplicable y las obligaciones profesionales correspondientes.</li>
-<li>Entiendo que puedo realizar preguntas, solicitar información sobre mi proceso y comunicar cualquier inquietud al profesional responsable.</li>
-<li>Comprendo que este consentimiento documenta mi autorización para la atención y no constituye garantía sobre resultados específicos del proceso terapéutico.</li>
-</ol>
-<p>Con mi firma declaro que he leído y comprendido este documento y que otorgo mi consentimiento de manera libre y voluntaria.</p>
+<p>Yo, <b>{{ paciente.nombres }} {{ paciente.apellidos }}</b>, identificado(a) con cédula <b>{{ paciente.cedula }}</b>, manifiesto que he recibido información suficiente sobre el proceso de atención psicológica que se realizará en H-Escapa y que he podido realizar preguntas y solicitar aclaraciones.</p>
+<ol class="clauses"><li>Autorizo voluntariamente la atención profesional y el desarrollo del proceso terapéutico acordado.</li><li>Comprendo la naturaleza general de las entrevistas, evaluación, orientación, intervención y seguimiento.</li><li>Comprendo que puedo realizar preguntas y comunicar cualquier inquietud al profesional responsable.</li><li>Entiendo que este consentimiento no constituye garantía de resultados específicos.</li></ol>
+<p>Declaro que he leído y comprendido este documento y otorgo mi consentimiento de manera libre y voluntaria.</p>
 </div>
-{% else %}
+{% elif tipo == "AUTORIZACION_INFORMACION" %}
 <div class="body-text">
-<p>Yo, <b>{{ paciente.nombres }} {{ paciente.apellidos }}</b>, identificado(a) con cédula <b>{{ paciente.cedula }}</b>, autorizo a H-Escapa y al profesional responsable de mi atención a recopilar, registrar, conservar y utilizar la información necesaria para la prestación, seguimiento y gestión administrativa de los servicios recibidos.</p>
-<ol class="clauses">
-<li>La información podrá incorporarse a mi historia clínica y a los registros administrativos necesarios para gestionar mi atención.</li>
-<li>El acceso a la información deberá limitarse al personal autorizado y a los usos permitidos por la normativa aplicable.</li>
-<li>Cuando corresponda, la información podrá ser utilizada para coordinación de citas, facturación, contacto y seguimiento de la atención.</li>
-<li>Comprendo que puedo consultar las condiciones de tratamiento de mi información y ejercer los derechos que correspondan conforme a la normativa aplicable.</li>
-</ol>
-<p>Con mi firma declaro que he leído y comprendido esta autorización y que la otorgo de manera libre y voluntaria.</p>
+<p>Yo, <b>{{ paciente.nombres }} {{ paciente.apellidos }}</b>, identificado(a) con cédula <b>{{ paciente.cedula }}</b>, autorizo el tratamiento de la información personal necesaria para la prestación, seguimiento y gestión administrativa de los servicios de H-Escapa.</p>
+<ol class="clauses"><li>La información podrá incorporarse a la historia clínica y registros administrativos necesarios.</li><li>El acceso se limitará al personal autorizado y a las finalidades permitidas.</li><li>Cuando corresponda, la información podrá utilizarse para citas, facturación, contacto y seguimiento.</li><li>El titular podrá ejercer los derechos que le correspondan conforme a la normativa aplicable.</li></ol>
+<p>Declaro que he recibido información clara sobre la finalidad del tratamiento y que otorgo esta autorización de manera libre e informada.</p>
+</div>
+{% elif tipo == "FICHA_ADMISION" %}
+<div class="body-text">
+<p>La presente ficha resume la información registrada por el paciente al momento de su admisión. El paciente declara que los datos proporcionados son, según su leal saber y entender, completos y correctos.</p>
+<div class="data"><div class="data-grid">
+<div><b>Dirección:</b> {{ paciente.direccion|default:"No registrada" }}</div><div><b>Ciudad:</b> {{ paciente.ciudad|default:"No registrada" }}</div>
+<div><b>Provincia:</b> {{ paciente.provincia|default:"No registrada" }}</div><div><b>Estado civil:</b> {{ paciente.estado_civil|default:"No registrado" }}</div>
+<div><b>Tipo de sangre:</b> {{ paciente.tipo_sangre|default:"No registrado" }}</div><div><b>Teléfono:</b> {{ paciente.telefono|default:"No registrado" }}</div>
+<div><b>Contacto de emergencia:</b> {{ paciente.contacto_emergencia|default:"No registrado" }}</div><div><b>Teléfono de emergencia:</b> {{ paciente.telefono_emergencia|default:"No registrado" }}</div>
+</div></div>
+<p>Confirmo que he revisado la información anterior y comunicaré oportunamente cualquier actualización relevante.</p>
+</div>
+{% elif tipo == "CONFIDENCIALIDAD" %}
+<div class="body-text">
+<p>H-Escapa y el profesional responsable reconocen la importancia de proteger la información proporcionada durante la atención. Este documento deja constancia del compromiso de confidencialidad aplicable al manejo de la información del paciente.</p>
+<ol class="clauses"><li>La información clínica será tratada con reserva y solo será accesible a personas autorizadas para las finalidades correspondientes.</li><li>Los documentos físicos y digitales deberán mantenerse bajo medidas razonables de seguridad y control de acceso.</li><li>La información no deberá divulgarse fuera de las finalidades autorizadas, salvo consentimiento, obligación legal o las excepciones que correspondan.</li><li>El paciente podrá solicitar información sobre el tratamiento de sus datos y ejercer los derechos previstos por la normativa aplicable.</li></ol>
+<p>Este documento constituye una constancia de las condiciones de confidencialidad comunicadas al paciente.</p>
+</div>
+{% elif tipo == "AUTORIZACION_CONTACTO" %}
+<div class="body-text">
+<p>Yo, <b>{{ paciente.nombres }} {{ paciente.apellidos }}</b>, autorizo a H-Escapa a utilizar los medios de contacto que he proporcionado para gestionar mi atención.</p>
+<div class="data"><div class="data-grid">
+<div><b>Correo:</b> {{ paciente.correo|default:"No registrado" }}</div><div><b>Teléfono:</b> {{ paciente.telefono|default:"No registrado" }}</div>
+<div><b>Teléfono alternativo:</b> {{ paciente.telefono_alternativo|default:"No registrado" }}</div><div><b>Medio preferido:</b> {{ paciente.get_contacto_preferido_display|default:"No registrado" }}</div>
+</div></div>
+<ol class="clauses"><li>Los medios de contacto podrán utilizarse para confirmar o recordar citas y realizar comunicaciones relacionadas directamente con la atención.</li><li>El paciente podrá solicitar la actualización de sus datos de contacto.</li><li>Cualquier uso distinto deberá contar con la base de legitimación que corresponda.</li></ol>
 </div>
 {% endif %}
 
