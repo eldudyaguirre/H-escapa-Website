@@ -79,11 +79,7 @@ class Paciente(models.Model):
     codigo_postal = models.CharField(max_length=20, blank=True)
     estado_civil = models.CharField(max_length=20, blank=True)
     contacto_preferido = models.CharField(max_length=10, default="telefono", blank=True)
-    tipo_sangre = models.CharField(
-        max_length=3,
-        choices=TIPOS_SANGRE,
-        default="ND",
-    )
+    tipo_sangre = models.CharField(max_length=3, choices=TIPOS_SANGRE, default="ND")
     altura_cm = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     peso_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     alergias = models.TextField(blank=True)
@@ -129,11 +125,7 @@ class Paciente(models.Model):
         blank=True,
         related_name="pacientes",
     )
-    estado = models.CharField(
-        max_length=10,
-        choices=ESTADOS,
-        default="ACTIVO",
-    )
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="ACTIVO")
     observaciones = models.TextField(blank=True)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
@@ -165,28 +157,12 @@ class Cita(models.Model):
         ("VIRTUAL", "Virtual"),
     ]
 
-    paciente = models.ForeignKey(
-        Paciente,
-        on_delete=models.PROTECT,
-        related_name="citas",
-    )
-    profesional = models.ForeignKey(
-        Profesional,
-        on_delete=models.PROTECT,
-        related_name="citas",
-    )
+    paciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, related_name="citas")
+    profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, related_name="citas")
     fecha_hora = models.DateTimeField()
     duracion_minutos = models.PositiveIntegerField(default=60)
-    modalidad = models.CharField(
-        max_length=12,
-        choices=MODALIDADES,
-        default="PRESENCIAL",
-    )
-    estado = models.CharField(
-        max_length=12,
-        choices=ESTADOS,
-        default="PROGRAMADA",
-    )
+    modalidad = models.CharField(max_length=12, choices=MODALIDADES, default="PRESENCIAL")
+    estado = models.CharField(max_length=12, choices=ESTADOS, default="PROGRAMADA")
     motivo = models.CharField(max_length=250, blank=True)
     notas = models.TextField(blank=True)
     creado_en = models.DateTimeField(auto_now_add=True)
@@ -207,23 +183,9 @@ class Cita(models.Model):
 
 
 class HistoriaClinica(models.Model):
-    paciente = models.ForeignKey(
-        Paciente,
-        on_delete=models.CASCADE,
-        related_name="historias_clinicas",
-    )
-    profesional = models.ForeignKey(
-        Profesional,
-        on_delete=models.PROTECT,
-        related_name="historias_clinicas",
-    )
-    cita = models.ForeignKey(
-        Cita,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="registros_clinicos",
-    )
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="historias_clinicas")
+    profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, related_name="historias_clinicas")
+    cita = models.ForeignKey(Cita, on_delete=models.SET_NULL, null=True, blank=True, related_name="registros_clinicos")
     fecha = models.DateTimeField(default=timezone.now)
     motivo_consulta = models.TextField(blank=True)
     evaluacion = models.TextField(blank=True)
@@ -244,6 +206,44 @@ class HistoriaClinica(models.Model):
 
     def __str__(self):
         return f"{self.paciente} - {self.fecha:%d/%m/%Y}"
+
+
+class DocumentoPaciente(models.Model):
+    TIPOS = [
+        ("CONSENTIMIENTO_TRATAMIENTO", "Consentimiento para tratamiento"),
+        ("AUTORIZACION_INFORMACION", "Autorización de información"),
+        ("IDENTIFICACION", "Documento de identificación"),
+        ("OTRO", "Otros documentos"),
+    ]
+
+    ESTADOS = [
+        ("PENDIENTE", "Pendiente de firma"),
+        ("FIRMADO", "Firmado y cargado"),
+    ]
+
+    paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.CASCADE,
+        related_name="documentos",
+    )
+    tipo = models.CharField(max_length=40, choices=TIPOS)
+    archivo = models.FileField(upload_to="pacientes/documentos/")
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="FIRMADO")
+    observaciones = models.TextField(blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+        verbose_name = "Documento del paciente"
+        verbose_name_plural = "Documentos del paciente"
+        indexes = [
+            models.Index(fields=["paciente", "tipo"]),
+            models.Index(fields=["paciente", "-creado_en"]),
+        ]
+
+    def __str__(self):
+        return f"{self.paciente} - {self.get_tipo_display()}"
 
 
 class CategoriaBlog(models.Model):
@@ -295,33 +295,11 @@ class Post(models.Model):
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     resumen = models.TextField(blank=True)
     contenido = models.TextField()
-    imagen_destacada = models.ImageField(
-        upload_to="blog/",
-        blank=True,
-        null=True,
-    )
-    categoria = models.ForeignKey(
-        CategoriaBlog,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="posts",
-    )
-    etiquetas = models.ManyToManyField(
-        EtiquetaBlog,
-        blank=True,
-        related_name="posts",
-    )
-    autor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name="posts_blog",
-    )
-    estado = models.CharField(
-        max_length=10,
-        choices=ESTADOS,
-        default="BORRADOR",
-    )
+    imagen_destacada = models.ImageField(upload_to="blog/", blank=True, null=True)
+    categoria = models.ForeignKey(CategoriaBlog, on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
+    etiquetas = models.ManyToManyField(EtiquetaBlog, blank=True, related_name="posts")
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="posts_blog")
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="BORRADOR")
     meta_titulo = models.CharField(max_length=200, blank=True)
     meta_descripcion = models.CharField(max_length=300, blank=True)
     fecha_publicacion = models.DateTimeField(blank=True, null=True)
@@ -340,10 +318,8 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.titulo)
-
         if self.estado == "PUBLICADO" and self.fecha_publicacion is None:
             self.fecha_publicacion = timezone.now()
-
         super().save(*args, **kwargs)
 
     @property
