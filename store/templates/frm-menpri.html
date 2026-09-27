@@ -25,7 +25,7 @@
     .dashboard-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
     .dashboard-heading h1{margin:0 0 6px;font-family:Marcellus,serif}
     .dashboard-heading p{margin:0;opacity:.72}
-    .demo-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:#fff4d6;color:#765515;font-size:.8rem;font-weight:600}
+    .dashboard-date{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:#edf5f1;color:#315a4d;font-size:.8rem;font-weight:600}
     .dashboard-card h4{margin-bottom:16px}
     .agenda-list li,.activity-list li{padding:10px 0;border-bottom:1px solid rgba(120,120,120,.15)}
     .agenda-list li:last-child,.activity-list li:last-child{border-bottom:0}
@@ -71,11 +71,50 @@
   </div><a href="{% url 'logout' %}" class="nav__link nav__logout" aria-label="Cerrar sesión"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Cerrar sesión</span></a></nav></div>
   <main class="main-content"><div class="home">{% block content %}
     <div class="dashboard-home" id="home">
-      <div class="dashboard-heading"><div><h1>Panel principal</h1><p>Resumen general del consultorio</p></div><span class="demo-badge"><i class="bx bx-info-circle" aria-hidden="true"></i> Datos demostrativos</span></div>
-      <div class="kpi-grid"><div class="kpi-card"><i class="bx bx-calendar-check" aria-hidden="true"></i><div><h3>5</h3><p>Citas hoy</p></div></div><div class="kpi-card"><i class="bx bx-user" aria-hidden="true"></i><div><h3>42</h3><p>Pacientes activos</p></div></div><div class="kpi-card"><i class="bx bx-file" aria-hidden="true"></i><div><h3>3</h3><p>Tests pendientes</p></div></div><div class="kpi-card"><i class="bx bx-edit-alt" aria-hidden="true"></i><div><h3>8</h3><p>Posts publicados</p></div></div></div>
-      <div class="dashboard-grid"><section class="dashboard-card" aria-labelledby="agenda-title"><h4 id="agenda-title">Agenda de hoy <small style="font-weight:400;opacity:.65">· ejemplo</small></h4><ul class="agenda-list"><li><span class="agenda-time">08:00</span> María López <span class="agenda-status">Confirmada</span></li><li><span class="agenda-time">10:00</span> Juan Pérez <span class="agenda-status pending">Pendiente</span></li><li><span class="agenda-time">14:00</span> Ana Torres <span class="agenda-status online">Online</span></li></ul></section><section class="dashboard-card" aria-labelledby="activity-title"><h4 id="activity-title">Actividad reciente <small style="font-weight:400;opacity:.65">· ejemplo</small></h4><ul class="activity-list"><li><i class="bx bx-user-plus" aria-hidden="true"></i> Nuevo paciente registrado</li><li><i class="bx bx-file" aria-hidden="true"></i> Test 1 generado</li><li><i class="bx bx-edit-alt" aria-hidden="true"></i> Post “Mindfulness” publicado</li></ul></section></div>
+      <div class="dashboard-heading"><div><h1>Panel principal</h1><p>Resumen general del consultorio</p></div><span class="dashboard-date"><i class="bx bx-calendar" aria-hidden="true"></i> {{ fecha_hoy|date:"d/m/Y" }}</span></div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><i class="bx bx-calendar-check" aria-hidden="true"></i><div><h3>{{ citas_hoy }}</h3><p>Citas hoy</p></div></div>
+        <div class="kpi-card"><i class="bx bx-user" aria-hidden="true"></i><div><h3>{{ pacientes_activos }}</h3><p>Pacientes activos</p></div></div>
+        <div class="kpi-card"><i class="bx bx-file" aria-hidden="true"></i><div><h3>{{ historias_clinicas }}</h3><p>Historias clínicas</p></div></div>
+        <div class="kpi-card"><i class="bx bx-edit-alt" aria-hidden="true"></i><div><h3>{{ posts_publicados }}</h3><p>Posts publicados</p></div></div>
+      </div>
+      <div class="dashboard-grid">
+        <section class="dashboard-card" aria-labelledby="agenda-title">
+          <h4 id="agenda-title">Agenda de hoy</h4>
+          <ul class="agenda-list">
+            {% for item in agenda %}
+              <li><span class="agenda-time">{{ item.hora }}</span> {{ item.paciente }} <span class="agenda-status {{ item.estado_clase }}">{{ item.estado }}</span></li>
+            {% empty %}
+              <li><span style="opacity:.65">No hay citas programadas para hoy.</span></li>
+            {% endfor %}
+          </ul>
+        </section>
+        <section class="dashboard-card" aria-labelledby="activity-title">
+          <h4 id="activity-title">Actividad reciente</h4>
+          <ul class="activity-list">
+            {% for item in actividad %}
+              <li><i class="bx {{ item.icono }}" aria-hidden="true"></i> {{ item.texto }}</li>
+            {% empty %}
+              <li><span style="opacity:.65">Todavía no hay actividad registrada.</span></li>
+            {% endfor %}
+          </ul>
+        </section>
+      </div>
     </div>
-    <section class="dashboard-agenda" id="calendario" aria-labelledby="workspace-title"><div class="workspace-card"><h4 id="workspace-title">Vista rápida de la semana</h4><p>Espacio visual de ejemplo. El calendario y las citas reales se conectarán en una siguiente etapa.</p><div class="workspace-placeholder" aria-label="Semana demostrativa"><div class="workspace-day">Lun<strong>—</strong></div><div class="workspace-day">Mar<strong>—</strong></div><div class="workspace-day today">Mié<strong>Hoy</strong></div><div class="workspace-day">Jue<strong>—</strong></div><div class="workspace-day">Vie<strong>—</strong></div><div class="workspace-day">Sáb<strong>—</strong></div><div class="workspace-day">Dom<strong>—</strong></div></div></div></section>
+    <section class="dashboard-agenda" id="calendario" aria-labelledby="workspace-title">
+      <div class="workspace-card">
+        <h4 id="workspace-title">Vista rápida de la semana</h4>
+        <p>Citas registradas en la semana actual.</p>
+        <div class="workspace-placeholder" aria-label="Citas de la semana">
+          {% for dia in semana %}
+            <div class="workspace-day{% if dia.hoy %} today{% endif %}">
+              {{ dia.nombre }}
+              <strong>{% if dia.cantidad %}{{ dia.cantidad }}{% else %}—{% endif %}</strong>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
   {% endblock %}</div></main>
   <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script><script src="{% static 'js/bootstrap.min.js' %}"></script><script src="{% static 'js/validator.min.js' %}"></script><script src="{% static 'js/jquery.slicknav.js' %}"></script><script src="{% static 'js/swiper-bundle.min.js' %}"></script><script src="{% static 'js/jquery.waypoints.min.js' %}"></script><script src="{% static 'js/jquery.counterup.min.js' %}"></script><script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script><script src="{% static 'js/SmoothScroll.js' %}"></script><script src="{% static 'js/parallaxie.js' %}"></script><script src="{% static 'js/gsap.min.js' %}"></script><script src="{% static 'js/magiccursor.js' %}"></script><script src="{% static 'js/SplitText.js' %}"></script><script src="{% static 'js/ScrollTrigger.min.js' %}"></script><script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script><script src="{% static 'js/wow.min.js' %}"></script><script src="{% static 'js/function.js' %}"></script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
