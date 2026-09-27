@@ -206,6 +206,9 @@ def homeinnuevopaciente(request):
             if accion_documento in {
                 "CONSENTIMIENTO_TRATAMIENTO",
                 "AUTORIZACION_INFORMACION",
+                "FICHA_ADMISION",
+                "CONFIDENCIALIDAD",
+                "AUTORIZACION_CONTACTO",
             }:
                 return redirect(
                     "generar_documento_paciente",
