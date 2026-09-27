@@ -362,7 +362,7 @@
             <td><span class="status-badge">{{ paciente.get_estado_display }}</span></td>
             <td>
               <div class="patient-actions">
-                <a class="patient-action" href="{% url 'homeinperfilpaciente' paciente.id %}" title="Ver paciente" aria-label="Ver paciente">
+                <a class="patient-action" href="{% url 'homeinperfilpaciente' paciente.cedula %}" title="Ver paciente" aria-label="Ver paciente">
                   <i class="bx bx-show"></i>
                 </a>
                 <a class="patient-action" href="{% url 'homeineditarpaciente' paciente.id %}" title="Editar paciente" aria-label="Editar paciente">
