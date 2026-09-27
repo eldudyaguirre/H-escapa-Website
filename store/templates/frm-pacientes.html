@@ -365,10 +365,10 @@
                 <a class="patient-action" href="{% url 'homeinperfilpaciente' paciente.cedula %}" title="Ver paciente" aria-label="Ver paciente">
                   <i class="bx bx-show"></i>
                 </a>
-                <a class="patient-action" href="{% url 'homeineditarpaciente' paciente.id %}" title="Editar paciente" aria-label="Editar paciente">
+                <a class="patient-action" href="{% url 'homeineditarpaciente' paciente.cedula %}" title="Editar paciente" aria-label="Editar paciente">
                   <i class="bx bx-edit-alt"></i>
                 </a>
-                <a class="patient-action" href="{% url 'homeinnuevacita' %}?paciente={{ paciente.id }}" title="Agendar cita" aria-label="Agendar cita">
+                <a class="patient-action" href="{% url 'homeinnuevacita' %}?paciente={{ paciente.cedula }}" title="Agendar cita" aria-label="Agendar cita">
                   <i class="bx bx-calendar-plus"></i>
                 </a>
               </div>
