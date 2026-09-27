@@ -40,7 +40,7 @@ class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
         fields = [
-            "cedula", "nombres", "apellidos", "fecha_nacimiento", "genero",
+            "cedula", "foto_perfil", "nombres", "apellidos", "fecha_nacimiento", "genero",
             "estado_civil", "direccion", "ciudad", "provincia",
             "correo", "telefono", "telefono_alternativo", "contacto_preferido",
             "contacto_emergencia", "relacion_emergencia", "telefono_emergencia",
