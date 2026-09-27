@@ -154,6 +154,9 @@
  .profile-upload-help{font-size:.7rem;line-height:1.3}
  .profile-upload-btn{padding:7px 11px;font-size:.76rem}
 }
+
+.family-checks{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin:4px 0 20px}.family-checks label{display:flex;align-items:center;gap:9px;font-size:.9rem;font-weight:600;color:#303735;cursor:pointer}.family-checks input{width:17px;height:17px;accent-color:#439b95}.family-notes{margin-top:4px}.family-notes textarea{min-height:90px}
+@media screen and (max-width:767px){.family-checks{gap:11px 18px}.family-checks label{font-size:.78rem}.family-checks input{width:16px;height:16px}.family-notes textarea{min-height:76px}}
 </style>
 {% endblock %}
 {% block content %}
@@ -190,7 +193,18 @@
 
 <section class="panel" id="medical" hidden><div class="card"><div class="head"><h2>Información médica</h2><p>Ingresa la historia y los datos médicos del paciente.</p></div><div class="body">
 <div class="section"><h3>Información médica</h3><div class="grid"><div class="field"><label>Tipo de sangre</label>{{ form.tipo_sangre }}</div><div class="field"><label>Altura (cm)</label>{{ form.altura_cm }}</div><div class="field"><label>Peso (kg)</label>{{ form.peso_kg }}</div><div class="field full"><label>Alergias</label>{{ form.alergias }}</div><div class="field full"><label>Medicamentos actuales</label>{{ form.medicamentos_actuales }}</div><div class="field full"><label>Condiciones crónicas</label>{{ form.condiciones_cronicas }}</div></div></div>
-<div class="section"><h3>Historia médica</h3><div class="grid"><div class="field full"><label>Cirugías previas</label>{{ form.cirugias_previas }}</div><div class="field full"><label>Hospitalizaciones anteriores</label>{{ form.hospitalizaciones }}</div><div class="field full"><label>Antecedentes familiares</label>{{ form.antecedentes_familiares }}</div></div></div>
+<div class="section family-history"><h3>Historia familiar</h3>
+<div class="family-checks">
+  <label>{{ form.family_diabetes }} <span>Diabetes</span></label>
+  <label>{{ form.family_hypertension }} <span>Hipertensión</span></label>
+  <label>{{ form.family_asthma }} <span>Asma</span></label>
+  <label>{{ form.family_heart_disease }} <span>Enfermedad cardíaca</span></label>
+  <label>{{ form.family_cancer }} <span>Cáncer</span></label>
+  <label>{{ form.family_mental_health }} <span>Condiciones de salud mental</span></label>
+</div>
+<div class="field full family-notes"><label>Notas adicionales de antecedentes familiares</label>{{ form.antecedentes_familiares }}</div>
+</div>
+<div class="section"><h3>Historia médica</h3><div class="grid"><div class="field full"><label>Cirugías previas</label>{{ form.cirugias_previas }}</div><div class="field full"><label>Hospitalizaciones anteriores</label>{{ form.hospitalizaciones }}</div></div></div>
 <div class="section"><h3>Estilo de vida</h3><div class="grid"><div class="field"><label>Tabaquismo</label>{{ form.tabaquismo }}</div><div class="field"><label>Consumo de alcohol</label>{{ form.consumo_alcohol }}</div><div class="field"><label>Frecuencia de ejercicio</label>{{ form.frecuencia_ejercicio }}</div><div class="field full"><label>Hábitos alimenticios</label>{{ form.habitos_dieteticos }}</div><div class="field full"><label>Observaciones</label>{{ form.observaciones }}</div></div></div>
 </div></div></section>
 
