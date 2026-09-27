@@ -136,7 +136,7 @@
   .header__toggle { display: none !important; }
   .header__logo { display: block; }
   .header__img { width: 40px; height: 40px; order: 1; }
-  .nav { left: 0; padding: 1.2rem 1.5rem 0; width: 68px; }
+  .nav { left: 0; padding: 1.2rem 1.5rem 0; width: var(--nav-width); }
   .nav__items { row-gap: 1.7rem; }
   .nav__icon { font-size: 1.3rem; }
   .nav__logo-name, .nav__name, .nav__subtitle, .nav__dropdown-icon { opacity: 0; transition: .3s; }
@@ -161,4 +161,32 @@
   color: #ffffff !important;
   opacity: 1 !important;
   -webkit-text-fill-color: #ffffff !important;
+}
+
+
+/* En PC el menú lateral permanece siempre desplegado. La contracción queda reservada para responsive. */
+@media screen and (min-width: 768px) {
+  .nav {
+    left: 0 !important;
+    width: var(--nav-width) !important;
+  }
+
+  .nav .nav__logo-name,
+  .nav .nav__subtitle,
+  .nav .nav__name,
+  .nav .nav__dropdown-icon {
+    opacity: 1 !important;
+  }
+
+  .nav .logo-default {
+    display: none !important;
+  }
+
+  .nav .logo-hover {
+    display: block !important;
+  }
+
+  .nav:hover {
+    width: var(--nav-width) !important;
+  }
 }
