@@ -94,6 +94,7 @@ class Paciente(models.Model):
     antecedentes_familiares = models.TextField(blank=True)
     tabaquismo = models.CharField(max_length=10, blank=True)
     consumo_alcohol = models.CharField(max_length=15, blank=True)
+    consumo_drogas = models.CharField(max_length=15, blank=True)
     frecuencia_ejercicio = models.CharField(max_length=15, blank=True)
     habitos_dieteticos = models.TextField(blank=True)
     contacto_emergencia = models.CharField(max_length=150, blank=True)
