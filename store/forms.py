@@ -22,6 +22,7 @@ class SignUpForm(forms.Form):
 
 class PacienteForm(forms.ModelForm):
     ESTADOS_CIVILES = [
+        ("", "Seleccione estado civil"),
         ("SOLTERO", "Soltero"),
         ("CASADO", "Casado"),
         ("DIVORCIADO", "Divorciado"),
