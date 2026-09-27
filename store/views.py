@@ -172,19 +172,21 @@ def imprimir_perfil_paciente(request, paciente_id):
 
 
 @staff_required
-def desactivar_paciente(request, paciente_id):
+def cambiar_estado_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, pk=paciente_id)
 
     if request.method != "POST":
         return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
 
-    if paciente.estado == "INACTIVO":
-        messages.info(request, "El paciente ya se encuentra inactivo.")
-    else:
+    if paciente.estado == "ACTIVO":
         paciente.estado = "INACTIVO"
-        paciente.save(update_fields=["estado", "actualizado_en"])
-        messages.success(request, f"El paciente {paciente.nombre} fue desactivado correctamente.")
+        mensaje = f"El paciente {paciente.nombre} fue desactivado correctamente."
+    else:
+        paciente.estado = "ACTIVO"
+        mensaje = f"El paciente {paciente.nombre} fue activado correctamente."
 
+    paciente.save(update_fields=["estado", "actualizado_en"])
+    messages.success(request, mensaje)
     return redirect("homeinpacientes")
 
 
