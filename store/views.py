@@ -240,6 +240,9 @@ def generar_documento_paciente(request, paciente_id, tipo):
     if tipo not in {
         "CONSENTIMIENTO_TRATAMIENTO",
         "AUTORIZACION_INFORMACION",
+        "FICHA_ADMISION",
+        "CONFIDENCIALIDAD",
+        "AUTORIZACION_CONTACTO",
     }:
         raise Http404("Tipo de documento no válido.")
 
