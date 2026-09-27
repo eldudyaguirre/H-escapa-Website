@@ -27,18 +27,44 @@
           {% endif %}
         </div>
         <h2 class="name">{{ paciente.nombre }}</h2>
-        <div class="muted">{{ paciente.edad }} años · {{ paciente.genero }}</div>
-        <span class="status{% if paciente.estado == 'Inactivo' %} inactive{% endif %}">{{ paciente.estado }}</span>
+        <div class="muted">{% if paciente.edad is not None %}{{ paciente.edad }} años{% else %}Edad no registrada{% endif %} · {{ paciente.get_genero_display|default:"No registrado" }}</div>
+        <span class="status{% if paciente.estado == 'INACTIVO' %} inactive{% endif %}">{{ paciente.get_estado_display }}</span>
       </div>
       <hr>
       <section class="info" id="informacion"><h3><i class="bx bx-user" aria-hidden="true"></i> Información personal</h3>
-        <p><b>Nombre completo:</b> {{ paciente.nombre }}</p><p><b>Correo electrónico:</b> {{ paciente.correo }}</p><p><b>Edad:</b> {{ paciente.edad }} años</p><p><b>Género:</b> {{ paciente.genero }}</p><p><b>Doctor asignado:</b> {{ paciente.doctor }}</p><p><b>Estado:</b> {{ paciente.estado }}</p>
+        <p><b>Nombre completo:</b> {{ paciente.nombre }}</p>
+        <p><b>Cédula:</b> {{ paciente.cedula }}</p>
+        <p><b>Fecha de nacimiento:</b> {% if paciente.fecha_nacimiento %}{{ paciente.fecha_nacimiento|date:"d/m/Y" }}{% else %}No registrada{% endif %}</p>
+        <p><b>Edad:</b> {% if paciente.edad is not None %}{{ paciente.edad }} años{% else %}No registrada{% endif %}</p>
+        <p><b>Género:</b> {{ paciente.get_genero_display|default:"No registrado" }}</p>
+        <p><b>Estado civil:</b> {{ paciente.get_estado_civil_display|default:"No registrado" }}</p>
+        <p><b>Correo electrónico:</b> {{ paciente.correo|default:"No registrado" }}</p>
+        <p><b>Teléfono:</b> {{ paciente.telefono|default:"No registrado" }}</p>
+        <p><b>Doctor asignado:</b> {{ paciente.doctor }}</p>
+        <p><b>Estado:</b> {{ paciente.get_estado_display }}</p>
       </section>
       <section class="info"><h3><i class="bx bx-file" aria-hidden="true"></i> Información clínica</h3>
-        <p><b>Grupo sanguíneo:</b> No registrado</p><p><b>Alergias:</b> No registradas</p><p><b>Antecedentes:</b> No registrados</p><p><b>Observaciones:</b> Pendiente de completar</p>
+        <p><b>Grupo sanguíneo:</b> {{ paciente.get_tipo_sangre_display|default:"No registrado" }}</p>
+        <p><b>Altura:</b> {% if paciente.altura_cm %}{{ paciente.altura_cm }} cm{% else %}No registrada{% endif %}</p>
+        <p><b>Peso:</b> {% if paciente.peso_kg %}{{ paciente.peso_kg }} kg{% else %}No registrado{% endif %}</p>
+        <p><b>Alergias:</b> {{ paciente.alergias|default:"No registradas" }}</p>
+        <p><b>Medicamentos actuales:</b> {{ paciente.medicamentos_actuales|default:"No registrados" }}</p>
+        <p><b>Condiciones crónicas:</b> {{ paciente.condiciones_cronicas|default:"No registradas" }}</p>
+        <p><b>Antecedentes familiares:</b> {{ paciente.antecedentes_familiares|default:"No registrados" }}</p>
+        <p><b>Observaciones:</b> {{ paciente.observaciones|default:"No registradas" }}</p>
       </section>
-      <section class="info"><h3><i class="bx bx-receipt" aria-hidden="true"></i> Información de seguro</h3><p><b>Proveedor:</b> No registrado</p><p><b>Número de póliza:</b> No registrado</p></section>
-      <section class="info"><h3><i class="bx bx-phone" aria-hidden="true"></i> Contacto de emergencia</h3><p><b>Nombre:</b> No registrado</p><p><b>Relación:</b> No registrada</p><p><b>Teléfono:</b> No registrado</p></section>
+      <section class="info"><h3><i class="bx bx-receipt" aria-hidden="true"></i> Facturación</h3>
+        <p><b>Identificación:</b> {{ paciente.identificacion_facturacion|default:"No registrada" }}</p>
+        <p><b>Nombre para facturación:</b> {{ paciente.nombre_facturacion|default:"No registrado" }}</p>
+        <p><b>Correo de facturación:</b> {{ paciente.correo_facturacion|default:"No registrado" }}</p>
+        <p><b>Método:</b> {{ paciente.metodo_facturacion|default:"No registrado" }}</p>
+      </section>
+      <section class="info"><h3><i class="bx bx-phone" aria-hidden="true"></i> Contacto de emergencia</h3>
+        <p><b>Nombre:</b> {{ paciente.contacto_emergencia|default:"No registrado" }}</p>
+        <p><b>Relación:</b> {{ paciente.relacion_emergencia|default:"No registrada" }}</p>
+        <p><b>Teléfono:</b> {{ paciente.telefono_emergencia|default:"No registrado" }}</p>
+        <p><b>Correo:</b> {{ paciente.correo_emergencia|default:"No registrado" }}</p>
+      </section>
       <div class="meta"><span>Ficha de demostración</span><span>Datos clínicos por completar</span></div>
     </aside>
 
