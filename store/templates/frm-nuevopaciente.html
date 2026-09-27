@@ -73,6 +73,11 @@
       <h2>Información personal</h2>
       <p class="section-note">Datos básicos de identificación y características del paciente.</p>
       <div class="fields">
+        <div class="field full">
+          <label for="{{ form.cedula.id_for_label }}">Número de cédula</label>
+          {{ form.cedula }}
+          {% for error in form.cedula.errors %}<small class="error">{{ error }}</small>{% endfor %}
+        </div>
         <div class="field">
           <label for="{{ form.nombres.id_for_label }}">Nombres</label>
           {{ form.nombres }}
