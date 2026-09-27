@@ -255,3 +255,36 @@
     left: 0 !important;
   }
 }
+
+
+/* PACIENTES - CORRECCIÓN RESPONSIVE FINAL */
+@media screen and (max-width: 767px) {
+  #navbar .nav__dropdown > button.nav__link,
+  #navbar .nav__dropdown > button.nav__link.active,
+  #navbar .nav__dropdown.show-dropdown > button.nav__link,
+  #navbar .nav__dropdown.show-dropdown > button.nav__link.active {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    filter: none !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  #navbar .nav__dropdown > button.nav__link .nav__icon,
+  #navbar .nav__dropdown > button.nav__link .nav__name,
+  #navbar .nav__dropdown > button.nav__link .nav__dropdown-icon,
+  #navbar .nav__dropdown > button.nav__link.active .nav__icon,
+  #navbar .nav__dropdown > button.nav__link.active .nav__name,
+  #navbar .nav__dropdown > button.nav__link.active .nav__dropdown-icon {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    filter: none !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  #navbar .nav__dropdown > button.nav__link:hover,
+  #navbar .nav__dropdown > button.nav__link:focus,
+  #navbar .nav__dropdown > button.nav__link:active {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+}
