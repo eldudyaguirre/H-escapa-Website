@@ -38,7 +38,7 @@
           <div class="patient-menu">
             <div class="patient-menu-title">Acciones</div>
             <a href="{% url 'homeineditarpaciente' paciente.cedula %}"><i class="bx bx-edit"></i> Editar paciente</a>
-            <button type="button" data-print-profile><i class="bx bx-printer"></i> Imprimir ficha</button>
+            <a href="{% url 'imprimir_perfil_paciente' paciente.cedula %}" target="_blank"><i class="bx bx-printer"></i> Imprimir ficha</a>
             <button type="button" data-export-profile><i class="bx bx-download"></i> Exportar datos</button>
             <div class="patient-menu-divider"></div>
             <button type="button" class="danger" data-deactivate-patient><i class="bx bx-user-x"></i> Desactivar paciente</button>
