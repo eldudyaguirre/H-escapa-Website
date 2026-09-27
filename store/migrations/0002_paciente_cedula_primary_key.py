@@ -16,7 +16,6 @@ def migrate_patient_pk(apps, schema_editor):
         END IF;
 
         -- Quitar temporalmente todas las FK que apuntan a Paciente.
-        -- Se usa quote_ident() para evitar que psycopg interprete % como placeholders.
         FOR fk_name, fk_table IN
             SELECT c.conname, cl.relname
             FROM pg_constraint c
