@@ -172,7 +172,7 @@
   <div class="profile-upload-info">
     <div class="profile-upload-title">Foto de perfil</div>
     <label class="profile-upload-btn" for="{{ form.foto_perfil.id_for_label }}">Cargar foto</label>
-    {{ form.foto_perfil.as_widget(attrs={"class":"profile-file","accept":"image/jpeg,image/png,image/gif"}) }}
+    {{ form.foto_perfil }}
     <div class="profile-upload-help">JPG, PNG o GIF · máximo recomendado 2 MB</div>
   </div>
 </div>
