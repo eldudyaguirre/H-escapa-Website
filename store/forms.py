@@ -21,6 +21,14 @@ class SignUpForm(forms.Form):
         return cleaned_data
 
 class PacienteForm(forms.ModelForm):
+    foto_perfil = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            "class": "profile-file",
+            "accept": "image/jpeg,image/png,image/gif",
+        }),
+    )
+
     ESTADOS_CIVILES = [
         ("", "Seleccione estado civil"),
         ("SOLTERO", "Soltero"),
