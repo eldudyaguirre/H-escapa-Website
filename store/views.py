@@ -4,10 +4,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from datetime import date, timedelta
 
 from .forms import CitaForm, PacienteForm
-from .models import Cita, Paciente, Post
+from .models import Cita, HistoriaClinica, Paciente, Post
 from functools import wraps
 
 
@@ -89,7 +90,106 @@ def staff_required(view_func):
 
 @staff_required
 def homein(request):
-    return render(request, "frm-menpri.html")
+    hoy = timezone.localdate()
+
+    # Indicadores reales del consultorio.
+    citas_hoy = (
+        Cita.objects.filter(fecha_hora__date=hoy)
+        .select_related("paciente", "profesional")
+        .order_by("fecha_hora")
+    )
+    pacientes_activos = Paciente.objects.filter(estado="ACTIVO").count()
+    historias_clinicas = HistoriaClinica.objects.count()
+    posts_publicados = Post.objects.filter(estado="PUBLICADO").count()
+
+    # Agenda de hoy.
+    agenda = []
+    for cita in citas_hoy:
+        estado_label = dict(Cita.ESTADOS).get(cita.estado, cita.estado)
+        estado_clase = "pending" if cita.estado == "PROGRAMADA" else ""
+        if cita.modalidad == "VIRTUAL":
+            estado_clase = "online"
+        agenda.append({
+            "hora": cita.fecha_hora.strftime("%H:%M"),
+            "paciente": str(cita.paciente),
+            "estado": estado_label,
+            "estado_clase": estado_clase,
+        })
+
+    # Actividad reciente basada en registros reales.
+    actividad = []
+
+    for paciente in Paciente.objects.order_by("-creado_en")[:5]:
+        actividad.append({
+            "fecha": paciente.creado_en,
+            "icono": "bx-user-plus",
+            "texto": f"Paciente {paciente} registrado",
+        })
+
+    for historia in (
+        HistoriaClinica.objects.select_related("paciente")
+        .order_by("-creado_en")[:5]
+    ):
+        actividad.append({
+            "fecha": historia.creado_en,
+            "icono": "bx-file",
+            "texto": f"Historia clínica registrada para {historia.paciente}",
+        })
+
+    for post in (
+        Post.objects.filter(estado="PUBLICADO")
+        .order_by("-fecha_publicacion", "-creado_en")[:5]
+    ):
+        actividad.append({
+            "fecha": post.fecha_publicacion or post.creado_en,
+            "icono": "bx-edit-alt",
+            "texto": f'Post "{post.titulo}" publicado',
+        })
+
+    for cita in Cita.objects.select_related("paciente").order_by("-creado_en")[:5]:
+        actividad.append({
+            "fecha": cita.creado_en,
+            "icono": "bx-calendar-event",
+            "texto": f"Cita registrada para {cita.paciente}",
+        })
+
+    actividad.sort(key=lambda item: item["fecha"], reverse=True)
+    actividad = actividad[:5]
+
+    # Resumen real de citas de la semana.
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    fin_semana = inicio_semana + timedelta(days=6)
+    citas_semana = (
+        Cita.objects.filter(fecha_hora__date__range=(inicio_semana, fin_semana))
+        .values_list("fecha_hora", flat=True)
+    )
+    citas_por_dia = {}
+    for fecha_hora in citas_semana:
+        dia = timezone.localtime(fecha_hora).date() if timezone.is_aware(fecha_hora) else fecha_hora.date()
+        citas_por_dia[dia] = citas_por_dia.get(dia, 0) + 1
+
+    nombres_dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+    semana = [
+        {
+            "nombre": nombres_dias[i],
+            "fecha": inicio_semana + timedelta(days=i),
+            "cantidad": citas_por_dia.get(inicio_semana + timedelta(days=i), 0),
+            "hoy": inicio_semana + timedelta(days=i) == hoy,
+        }
+        for i in range(7)
+    ]
+
+    contexto = {
+        "citas_hoy": citas_hoy.count(),
+        "pacientes_activos": pacientes_activos,
+        "historias_clinicas": historias_clinicas,
+        "posts_publicados": posts_publicados,
+        "agenda": agenda,
+        "actividad": actividad,
+        "semana": semana,
+        "fecha_hoy": hoy,
+    }
+    return render(request, "frm-menpri.html", contexto)
 
 
 @staff_required
