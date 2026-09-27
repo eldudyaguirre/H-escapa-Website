@@ -140,7 +140,7 @@
 {% block content %}
 <section class="np">
 <div class="np-head"><a class="np-back" href="{% url 'homeinpacientes' %}">←</a><div><h1>Nuevo paciente</h1><p>Registra un nuevo paciente en tu consultorio.</p></div></div>
-<form method="post" novalidate>{% csrf_token %}
+<form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
 {% if form.non_field_errors %}<div class="np-error">{{ form.non_field_errors }}</div>{% endif %}
 <div class="tabs" role="tablist">
 <button class="tab" type="button" aria-selected="true" data-tab="personal">Información personal</button><button class="tab" type="button" aria-selected="false" data-tab="medical">Información médica</button><button class="tab" type="button" aria-selected="false" data-tab="insurance">Seguro y facturación</button><button class="tab" type="button" aria-selected="false" data-tab="consent">Consentimiento y documentos</button>
@@ -148,7 +148,9 @@
 
 <section class="panel" id="personal"><div class="card"><div class="head"><h2>Información personal</h2><p>Ingresa los datos personales del paciente.</p></div><div class="body">
 <div class="section"><h3>Datos personales</h3><div class="grid">
-<div class="field"><label>Número de cédula</label>{{ form.cedula }}</div><div class="field"><label>Nombres</label>{{ form.nombres }}</div><div class="field"><label>Apellidos</label>{{ form.apellidos }}</div><div class="field"><label>Fecha de nacimiento</label>{{ form.fecha_nacimiento }}</div><div class="field"><label>Género</label>{{ form.genero }}</div><div class="field"><label>Estado civil</label>{{ form.estado_civil }}</div><div class="field full"><label>Dirección</label>{{ form.direccion }}</div><div class="field"><label>Ciudad</label>{{ form.ciudad }}</div><div class="field"><label>Provincia</label>{{ form.provincia }}</div>
+<div class="field"><label>Número de cédula</label>{{ form.cedula }}</div>
+<div class="field"><label>Foto de perfil</label>{{ form.foto_perfil }}<small>JPG, PNG o GIF. Tamaño máximo recomendado: 2 MB.</small></div>
+<div class="field"><label>Nombres</label>{{ form.nombres }}</div><div class="field"><label>Apellidos</label>{{ form.apellidos }}</div><div class="field"><label>Fecha de nacimiento</label>{{ form.fecha_nacimiento }}</div><div class="field"><label>Género</label>{{ form.genero }}</div><div class="field"><label>Estado civil</label>{{ form.estado_civil }}</div><div class="field full"><label>Dirección</label>{{ form.direccion }}</div><div class="field"><label>Ciudad</label>{{ form.ciudad }}</div><div class="field"><label>Provincia</label>{{ form.provincia }}</div>
 </div></div>
 <div class="section"><h3>Información de contacto</h3><div class="grid">
 <div class="field"><label>Correo electrónico</label>{{ form.correo }}</div><div class="field"><label>Número de teléfono</label>{{ form.telefono }}</div><div class="field"><label>Teléfono alternativo</label>{{ form.telefono_alternativo }}</div><div class="field full"><label>Método de contacto preferido</label>{{ form.contacto_preferido }}</div>
