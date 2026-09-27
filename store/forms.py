@@ -45,6 +45,13 @@ class PacienteForm(forms.ModelForm):
         label="Estado civil",
     )
 
+    family_diabetes = forms.BooleanField(required=False)
+    family_hypertension = forms.BooleanField(required=False)
+    family_asthma = forms.BooleanField(required=False)
+    family_heart_disease = forms.BooleanField(required=False)
+    family_cancer = forms.BooleanField(required=False)
+    family_mental_health = forms.BooleanField(required=False)
+
     class Meta:
         model = Paciente
         fields = [
@@ -77,6 +84,27 @@ class PacienteForm(forms.ModelForm):
             "altura_cm": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
             "peso_kg": forms.NumberInput(attrs={"step": "0.01", "min": "0"}),
         }
+
+    def clean_antecedentes_familiares(self):
+        notes = (self.cleaned_data.get("antecedentes_familiares") or "").strip()
+        history = []
+        labels = [
+            ("family_diabetes", "Diabetes"),
+            ("family_hypertension", "Hipertensión"),
+            ("family_asthma", "Asma"),
+            ("family_heart_disease", "Enfermedad cardíaca"),
+            ("family_cancer", "Cáncer"),
+            ("family_mental_health", "Condiciones de salud mental"),
+        ]
+        for field_name, label in labels:
+            if self.cleaned_data.get(field_name):
+                history.append(label)
+
+        if history:
+            selected = "Antecedentes familiares seleccionados: " + ", ".join(history)
+            return f"{selected}\n{notes}".strip()
+
+        return notes
 
     def clean_cedula(self):
         cedula = self.cleaned_data["cedula"].strip()
