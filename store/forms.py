@@ -31,6 +31,12 @@ class PacienteForm(forms.ModelForm):
         ("UNION_LIBRE", "Unión libre"),
     ]
 
+    estado_civil = forms.ChoiceField(
+        choices=ESTADOS_CIVILES,
+        required=False,
+        label="Estado civil",
+    )
+
     class Meta:
         model = Paciente
         fields = [
@@ -51,7 +57,6 @@ class PacienteForm(forms.ModelForm):
         widgets = {
             "cedula": forms.TextInput(attrs={"maxlength": "10", "inputmode": "numeric", "autocomplete": "off", "placeholder": "Ingrese la cédula"}),
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
-            "estado_civil": forms.Select(choices=ESTADOS_CIVILES),
             "direccion": forms.Textarea(attrs={"rows": 3}),
             "alergias": forms.Textarea(attrs={"rows": 3}),
             "medicamentos_actuales": forms.Textarea(attrs={"rows": 3}),
