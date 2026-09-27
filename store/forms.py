@@ -39,6 +39,20 @@ class PacienteForm(forms.ModelForm):
         ("UNION_LIBRE", "Unión libre"),
     ]
 
+    EJERCICIO_OPCIONES = [
+        ("", "Seleccione frecuencia"),
+        ("NINGUNO", "Ninguno"),
+        ("OCASIONAL", "Ocasional"),
+        ("REGULAR", "Regular"),
+        ("DIARIO", "Diario"),
+    ]
+
+    frecuencia_ejercicio = forms.ChoiceField(
+        choices=EJERCICIO_OPCIONES,
+        required=False,
+        label="Frecuencia de ejercicio",
+    )
+
     CONSUMO_OPCIONES = [
         ("", "Seleccione consumo"),
         ("NINGUNO", "Ninguno"),
