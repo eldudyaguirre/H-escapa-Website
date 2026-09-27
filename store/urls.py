@@ -32,6 +32,7 @@ urlpatterns = [
     path("homein-pacientes/", views.homeinpacientes, name="homeinpacientes"),
     path("homein-pacientes/foto/<str:paciente_id>/", views.foto_paciente, name="homein_foto_paciente"),
     path("homein-pacientes/perfil/<str:paciente_id>/", views.homeinperfilpaciente, name="homeinperfilpaciente"),
+    path("homein-pacientes/perfil/<str:paciente_id>/imprimir/", views.imprimir_perfil_paciente, name="imprimir_perfil_paciente"),
     path("homein-pacientes/editar/<str:paciente_id>/", views.homeineditarpaciente, name="homeineditarpaciente"),
     path("homein-nuevopaciente/", views.homeinnuevopaciente, name="homeinnuevopaciente"),
     path("homein-nuevacita/", views.homeinnuevacita, name="homeinnuevacita"),
