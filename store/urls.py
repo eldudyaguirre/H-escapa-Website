@@ -30,6 +30,7 @@ urlpatterns = [
     path("homein/", views.homein, name="homein"),
     path("homein-calendario/", views.homeincalendario, name="homeincalendario"),
     path("homein-pacientes/", views.homeinpacientes, name="homeinpacientes"),
+    path("homein-pacientes/foto/<str:paciente_id>/", views.foto_paciente, name="homein_foto_paciente"),
     path("homein-pacientes/perfil/<str:paciente_id>/", views.homeinperfilpaciente, name="homeinperfilpaciente"),
     path("homein-pacientes/editar/<str:paciente_id>/", views.homeineditarpaciente, name="homeineditarpaciente"),
     path("homein-nuevopaciente/", views.homeinnuevopaciente, name="homeinnuevopaciente"),
