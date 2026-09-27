@@ -190,3 +190,68 @@
     width: var(--nav-width) !important;
   }
 }
+
+
+/* ===== MENU PC DEFINITIVO =====
+   PC: menú siempre visible y expandido.
+   Responsive: se controla con el botón hamburguesa.
+*/
+@media screen and (min-width: 768px) {
+  #navbar.nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 219px !important;
+    height: 100vh !important;
+    padding: 1.2rem 1.5rem 0 !important;
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  #navbar.nav .nav__container {
+    width: 100% !important;
+    height: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #navbar.nav .nav__logo-name,
+  #navbar.nav .nav__subtitle,
+  #navbar.nav .nav__name,
+  #navbar.nav .nav__dropdown-icon {
+    display: initial !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #navbar.nav .logo-default {
+    display: none !important;
+  }
+
+  #navbar.nav .logo-hover {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #navbar.nav:hover {
+    width: 219px !important;
+  }
+
+  #navbar.nav.show-menu {
+    left: 0 !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #navbar.nav {
+    left: -100% !important;
+    width: 300px !important;
+  }
+
+  #navbar.nav.show-menu {
+    left: 0 !important;
+  }
+}
