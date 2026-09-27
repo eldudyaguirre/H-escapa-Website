@@ -132,6 +132,8 @@ class PacienteForm(forms.ModelForm):
             "cedula", "foto_perfil", "nombres", "apellidos", "fecha_nacimiento", "genero",
             "estado_civil", "direccion", "ciudad", "provincia",
             "correo", "telefono", "telefono_alternativo", "contacto_preferido",
+            "recibir_recordatorios_citas", "recibir_notificaciones_resultados",
+            "recibir_notificaciones_recetas", "recibir_boletin_novedades",
             "contacto_emergencia", "relacion_emergencia", "telefono_emergencia",
             "correo_emergencia", "tipo_sangre", "altura_cm", "peso_kg",
             "alergias", "medicamentos_actuales", "condiciones_cronicas",
