@@ -39,6 +39,26 @@ class PacienteForm(forms.ModelForm):
         ("UNION_LIBRE", "Unión libre"),
     ]
 
+    CONSUMO_OPCIONES = [
+        ("", "Seleccione consumo"),
+        ("NINGUNO", "Ninguno"),
+        ("OCASIONAL", "Ocasional"),
+        ("MODERADO", "Moderado"),
+        ("ALTO", "Alto"),
+    ]
+
+    consumo_alcohol = forms.ChoiceField(
+        choices=CONSUMO_OPCIONES,
+        required=False,
+        label="Consumo de alcohol",
+    )
+
+    consumo_drogas = forms.ChoiceField(
+        choices=CONSUMO_OPCIONES,
+        required=False,
+        label="Consumo de drogas",
+    )
+
     TABAQUISMO_OPCIONES = [
         ("", "Seleccione estado"),
         ("NUNCA", "Nunca fumó"),
