@@ -140,7 +140,7 @@ def homeineditarpaciente(request, paciente_id):
 @staff_required
 def homeinnuevopaciente(request):
     if request.method == "POST":
-        form = PacienteForm(request.POST)
+        form = PacienteForm(request.POST, request.FILES)
         if form.is_valid():
             paciente = form.save()
             return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
