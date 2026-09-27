@@ -160,6 +160,18 @@ def homeinperfilpaciente(request, paciente_id):
 
 
 @staff_required
+def imprimir_perfil_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente.objects.select_related("profesional"), pk=paciente_id)
+    citas = paciente.citas.select_related("profesional").order_by("-fecha_hora")
+    documentos = paciente.documentos.all()
+    return render(request, "perfil-paciente-imprimir.html", {
+        "paciente": paciente,
+        "citas": citas,
+        "documentos": documentos,
+    })
+
+
+@staff_required
 def homeineditarpaciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, pk=paciente_id)
     if request.method == "POST":
