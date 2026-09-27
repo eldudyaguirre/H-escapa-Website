@@ -254,6 +254,15 @@
     background:#43a86b;
   }
 
+  .status-badge.inactive{
+    background:#fff1b8;
+    color:#8a6500;
+  }
+
+  .status-badge.inactive::before{
+    background:#e0a900;
+  }
+
   .patient-actions{
     display:flex;
     align-items:center;
@@ -367,7 +376,7 @@
             </td>
             <td>{{ paciente.telefono|default:"—" }}</td>
             <td>{{ paciente.profesional|default:"Sin asignar" }}</td>
-            <td><span class="status-badge">{{ paciente.get_estado_display }}</span></td>
+            <td><span class="status-badge{% if paciente.estado == 'INACTIVO' %} inactive{% endif %}">{{ paciente.get_estado_display }}</span></td>
             <td>
               <div class="patient-actions">
                 <a class="patient-action" href="{% url 'homeinperfilpaciente' paciente.cedula %}" title="Ver paciente" aria-label="Ver paciente">
