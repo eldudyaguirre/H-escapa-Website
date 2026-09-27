@@ -62,7 +62,7 @@ class PacienteForm(forms.ModelForm):
             "correo_emergencia", "tipo_sangre", "altura_cm", "peso_kg",
             "alergias", "medicamentos_actuales", "condiciones_cronicas",
             "cirugias_previas", "hospitalizaciones", "antecedentes_familiares",
-            "tabaquismo", "consumo_alcohol", "frecuencia_ejercicio",
+            "tabaquismo", "consumo_alcohol", "consumo_drogas", "frecuencia_ejercicio",
             "habitos_dieteticos", "seguro_proveedor", "seguro_poliza",
             "seguro_grupo", "seguro_titular", "seguro_relacion",
             "seguro_telefono", "seguro_secundario", "seguro_secundario_proveedor",
