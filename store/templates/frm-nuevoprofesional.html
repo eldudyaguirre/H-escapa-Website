@@ -38,6 +38,32 @@
   .profile-upload-btn{display:inline-flex;align-items:center;justify-content:center;width:max-content;padding:8px 14px;border:1px solid #439b95;border-radius:7px;background:#fff;color:#287d77;cursor:pointer;font-size:.82rem;font-weight:600}
   .profile-upload-btn:hover{background:#eef8f7}
   .new-pro-access{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .access-panel{padding:22px 24px}
+  .access-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .access-box{border:1px solid #e3ebe9;border-radius:10px;padding:16px;background:#fafcfc}
+  .access-box h3{margin:0 0 5px;font-size:.85rem;color:#263b3a}
+  .access-box p{margin:0 0 14px;font-size:.68rem;color:#84918f}
+  .access-role-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .access-role{position:relative}
+  .access-role input{position:absolute;opacity:0}
+  .access-role label{display:block;padding:11px 12px;border:1px solid #dce5e3;border-radius:8px;background:#fff;cursor:pointer}
+  .access-role label strong{display:block;font-size:.72rem;color:#30413f}
+  .access-role label span{display:block;margin-top:3px;font-size:.62rem;color:#84918f}
+  .access-role input:checked+label{border-color:#439b95;background:#f1faf8;box-shadow:0 0 0 2px rgba(67,155,149,.08)}
+  .permission-table{border:1px solid #e3ebe9;border-radius:10px;overflow:hidden}
+  .permission-row{display:grid;grid-template-columns:1fr repeat(4,72px);align-items:center;min-height:42px;border-bottom:1px solid #edf1f0;padding:0 12px}
+  .permission-row:last-child{border-bottom:0}
+  .permission-row.head{background:#f5f8f7;color:#667572;font-weight:700;font-size:.65rem}
+  .permission-row span{font-size:.69rem;color:#42534f}
+  .permission-row label{text-align:center}
+  .permission-row input{accent-color:#005855;width:15px;height:15px}
+  .access-settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px}
+  .access-setting{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e3ebe9;border-radius:8px;background:#fff}
+  .access-setting input{accent-color:#005855;margin-top:2px}
+  .access-setting strong{display:block;font-size:.69rem;color:#30413f}
+  .access-setting span{display:block;font-size:.6rem;color:#84918f;margin-top:2px}
+  .access-note{margin-top:12px;padding:10px 12px;border-radius:8px;background:#f5faf8;color:#657572;font-size:.64rem}
+  @media(max-width:700px){.access-grid,.access-role-grid,.access-settings{grid-template-columns:1fr}.permission-row{grid-template-columns:1fr repeat(4,48px);padding:0 7px}.permission-row span{font-size:.62rem}}
   .new-pro-access-box{padding:15px;border:1px solid #e5eceb;border-radius:9px;background:#f9fbfa}
   .new-pro-access-box strong{display:block;color:#30413f;font-size:.76rem;margin-bottom:4px}
   .new-pro-access-box span{display:block;color:#84918f;font-size:.66rem;line-height:1.45}
@@ -79,6 +105,27 @@ document.addEventListener('DOMContentLoaded', function(){
     tab.addEventListener('click', function(){ showTab(tab.dataset.tab); });
   });
   showTab('personal');
+
+  const roleHidden = document.getElementById('id_rol_sistema');
+  document.querySelectorAll('input[name="rol_visual"]').forEach(function(role){
+    role.addEventListener('change', function(){ if(roleHidden) roleHidden.value=this.value; });
+  });
+  const roleDefaults = {
+    ADMINISTRADOR: ['pacientes_view','pacientes_add','pacientes_change','pacientes_delete','citas_view','citas_add','citas_change','citas_delete','profesionales_view','profesionales_add','profesionales_change','profesionales_delete'],
+    GESTOR: ['pacientes_view','pacientes_add','pacientes_change','citas_view','citas_add','citas_change','profesionales_view'],
+    PROFESIONAL: ['pacientes_view','pacientes_change','citas_view','citas_add','citas_change'],
+    RECEPCION: ['pacientes_view','pacientes_add','pacientes_change','citas_view','citas_add','citas_change'],
+    PERSONAL: ['pacientes_view','citas_view']
+  };
+  function applyRoleDefaults(){
+    const role=(roleHidden&&roleHidden.value)||'PROFESIONAL';
+    document.querySelectorAll('input[name="permisos"]').forEach(function(box){
+      box.checked=roleDefaults[role] ? roleDefaults[role].includes(box.value) : false;
+    });
+  }
+  document.getElementById('use-role-default')?.addEventListener('click', applyRoleDefaults);
+  document.querySelectorAll('input[name="rol_visual"]').forEach(function(role){role.addEventListener('change',applyRoleDefaults);});
+  applyRoleDefaults();
 
   const photoInput = document.getElementById('{{ form.foto.id_for_label }}');
   const photoPreview = document.getElementById('professional-profile-preview');
@@ -162,8 +209,53 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="new-pro-grid"><div class="new-pro-field"><label>Nombre</label>{{form.contacto_emergencia_nombre}}</div><div class="new-pro-field"><label>Teléfono</label>{{form.contacto_emergencia_telefono}}</div><div class="new-pro-field"><label>Relación</label>{{form.contacto_emergencia_relacion}}</div></div>
 </section>
 <section class="new-pro-section new-pro-tab-content" data-content="access">
-<h2>Acceso y cuenta</h2><p>Credenciales para ingresar al panel interno.</p>
-<div class="new-pro-grid"><div class="new-pro-field"><label>Usuario *</label>{{form.username}}</div><div></div><div class="new-pro-field"><label>Contraseña *</label>{{form.password1}}</div><div class="new-pro-field"><label>Confirmar contraseña *</label>{{form.password2}}</div></div>
+<h2>Acceso y cuenta</h2><p>Configura las credenciales, el rol y los permisos del profesional.</p>
+
+<div class="access-grid">
+  <div class="access-box">
+    <h3>Credenciales de acceso</h3><p>Datos que utilizará para ingresar al consultorio.</p>
+    <div class="new-pro-grid">
+      <div class="new-pro-field"><label>Usuario *</label>{{form.username}}</div>
+      <div class="new-pro-field"><label>Correo para acceso *</label>{{form.email}}</div>
+      <div class="new-pro-field"><label>Contraseña temporal *</label>{{form.password1}}</div>
+      <div class="new-pro-field"><label>Confirmar contraseña *</label>{{form.password2}}</div>
+    </div>
+  </div>
+
+  <div class="access-box">
+    <h3>Rol del sistema</h3><p>Define el nivel general de acceso.</p>
+    <div class="access-role-grid" id="system-roles">
+      <div class="access-role"><input type="radio" id="role-admin" name="rol_visual" value="ADMINISTRADOR"><label for="role-admin"><strong>Administrador</strong><span>Acceso completo al sistema.</span></label></div>
+      <div class="access-role"><input type="radio" id="role-manager" name="rol_visual" value="GESTOR"><label for="role-manager"><strong>Gestor</strong><span>Gestión de personal, agenda y reportes.</span></label></div>
+      <div class="access-role"><input type="radio" id="role-doctor" name="rol_visual" value="PROFESIONAL" checked><label for="role-doctor"><strong>Profesional</strong><span>Pacientes, citas y atención clínica.</span></label></div>
+      <div class="access-role"><input type="radio" id="role-reception" name="rol_visual" value="RECEPCION"><label for="role-reception"><strong>Recepción</strong><span>Agenda, pacientes y registro.</span></label></div>
+      <div class="access-role"><input type="radio" id="role-staff" name="rol_visual" value="PERSONAL"><label for="role-staff"><strong>Personal</strong><span>Acceso básico a módulos asignados.</span></label></div>
+    </div>
+    {{form.rol_sistema.as_hidden}}
+  </div>
+</div>
+
+<div class="access-box" style="margin-top:16px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+    <div><h3>Permisos de módulos</h3><p>Selecciona qué puede ver, crear, editar o eliminar.</p></div>
+    <button type="button" class="new-pro-cancel" id="use-role-default" style="height:32px;padding:0 11px">Usar permisos del rol</button>
+  </div>
+  <div class="permission-table">
+    <div class="permission-row head"><span>Módulo</span><span>Ver</span><span>Agregar</span><span>Editar</span><span>Eliminar</span></div>
+    <div class="permission-row"><span>Pacientes</span><label>{{form.permisos.0}}</label><label>{{form.permisos.1}}</label><label>{{form.permisos.2}}</label><label>{{form.permisos.3}}</label></div>
+    <div class="permission-row"><span>Citas</span><label>{{form.permisos.4}}</label><label>{{form.permisos.5}}</label><label>{{form.permisos.6}}</label><label>{{form.permisos.7}}</label></div>
+    <div class="permission-row"><span>Profesionales</span><label>{{form.permisos.8}}</label><label>{{form.permisos.9}}</label><label>{{form.permisos.10}}</label><label>{{form.permisos.11}}</label></div>
+    <div class="permission-row"><span>Prescripciones</span><label><input type="checkbox" disabled title="Módulo aún no implementado"></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label></div>
+    <div class="permission-row"><span>Facturación</span><label><input type="checkbox" disabled title="Módulo aún no implementado"></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label></div>
+  </div>
+  <div class="access-note">Los permisos disponibles se guardan en la cuenta mediante el sistema de permisos de Django. Prescripciones y Facturación quedarán habilitados cuando esos módulos estén implementados.</div>
+</div>
+
+<div class="access-settings">
+  <label class="access-setting"><input type="checkbox" name="forzar_cambio_clave" checked><span><strong>Forzar cambio de contraseña</strong><span>Recomendado para cuentas nuevas.</span></span></label>
+  <label class="access-setting"><input type="checkbox" name="dos_factores"><span><strong>Autenticación de dos factores</strong><span>Preparado para futura implementación.</span></span></label>
+  <label class="access-setting"><input type="checkbox" name="activo" checked><span><strong>Cuenta activa</strong><span>Permite iniciar sesión.</span></span></label>
+</div>
 </section>
 <div class="new-pro-actions"><a class="new-pro-cancel" href="{% url 'homeinprofesionales' %}">Cancelar</a><button class="new-pro-save" type="submit"><i class="bx bx-save"></i> Guardar profesional</button></div>
 </div>
