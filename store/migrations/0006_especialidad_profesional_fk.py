@@ -27,6 +27,7 @@ def migrar_especialidades(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ("store", "0005_paciente_consumo_drogas"),
+        ("store", "0009_paciente_preferencias_comunicacion"),
     ]
 
     operations = [
@@ -48,7 +49,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="profesional",
             name="especialidad_nueva",
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name="profesionales_nuevo", to="store.especialidad"),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="profesionales_nuevo",
+                to="store.especialidad",
+            ),
         ),
         migrations.RunPython(migrar_especialidades, migrations.RunPython.noop),
         migrations.RemoveField(
@@ -63,6 +69,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="profesional",
             name="especialidad",
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name="profesionales", to="store.especialidad"),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="profesionales",
+                to="store.especialidad",
+            ),
         ),
     ]
