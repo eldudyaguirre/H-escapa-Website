@@ -292,8 +292,8 @@
 @media screen and (max-width: 767px) {
   #navbar.nav {
     left: -100% !important;
-    width: 360px !important;
-    max-width: calc(100vw - 28px) !important;
+    width: 250px !important;
+    max-width: calc(100vw - 24px) !important;
     box-sizing: border-box !important;
   }
 
@@ -323,5 +323,21 @@
     color: var(--h-escapa3-color) !important;
     opacity: 1 !important;
     -webkit-text-fill-color: var(--h-escapa3-color) !important;
+  }
+}
+
+/* ===== ANCHO DEFINITIVO DEL MENÚ MÓVIL ===== */
+@media screen and (max-width: 767px) {
+  #navbar.nav {
+    width: 250px !important;
+    max-width: calc(100vw - 24px) !important;
+    box-sizing: border-box !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  #navbar.nav .nav__dropdown-collapse {
+    width: calc(100% - 14px) !important;
+    margin-left: 7px !important;
+    box-sizing: border-box !important;
   }
 }
