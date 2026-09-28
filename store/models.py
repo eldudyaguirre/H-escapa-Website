@@ -20,19 +20,45 @@ class Especialidad(models.Model):
 
 
 class Profesional(models.Model):
-    usuario = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="profesional",
-    )
+    GENEROS = [
+        ("M", "Masculino"), ("F", "Femenino"), ("O", "Otro"), ("N", "Prefiero no indicar"),
+    ]
+    TIPOS_CONTRATO = [
+        ("TIEMPO_COMPLETO", "Tiempo completo"), ("MEDIO_TIEMPO", "Medio tiempo"),
+        ("CONTRATO", "Contrato"), ("TEMPORAL", "Temporal"), ("PRACTICAS", "Prácticas"),
+    ]
+
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profesional")
+
+    foto = models.ImageField(upload_to="profesionales/fotos/", blank=True, null=True)
+    cedula = models.CharField(max_length=10, blank=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    especialidad = models.ForeignKey(
-        Especialidad,
-        on_delete=models.PROTECT,
-        related_name="profesionales",
-    )
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    genero = models.CharField(max_length=1, choices=GENEROS, blank=True)
     telefono = models.CharField(max_length=30, blank=True)
+    direccion = models.CharField(max_length=250, blank=True)
+    ciudad = models.CharField(max_length=100, blank=True)
+    provincia = models.CharField(max_length=100, blank=True)
+    contacto_emergencia_nombre = models.CharField(max_length=150, blank=True)
+    contacto_emergencia_telefono = models.CharField(max_length=30, blank=True)
+    contacto_emergencia_relacion = models.CharField(max_length=80, blank=True)
+
+    profesion = models.CharField(max_length=150, blank=True)
+    especialidad = models.ForeignKey(Especialidad, on_delete=models.PROTECT, related_name="profesionales")
+    especializacion = models.CharField(max_length=150, blank=True)
+    titulo = models.CharField(max_length=150, blank=True)
+    institucion_titulo = models.CharField(max_length=200, blank=True)
+    anio_titulo = models.PositiveIntegerField(blank=True, null=True)
+    tipo_licencia = models.CharField(max_length=150, blank=True)
+    numero_licencia = models.CharField(max_length=100, blank=True)
+    fecha_emision_licencia = models.DateField(blank=True, null=True)
+    fecha_vencimiento_licencia = models.DateField(blank=True, null=True)
+    biografia = models.TextField(blank=True)
+
+    codigo_empleado = models.CharField(max_length=50, blank=True)
+    tipo_contrato = models.CharField(max_length=20, choices=TIPOS_CONTRATO, blank=True)
+    fecha_ingreso = models.DateField(blank=True, null=True)
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
