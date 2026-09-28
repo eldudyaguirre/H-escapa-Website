@@ -1,16 +1,120 @@
 {% extends "frm-menpri.html" %}
 {% block title %}H-Escapa | Especialidades{% endblock %}
+
 {% block content %}
-<section style="padding:32px 36px;max-width:1100px;margin:auto">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:15px;flex-wrap:wrap">
-    <div><h1 style="margin:0;font-family:Marcellus,serif;color:#19181B">Especialidades</h1><p style="margin:7px 0 0;color:#6f7478">Especialidades disponibles para los profesionales del consultorio.</p></div>
-    <a href="{% url 'homeinnuevaespecialidad' %}" style="background:#439b95;color:#fff;padding:11px 17px;border-radius:8px;text-decoration:none;font-weight:600"><i class="bx bx-plus"></i> Nueva Especialidad</a>
-  </div>
-  <div style="background:#fff;border:1px solid #e8eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06);overflow:hidden">
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="background:#f7f9f9"><th style="padding:14px 18px;text-align:left;color:#5b6563">Especialidad</th><th style="padding:14px 18px;text-align:left;color:#5b6563">Profesionales</th><th style="padding:14px 18px;text-align:left;color:#5b6563">Estado</th></tr></thead>
-      <tbody>{% for especialidad in especialidades %}<tr><td style="padding:15px 18px;border-top:1px solid #eef1f0;color:#202625">{{ especialidad.nombre }}</td><td style="padding:15px 18px;border-top:1px solid #eef1f0;color:#3e4645">{{ especialidad.profesionales.count }}</td><td style="padding:15px 18px;border-top:1px solid #eef1f0">{% if especialidad.activa %}<span style="background:#e8f6ee;color:#287044;padding:5px 10px;border-radius:999px;font-size:.78rem">Activa</span>{% else %}<span style="background:#fff1b8;color:#8a6500;padding:5px 10px;border-radius:999px;font-size:.78rem">Inactiva</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="3" style="padding:40px;text-align:center;color:#7c8583">No hay especialidades registradas.</td></tr>{% endfor %}</tbody>
-    </table>
+<style>
+  .specialties-page{padding:26px 28px 42px}
+  .sp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .sp-header h1{margin:0 0 5px;font-family:Marcellus,serif;font-size:1.7rem;color:#19181B}
+  .sp-header p{margin:0;color:#6f7478;font-size:.86rem}
+  .sp-actions{display:flex;gap:9px;flex-wrap:wrap}
+  .sp-btn{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border-radius:8px;text-decoration:none;font-size:.78rem;font-weight:600;border:1px solid #dfe5e3}
+  .sp-btn.primary{background:#005855;color:#fff;border-color:#005855}
+  .sp-btn.primary:hover{background:#00433f;color:#fff}
+  .sp-btn.secondary{background:#fff;color:#3e4645}
+  .sp-btn.secondary:hover{border-color:#439b95;color:#005855;background:#f8fbfa}
+  .sp-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px;align-items:start}
+  .sp-panel,.sp-side-card{background:#fff;border:1px solid #e8eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06)}
+  .sp-panel{overflow:hidden}
+  .sp-main-head{padding:19px 18px 13px}
+  .sp-main-head h2,.sp-side-card h3{margin:0;color:#19181B;font-size:1.05rem;font-weight:700}
+  .sp-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .sp-tabs{display:flex;background:#f0f4f3;border-radius:6px;padding:3px}
+  .sp-tab{border:0;background:transparent;color:#6f7977;height:30px;padding:0 14px;border-radius:4px;font-size:.72rem;font-weight:600}
+  .sp-tab.active{background:#fff;color:#005855;box-shadow:0 1px 4px rgba(30,55,53,.08)}
+  .sp-search{height:32px;width:225px;border:1px solid #dfe5e3;border-radius:6px;padding:0 11px;color:#3e4645;outline:none;font-size:.72rem;background:#fff}
+  .sp-search:focus{border-color:#439b95;box-shadow:0 0 0 2px rgba(67,155,149,.1)}
+  .sp-filter{height:32px;border:1px solid #dfe5e3;border-radius:6px;background:#fff;color:#63706e;padding:0 8px;font-size:.72rem}
+  .sp-table-wrap{overflow:auto;margin:0 18px 18px;border:1px solid #e8eceb;border-radius:8px}
+  .sp-table{width:100%;border-collapse:collapse;min-width:600px}
+  .sp-table th{height:37px;background:#f7f9f9;color:#5b6563;text-align:left;padding:0 12px;font-size:.68rem;font-weight:600;border-bottom:1px solid #e8eceb}
+  .sp-table td{padding:13px 12px;border-bottom:1px solid #eef1f0;color:#3e4645;font-size:.74rem}
+  .sp-table tbody tr:last-child td{border-bottom:0}
+  .sp-table tbody tr:hover{background:#f9fcfb}
+  .sp-name{display:flex;align-items:center;gap:10px}
+  .sp-icon{width:34px;height:34px;border-radius:9px;background:#e7f3f1;color:#005855;display:grid;place-items:center;font-size:1rem}
+  .sp-name strong{color:#202625;font-size:.76rem}
+  .sp-name small{display:block;color:#8a9391;font-size:.62rem;margin-top:2px}
+  .sp-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:.63rem;font-weight:700}
+  .sp-badge.active{background:#e8f6ee;color:#287044}.sp-badge.inactive{background:#fff1b8;color:#8a6500}
+  .sp-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .sp-count{font-weight:700;color:#202625}
+  .sp-side{display:flex;flex-direction:column;gap:18px}
+  .sp-side-card{padding:18px}
+  .sp-overview-icon{float:right;font-size:1.45rem;color:#91a19e}
+  .sp-total{margin:38px 0 13px}.sp-total strong{display:block;font-size:1.7rem;line-height:1;color:#19181B}.sp-total span{font-size:.64rem;color:#7c8583}
+  .sp-overview-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.7rem;color:#3e4645}
+  .sp-number{min-width:24px;text-align:center;padding:3px 7px;border:1px solid #dfe5e3;border-radius:12px;font-size:.62rem}
+  .sp-empty{padding:45px 20px;text-align:center;color:#7c8583}.sp-empty i{display:block;font-size:2.6rem;color:#a5b5b2;margin-bottom:8px}
+  @media(max-width:1000px){.sp-layout{grid-template-columns:1fr}.sp-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:680px){.specialties-page{padding:18px 12px 30px}.sp-side{grid-template-columns:1fr}.sp-search{width:100%}.sp-toolbar{align-items:stretch}.sp-tabs{width:100%}.sp-tab{flex:1}}
+</style>
+
+<section class="specialties-page">
+  <header class="sp-header">
+    <div>
+      <h1>Gestión de especialidades</h1>
+      <p>Administra las especialidades disponibles para los profesionales del consultorio</p>
+    </div>
+    <div class="sp-actions">
+      <a class="sp-btn secondary" href="{% url 'homeinprofesionales' %}"><i class="bx bx-group"></i> Profesionales</a>
+      <a class="sp-btn primary" href="{% url 'homeinnuevaespecialidad' %}"><i class="bx bx-plus"></i> Nueva Especialidad</a>
+    </div>
+  </header>
+
+  <div class="sp-layout">
+    <section class="sp-panel">
+      <div class="sp-main-head">
+        <h2>Directorio de especialidades</h2>
+        <div class="sp-toolbar">
+          <div class="sp-tabs">
+            <button class="sp-tab active" type="button">Vista de lista</button>
+            <button class="sp-tab" type="button">Vista de cuadrícula</button>
+          </div>
+          <form method="get" style="display:flex;gap:7px;flex-wrap:wrap">
+            <input class="sp-search" type="search" name="q" value="{{ q }}" placeholder="Buscar especialidad...">
+            <select class="sp-filter" name="estado" onchange="this.form.submit()">
+              <option value="">Todos</option>
+              <option value="ACTIVA" {% if estado == "ACTIVA" %}selected{% endif %}>Activas</option>
+              <option value="INACTIVA" {% if estado == "INACTIVA" %}selected{% endif %}>Inactivas</option>
+            </select>
+          </form>
+        </div>
+      </div>
+
+      <div class="sp-table-wrap">
+        <table class="sp-table">
+          <thead><tr><th>Especialidad</th><th>Profesionales</th><th>Estado</th><th>Creada</th></tr></thead>
+          <tbody>
+            {% for especialidad in especialidades %}
+            <tr>
+              <td><div class="sp-name"><span class="sp-icon"><i class="bx bx-plus-medical"></i></span><div><strong>{{ especialidad.nombre }}</strong><small>Especialidad del consultorio</small></div></div></td>
+              <td><span class="sp-count">{{ especialidad.profesionales.count }}</span></td>
+              <td>{% if especialidad.activa %}<span class="sp-badge active"><span class="sp-dot"></span>Activa</span>{% else %}<span class="sp-badge inactive"><span class="sp-dot"></span>Inactiva</span>{% endif %}</td>
+              <td>{{ especialidad.creado_en|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4"><div class="sp-empty"><i class="bx bx-plus-medical"></i><strong>No hay especialidades registradas</strong><div>Agrega la primera especialidad para comenzar.</div></div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="sp-side">
+      <section class="sp-side-card">
+        <i class="bx bx-plus-medical sp-overview-icon"></i>
+        <h3>Resumen de especialidades</h3>
+        <div class="sp-total"><strong>{{ total }}</strong><span>Total especialidades</span></div>
+        <div class="sp-overview-row"><span>Activas</span><span class="sp-number">{{ activas }}</span></div>
+        <div class="sp-overview-row"><span>Inactivas</span><span class="sp-number">{{ inactivas }}</span></div>
+      </section>
+      <section class="sp-side-card">
+        <h3>Acceso rápido</h3>
+        <div style="margin-top:14px;color:#6f7977;font-size:.72rem;line-height:1.6">Las especialidades se administran desde este catálogo y luego pueden asignarse a los profesionales.</div>
+        <a href="{% url 'homeinnuevaespecialidad' %}" class="sp-btn primary" style="margin-top:14px;width:100%;justify-content:center">Nueva Especialidad</a>
+      </section>
+    </aside>
   </div>
 </section>
 {% endblock %}
