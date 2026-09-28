@@ -165,8 +165,57 @@
   background:#fff;
   color:#71807e;
   cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
 }
-.sp-action:hover{background:#eef7f5;color:#439b95;border-color:#b9d8d4}
+.sp-action:hover,.sp-action[aria-expanded="true"]{background:#eef7f5;color:#439b95;border-color:#b9d8d4}
+.sp-action-wrap{position:relative;display:inline-block}
+.sp-action-menu{
+  position:absolute;
+  top:calc(100% + 7px);
+  right:0;
+  z-index:20;
+  width:150px;
+  padding:5px;
+  background:#fff;
+  border:1px solid #dce5e3;
+  border-radius:6px;
+  box-shadow:0 10px 24px rgba(24,48,46,.14);
+  display:none;
+  text-align:left;
+}
+.sp-action-wrap.open .sp-action-menu{display:block}
+.sp-action-menu::before{
+  content:"";
+  position:absolute;
+  top:-5px;
+  right:10px;
+  width:8px;
+  height:8px;
+  background:#fff;
+  border-left:1px solid #dce5e3;
+  border-top:1px solid #dce5e3;
+  transform:rotate(45deg);
+}
+.sp-action-item{
+  display:block;
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#344442;
+  padding:7px 8px;
+  border-radius:3px;
+  font:600 11px 'Sora',sans-serif;
+  text-align:left;
+  text-decoration:none;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.sp-action-item:hover{background:#f1f7f6;color:#005855}
+.sp-action-item.danger{color:#d32f2f}
+.sp-action-item.danger:hover{background:#fff1f1;color:#b42318}
+.sp-action-divider{height:1px;background:#edf1f0;margin:4px 0}
 .sp-empty{padding:55px 20px;text-align:center;color:#84918f}
 .sp-empty i{display:block;font-size:2rem;color:#9fc7c2;margin-bottom:10px}
 .sp-empty strong{display:block;color:#536360;margin-bottom:4px}
@@ -254,7 +303,22 @@
             <td><span class="sp-count">{{ especialidad.profesionales.count }}</span></td>
             <td>{% if especialidad.activa %}<span class="sp-badge active"><span class="sp-dot"></span>Activa</span>{% else %}<span class="sp-badge inactive"><span class="sp-dot"></span>Inactiva</span>{% endif %}</td>
             <td>{{ especialidad.creado_en|date:"d/m/Y" }}</td>
-            <td style="text-align:center"><button type="button" class="sp-action" title="Más opciones"><i class="bx bx-dots-horizontal-rounded"></i></button></td>
+            <td style="text-align:center">
+  <div class="sp-action-wrap">
+    <button type="button" class="sp-action" title="Acciones" aria-expanded="false">
+      <i class="bx bx-dots-horizontal-rounded"></i>
+    </button>
+    <div class="sp-action-menu">
+      <button type="button" class="sp-action-item" data-action="details">Ver detalles</button>
+      <button type="button" class="sp-action-item" data-action="edit">Editar especialidad</button>
+      <button type="button" class="sp-action-item" data-action="staff">Gestionar profesionales</button>
+      <div class="sp-action-divider"></div>
+      <button type="button" class="sp-action-item danger" data-action="deactivate">
+        {% if especialidad.activa %}Desactivar{% else %}Activar{% endif %}
+      </button>
+    </div>
+  </div>
+</td>
           </tr>
           {% empty %}
           <tr><td colspan="5"><div class="sp-empty"><i class="bx bx-plus-medical"></i><strong>No hay especialidades registradas</strong><div>Agrega la primera especialidad para comenzar.</div></div></td></tr>
@@ -264,4 +328,30 @@
     </div>
   </section>
 </section>
+<script>
+(function(){
+  document.querySelectorAll('.sp-action-wrap').forEach(function(wrapper){
+    const button = wrapper.querySelector('.sp-action');
+    button.addEventListener('click', function(event){
+      event.stopPropagation();
+      document.querySelectorAll('.sp-action-wrap.open').forEach(function(other){
+        if(other !== wrapper){
+          other.classList.remove('open');
+          const b = other.querySelector('.sp-action');
+          if(b) b.setAttribute('aria-expanded','false');
+        }
+      });
+      const open = wrapper.classList.toggle('open');
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+  document.addEventListener('click', function(){
+    document.querySelectorAll('.sp-action-wrap.open').forEach(function(wrapper){
+      wrapper.classList.remove('open');
+      const button = wrapper.querySelector('.sp-action');
+      if(button) button.setAttribute('aria-expanded','false');
+    });
+  });
+})();
+</script>
 {% endblock %}
