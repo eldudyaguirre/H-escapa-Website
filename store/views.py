@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.db import models, transaction
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -185,7 +186,7 @@ def homeinnuevaespecialidad(request):
 @staff_required
 def homeinnuevoprofesional(request):
     if request.method == "POST":
-        form = ProfesionalForm(request.POST)
+        form = ProfesionalForm(request.POST, request.FILES)
         if form.is_valid():
             with transaction.atomic():
                 User = get_user_model()
@@ -227,6 +228,26 @@ def homeinnuevoprofesional(request):
                     fecha_ingreso=form.cleaned_data.get("fecha_ingreso"),
                     activo=form.cleaned_data["activo"],
                 )
+                # Aplicar permisos Django seleccionados desde la pestaña Acceso y cuenta.
+                permisos = form.cleaned_data.get("permisos", [])
+                permission_map = {
+                    "pacientes": "paciente",
+                    "citas": "cita",
+                    "profesionales": "profesional",
+                }
+                selected_permissions = []
+                for key in permisos:
+                    modulo, accion = key.rsplit("_", 1)
+                    model_name = permission_map.get(modulo)
+                    if model_name:
+                        permiso = Permission.objects.filter(
+                            content_type__app_label="store",
+                            content_type__model=model_name,
+                            codename=f"{accion}_{model_name}",
+                        ).first()
+                        if permiso:
+                            selected_permissions.append(permiso)
+                usuario.user_permissions.set(selected_permissions)
             messages.success(request, f"Profesional {form.cleaned_data['nombre']} {form.cleaned_data['apellido']} creado correctamente.")
             return redirect("homeinprofesionales")
     else:
