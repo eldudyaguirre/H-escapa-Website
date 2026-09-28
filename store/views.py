@@ -119,6 +119,8 @@ def homeinespecialidades(request):
     total = Especialidad.objects.count()
     activas = Especialidad.objects.filter(activa=True).count()
     inactivas = Especialidad.objects.filter(activa=False).count()
+    total_profesionales = Profesional.objects.count()
+    profesionales_asignados = Profesional.objects.filter(especialidad__isnull=False).count()
 
     return render(request, "frm-especialidades.html", {
         "especialidades": especialidades,
@@ -127,6 +129,8 @@ def homeinespecialidades(request):
         "total": total,
         "activas": activas,
         "inactivas": inactivas,
+        "total_profesionales": total_profesionales,
+        "profesionales_asignados": profesionales_asignados,
     })
 
 
