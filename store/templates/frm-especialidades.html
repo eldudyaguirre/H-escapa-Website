@@ -309,13 +309,15 @@
       <i class="bx bx-dots-horizontal-rounded"></i>
     </button>
     <div class="sp-action-menu">
-      <button type="button" class="sp-action-item" data-action="details">Ver detalles</button>
-      <button type="button" class="sp-action-item" data-action="edit">Editar especialidad</button>
-      <button type="button" class="sp-action-item" data-action="staff">Gestionar profesionales</button>
+      <a class="sp-action-item" href="{% url 'homeineditarespecialidad' especialidad.id %}">Editar especialidad</a>
+      <a class="sp-action-item" href="{% url 'homeinprofesionales' %}?especialidad={{ especialidad.id }}">Gestionar profesionales</a>
       <div class="sp-action-divider"></div>
-      <button type="button" class="sp-action-item danger" data-action="deactivate">
-        {% if especialidad.activa %}Desactivar{% else %}Activar{% endif %}
-      </button>
+      <form method="post" action="{% url 'cambiar_estado_especialidad' especialidad.id %}" style="margin:0">
+        {% csrf_token %}
+        <button type="submit" class="sp-action-item danger">
+          {% if especialidad.activa %}Desactivar{% else %}Activar{% endif %}
+        </button>
+      </form>
     </div>
   </div>
 </td>
