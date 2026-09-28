@@ -1,29 +1,5 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Profesionales<script>
-(function(){
-  const btn=document.getElementById('proFilterBtn');
-  const panel=document.getElementById('proFilterPanel');
-  const reset=document.getElementById('proResetFilters');
-  if(!btn||!panel)return;
-  btn.addEventListener('click',function(e){
-    e.stopPropagation();
-    const open=panel.classList.toggle('open');
-    btn.setAttribute('aria-expanded',String(open));
-  });
-  panel.addEventListener('click',function(e){e.stopPropagation()});
-  document.addEventListener('click',function(){
-    panel.classList.remove('open');
-    btn.setAttribute('aria-expanded','false');
-  });
-  if(reset){
-    reset.addEventListener('click',function(){
-      document.getElementById('filterEspecialidad').value='';
-      document.getElementById('filterEstado').value='';
-    });
-  }
-})();
-</script>
-{% endblock %}
+{% block title %}H-Escapa | Profesionales{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -203,4 +179,38 @@
     </aside>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.getElementById('proFilterBtn');
+  const panel = document.getElementById('proFilterPanel');
+  const reset = document.getElementById('proResetFilters');
+  if (!btn || !panel) return;
+
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    const open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(open));
+  });
+
+  panel.addEventListener('click', function(e){
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', function(){
+    panel.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+
+  if (reset) {
+    reset.addEventListener('click', function(){
+      document.getElementById('filterEspecialidad').value = '';
+      document.getElementById('filterEstado').value = '';
+    });
+  }
+});
+</script>
 {% endblock %}
