@@ -11,8 +11,8 @@ from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .forms import CitaForm, PacienteForm
-from .models import Cita, DocumentoPaciente, Paciente, Post, Profesional
+from .forms import CitaForm, EspecialidadForm, PacienteForm
+from .models import Cita, DocumentoPaciente, Especialidad, Paciente, Post, Profesional
 
 
 def home(request):
@@ -101,6 +101,27 @@ def homeincalendario(request):
     return render(request, "frm-calendario.html", {"citas": citas})
 
 
+
+
+@staff_required
+def homeinespecialidades(request):
+    especialidades = Especialidad.objects.all()
+    return render(request, "frm-especialidades.html", {"especialidades": especialidades})
+
+
+@staff_required
+def homeinnuevaespecialidad(request):
+    if request.method == "POST":
+        form = EspecialidadForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Especialidad creada correctamente.")
+            return redirect("homeinespecialidades")
+    else:
+        form = EspecialidadForm()
+    return render(request, "frm-nuevaespecialidad.html", {"form": form})
+
+
 @staff_required
 def homeinprofesionales(request):
     profesionales = Profesional.objects.select_related("usuario").all()
@@ -129,10 +150,10 @@ def homeinprofesionales(request):
     activos = Profesional.objects.filter(activo=True).count()
     inactivos = Profesional.objects.filter(activo=False).count()
 
-    especialidades = []
-    for codigo, nombre in Profesional.ESPECIALIDADES:
-        cantidad = Profesional.objects.filter(especialidad=codigo).count()
-        especialidades.append({"nombre": nombre, "cantidad": cantidad})
+    especialidades = [
+        {"nombre": especialidad.nombre, "cantidad": especialidad.profesionales.count()}
+        for especialidad in Especialidad.objects.filter(activa=True)
+    ]
 
     return render(
         request,
@@ -142,7 +163,7 @@ def homeinprofesionales(request):
             "q": q,
             "estado": estado,
             "especialidad": especialidad,
-            "especialidades_opciones": Profesional.ESPECIALIDADES,
+            "especialidades_opciones": Especialidad.objects.filter(activa=True),
             "total_profesionales": total_profesionales,
             "activos": activos,
             "inactivos": inactivos,
