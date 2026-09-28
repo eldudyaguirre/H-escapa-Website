@@ -1,0 +1,16 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Nueva Especialidad{% endblock %}
+{% block content %}
+<section style="padding:32px 36px;max-width:720px;margin:auto">
+  <div style="margin-bottom:24px"><h1 style="margin:0;font-family:Marcellus,serif;color:#19181B">Nueva Especialidad</h1><p style="margin:7px 0 0;color:#6f7478">Registra una nueva especialidad para el consultorio.</p></div>
+  <div style="background:#fff;border:1px solid #e8eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06);padding:24px">
+    <form method="post">{% csrf_token %}
+      <label style="display:block;color:#3e4645;font-weight:600;margin-bottom:8px">Nombre de la especialidad</label>
+      {{ form.nombre }}
+      {% if form.nombre.errors %}<div style="color:#b42318;font-size:.85rem;margin-top:6px">{{ form.nombre.errors }}</div>{% endif %}
+      <label style="display:flex;align-items:center;gap:8px;color:#3e4645;margin:18px 0"><input type="checkbox" name="activa" {% if form.activa.value %}checked{% endif %}> Especialidad activa</label>
+      <div style="display:flex;gap:10px;justify-content:flex-end"><a href="{% url 'homeinespecialidades' %}" style="padding:10px 16px;border:1px solid #dfe5e3;border-radius:8px;text-decoration:none;color:#63706e">Cancelar</a><button type="submit" style="padding:10px 16px;border:0;border-radius:8px;background:#005855;color:#fff;font-weight:600">Guardar especialidad</button></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
