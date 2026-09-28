@@ -9,6 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
+from django.utils import timezone
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -93,8 +94,45 @@ def staff_required(view_func):
 
 
 @staff_required
+@staff_required
 def homein(request):
-    return render(request, "frm-menpri.html")
+    hoy = timezone.localdate()
+    inicio_hoy = timezone.make_aware(timezone.datetime.combine(hoy, timezone.datetime.min.time()))
+    fin_hoy = inicio_hoy + timedelta(days=1)
+
+    citas_hoy = (
+        Cita.objects
+        .select_related("paciente", "profesional")
+        .filter(fecha_hora__gte=inicio_hoy, fecha_hora__lt=fin_hoy)
+        .exclude(estado__in=["CANCELADA", "NO_ASISTIO"])
+        .order_by("fecha_hora")
+    )
+
+    pacientes_activos = Paciente.objects.filter(estado="ACTIVO").count()
+    profesionales_activos = Profesional.objects.filter(activo=True).count()
+    posts_publicados = Post.objects.filter(estado="PUBLICADO").count()
+
+    pacientes_recientes = Paciente.objects.order_by("-creado_en")[:3]
+    profesionales_recientes = Profesional.objects.select_related("especialidad").order_by("-creado_en")[:3]
+    citas_proximas = (
+        Cita.objects
+        .select_related("paciente", "profesional")
+        .filter(fecha_hora__gte=timezone.now())
+        .exclude(estado__in=["CANCELADA", "NO_ASISTIO"])
+        .order_by("fecha_hora")[:5]
+    )
+
+    return render(request, "frm-menpri.html", {
+        "citas_hoy": citas_hoy,
+        "citas_hoy_count": citas_hoy.count(),
+        "pacientes_activos": pacientes_activos,
+        "profesionales_activos": profesionales_activos,
+        "posts_publicados": posts_publicados,
+        "pacientes_recientes": pacientes_recientes,
+        "profesionales_recientes": profesionales_recientes,
+        "citas_proximas": citas_proximas,
+        "fecha_hoy": hoy,
+    })
 
 
 @staff_required
