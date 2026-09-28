@@ -285,6 +285,37 @@ class ProfesionalForm(forms.Form):
     password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Mínimo 8 caracteres"}))
     password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Repita la contraseña"}))
     activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
+    rol_sistema = forms.ChoiceField(
+        label="Rol del sistema",
+        choices=[
+            ("ADMINISTRADOR", "Administrador"),
+            ("GESTOR", "Gestor"),
+            ("PROFESIONAL", "Profesional"),
+            ("RECEPCION", "Recepción"),
+            ("PERSONAL", "Personal"),
+        ],
+        initial="PROFESIONAL",
+        widget=forms.RadioSelect,
+    )
+    permisos = forms.MultipleChoiceField(
+        label="Permisos de módulos",
+        required=False,
+        choices=[
+            ("pacientes_view", "Pacientes · Ver"),
+            ("pacientes_add", "Pacientes · Agregar"),
+            ("pacientes_change", "Pacientes · Editar"),
+            ("pacientes_delete", "Pacientes · Eliminar"),
+            ("citas_view", "Citas · Ver"),
+            ("citas_add", "Citas · Agregar"),
+            ("citas_change", "Citas · Editar"),
+            ("citas_delete", "Citas · Eliminar"),
+            ("profesionales_view", "Profesionales · Ver"),
+            ("profesionales_add", "Profesionales · Agregar"),
+            ("profesionales_change", "Profesionales · Editar"),
+            ("profesionales_delete", "Profesionales · Eliminar"),
+        ],
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
