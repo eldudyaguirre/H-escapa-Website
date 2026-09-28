@@ -1,5 +1,17 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Agregar profesional{% endblock %}
+{% block title %}H-Escapa | Agregar profesional<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const tabs=document.querySelectorAll('.new-pro-tab');
+  const panels=document.querySelectorAll('.new-pro-tab-content');
+  function showTab(name){
+    tabs.forEach(function(tab){tab.classList.toggle('active',tab.dataset.tab===name)});
+    panels.forEach(function(panel){panel.classList.toggle('active',panel.dataset.content===name)});
+  }
+  tabs.forEach(function(tab){tab.addEventListener('click',function(){showTab(tab.dataset.tab)})});
+  showTab('personal');
+});
+</script>
+{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -12,6 +24,8 @@
   .new-pro-tabs{display:flex;gap:4px;padding:4px;background:#edf3f1;border-radius:8px;margin-bottom:15px}
   .new-pro-tab{flex:1;border:0;background:transparent;color:#667572;border-radius:6px;padding:10px 12px;font:600 .74rem 'Sora',sans-serif}
   .new-pro-tab.active{background:#fff;color:#005855;box-shadow:0 1px 4px rgba(30,55,53,.08)}
+  .new-pro-tab-content{display:none}
+  .new-pro-tab-content.active{display:block}
   .new-pro-card{background:#fff;border:1px solid #e5eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.055);overflow:hidden}
   .new-pro-section{padding:22px 24px;border-bottom:1px solid #edf1f0}
   .new-pro-section:last-child{border-bottom:0}
@@ -61,9 +75,9 @@
   </header>
 
   <div class="new-pro-tabs">
-    <button type="button" class="new-pro-tab active"><i class="bx bx-user"></i> Información personal</button>
-    <button type="button" class="new-pro-tab"><i class="bx bx-briefcase"></i> Información profesional</button>
-    <button type="button" class="new-pro-tab"><i class="bx bx-lock-alt"></i> Acceso y cuenta</button>
+    <button type="button" class="new-pro-tab active" data-tab="personal"><i class="bx bx-user"></i> Información personal</button>
+    <button type="button" class="new-pro-tab" data-tab="professional"><i class="bx bx-briefcase"></i> Información profesional</button>
+    <button type="button" class="new-pro-tab" data-tab="access"><i class="bx bx-lock-alt"></i> Acceso y cuenta</button>
   </div>
 
   <form method="post" novalidate>
@@ -73,7 +87,7 @@
     {% endif %}
 
     <div class="new-pro-card">
-      <section class="new-pro-section">
+      <section class="new-pro-section new-pro-tab-content" data-content="personal">
         <h2>Información personal</h2>
         <p>Ingresa los datos básicos del profesional.</p>
         <div class="new-pro-grid">
@@ -100,7 +114,7 @@
         </div>
       </section>
 
-      <section class="new-pro-section">
+      <section class="new-pro-section new-pro-tab-content" data-content="professional">
         <h2>Información profesional</h2>
         <p>Asigna la especialidad registrada en el catálogo del consultorio.</p>
         <div class="new-pro-grid">
@@ -120,7 +134,7 @@
         </div>
       </section>
 
-      <section class="new-pro-section">
+      <section class="new-pro-section new-pro-tab-content" data-content="access">
         <h2>Acceso y cuenta</h2>
         <p>El profesional tendrá una cuenta para ingresar al panel interno.</p>
         <div class="new-pro-access">
