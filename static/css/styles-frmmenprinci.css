@@ -292,7 +292,9 @@
 @media screen and (max-width: 767px) {
   #navbar.nav {
     left: -100% !important;
-    width: 300px !important;
+    width: 360px !important;
+    max-width: calc(100vw - 28px) !important;
+    box-sizing: border-box !important;
   }
 
   #navbar.nav.show-menu {
