@@ -6,12 +6,13 @@ import mimetypes
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.db import models
+from django.contrib.auth import get_user_model
+from django.db import models, transaction
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .forms import CitaForm, EspecialidadForm, PacienteForm
+from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm
 from .models import Cita, DocumentoPaciente, Especialidad, Paciente, Post, Profesional
 
 
@@ -179,6 +180,35 @@ def homeinnuevaespecialidad(request):
     else:
         form = EspecialidadForm()
     return render(request, "frm-nuevaespecialidad.html", {"form": form})
+
+
+@staff_required
+def homeinnuevoprofesional(request):
+    if request.method == "POST":
+        form = ProfesionalForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                User = get_user_model()
+                usuario = User.objects.create_user(
+                    username=form.cleaned_data["username"],
+                    email=form.cleaned_data["email"],
+                    password=form.cleaned_data["password1"],
+                    is_active=form.cleaned_data["activo"],
+                    is_staff=True,
+                )
+                Profesional.objects.create(
+                    usuario=usuario,
+                    nombre=form.cleaned_data["nombre"].strip(),
+                    apellido=form.cleaned_data["apellido"].strip(),
+                    especialidad=form.cleaned_data["especialidad"],
+                    telefono=form.cleaned_data["telefono"].strip(),
+                    activo=form.cleaned_data["activo"],
+                )
+            messages.success(request, f"Profesional {form.cleaned_data['nombre']} {form.cleaned_data['apellido']} creado correctamente.")
+            return redirect("homeinprofesionales")
+    else:
+        form = ProfesionalForm()
+    return render(request, "frm-nuevoprofesional.html", {"form": form})
 
 
 @staff_required
