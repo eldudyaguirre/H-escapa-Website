@@ -144,7 +144,7 @@
             {% for profesional in profesionales %}
             <tr>
               <td><div class="pro-person"><div class="pro-avatar">{{ profesional.nombre|first|upper }}{{ profesional.apellido|first|upper }}</div><div><strong>{{ profesional.nombre }} {{ profesional.apellido }}</strong><small>{{ profesional.usuario.username }}</small></div></div></td>
-              <td>{{ profesional.get_especialidad_display }}</td>
+              <td>{{ profesional.especialidad.nombre }}</td>
               <td class="pro-contact">{% if profesional.usuario.email %}<small>{{ profesional.usuario.email }}</small>{% endif %}{{ profesional.telefono|default:"—" }}</td>
               <td>{{ profesional.creado_en|date:"d/m/Y" }}</td>
               <td>{% if profesional.activo %}<span class="pro-badge active"><span class="pro-dot"></span>Activo</span>{% else %}<span class="pro-badge inactive"><span class="pro-dot"></span>Inactivo</span>{% endif %}</td>
