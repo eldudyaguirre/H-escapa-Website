@@ -40,6 +40,8 @@ class Profesional(models.Model):
     direccion = models.CharField(max_length=250, blank=True)
     ciudad = models.CharField(max_length=100, blank=True)
     provincia = models.CharField(max_length=100, blank=True)
+    codigo_postal = models.CharField(max_length=20, blank=True)
+    pais = models.CharField(max_length=100, default="Ecuador", blank=True)
     contacto_emergencia_nombre = models.CharField(max_length=150, blank=True)
     contacto_emergencia_telefono = models.CharField(max_length=30, blank=True)
     contacto_emergencia_relacion = models.CharField(max_length=80, blank=True)
@@ -60,6 +62,8 @@ class Profesional(models.Model):
     tipo_contrato = models.CharField(max_length=20, choices=TIPOS_CONTRATO, blank=True)
     fecha_ingreso = models.DateField(blank=True, null=True)
     activo = models.BooleanField(default=True)
+    forzar_cambio_clave = models.BooleanField(default=True)
+    dos_factores = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
