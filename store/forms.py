@@ -263,7 +263,9 @@ class ProfesionalForm(forms.Form):
     email = forms.EmailField(label="Correo electrónico", required=True, widget=forms.EmailInput(attrs={"placeholder":"profesional@correo.com"}))
     direccion = forms.CharField(label="Dirección", max_length=250, required=False, widget=forms.TextInput(attrs={"autocomplete":"street-address"}))
     ciudad = forms.CharField(label="Ciudad", max_length=100, required=False, widget=forms.TextInput(attrs={"autocomplete":"address-level2"}))
-    provincia = forms.CharField(label="Provincia", max_length=100, required=False, widget=forms.TextInput(attrs={"autocomplete":"address-level1"}))
+    provincia = forms.CharField(label="Provincia", max_length=100, required=False, widget=forms.TextInput(attrs={"autocomplete":"off"}))
+    codigo_postal = forms.CharField(label="Código postal", max_length=20, required=False, widget=forms.TextInput(attrs={"inputmode":"numeric", "autocomplete":"postal-code"}))
+    pais = forms.CharField(label="País", max_length=100, required=False, initial="Ecuador", widget=forms.TextInput(attrs={"autocomplete":"country-name"}))
     contacto_emergencia_nombre = forms.CharField(label="Contacto de emergencia", max_length=150, required=False)
     contacto_emergencia_telefono = forms.CharField(label="Teléfono de emergencia", max_length=30, required=False)
     contacto_emergencia_relacion = forms.CharField(label="Relación", max_length=80, required=False)
@@ -285,6 +287,8 @@ class ProfesionalForm(forms.Form):
     password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Mínimo 8 caracteres"}))
     password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Repita la contraseña"}))
     activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
+    forzar_cambio_clave = forms.BooleanField(label="Forzar cambio de contraseña", required=False, initial=True)
+    dos_factores = forms.BooleanField(label="Autenticación de dos factores", required=False, initial=False)
     rol_sistema = forms.ChoiceField(
         label="Rol del sistema",
         choices=[
