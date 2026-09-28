@@ -28,7 +28,7 @@
   .new-pro-help{font-size:.66rem;color:#8b9694}
   .new-pro-error{font-size:.68rem;color:#b42318}
   /* Foto de perfil, igual al formulario de pacientes */
-  .profile-upload{display:flex;align-items:center;gap:18px;padding:14px 16px;margin:0 0 20px;border:1px solid #e3e8e6;border-radius:10px;background:#fafcfc}
+  .profile-upload{display:flex;align-items:center;gap:18px;padding:14px 16px;margin:0 0 20px;border:1px solid #e3e8e6;border-radius:10px;background:#fafcfc;width:100%;box-sizing:border-box}
   .profile-preview{width:76px;height:76px;min-width:76px;border-radius:50%;background:#eef3f2;display:grid;place-items:center;overflow:hidden;color:#439b95;font-size:30px}
   .profile-preview img{width:100%;height:100%;object-fit:cover;display:block}
   .profile-upload-info{display:flex;flex-direction:column;gap:5px}
@@ -119,7 +119,6 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="new-pro-card">
 <section class="new-pro-section new-pro-tab-content" data-content="personal">
 <h2>Información personal</h2><p>Datos básicos y contacto del profesional.</p>
-<div class="new-pro-grid">
 <div class="profile-upload">
   <div class="profile-preview" id="professional-profile-preview" aria-hidden="true">◯</div>
   <div class="profile-upload-info">
@@ -129,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="profile-upload-help">JPG, PNG o GIF · máximo recomendado 2 MB</div>
   </div>
 </div>
+<div class="new-pro-grid">
 <div class="new-pro-field"><label>Nombres *</label>{{form.nombre}}</div><div class="new-pro-field"><label>Apellidos *</label>{{form.apellido}}</div>
 <div class="new-pro-field"><label>Cédula</label>{{form.cedula}}</div><div class="new-pro-field"><label>Fecha de nacimiento</label>{{form.fecha_nacimiento}}</div>
 <div class="new-pro-field"><label>Género</label>{{form.genero}}</div><div class="new-pro-field"><label>Teléfono</label>{{form.telefono}}</div>
