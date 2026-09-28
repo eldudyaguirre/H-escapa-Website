@@ -1,5 +1,193 @@
 {% extends "frm-menpri.html" %}
 {% block content %}
+<style>
+/* ===== Gestión de especialidades ===== */
+.specialties-page{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:28px 32px 48px;
+  font-family:'Sora',sans-serif;
+  color:#263b3a;
+}
+.specialties-page *{box-sizing:border-box}
+.sp-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:24px;
+}
+.sp-header h1{
+  margin:0 0 6px;
+  font-family:'Marcellus',serif;
+  font-size:2rem;
+  line-height:1.15;
+  color:#263b3a;
+}
+.sp-header p,.sp-main-head p{
+  margin:0;
+  color:#71817f;
+  font-size:.88rem;
+}
+.sp-actions{display:flex;gap:10px;flex-wrap:wrap}
+.sp-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:0 16px;
+  border-radius:9px;
+  text-decoration:none;
+  font-size:.82rem;
+  font-weight:600;
+  transition:.2s ease;
+}
+.sp-btn.primary{background:#439b95;color:#fff;box-shadow:0 6px 16px rgba(67,155,149,.2)}
+.sp-btn.primary:hover{background:#357f7a;color:#fff;transform:translateY(-1px)}
+.sp-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:22px;
+}
+.sp-stat{
+  position:relative;
+  min-height:112px;
+  padding:19px 20px;
+  background:#fff;
+  border:1px solid #e5eceb;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(29,70,68,.05);
+}
+.sp-stat-title{display:block;color:#71817f;font-size:.78rem;font-weight:600;margin-bottom:8px}
+.sp-stat-icon{
+  position:absolute;
+  top:19px;
+  right:19px;
+  font-size:1.35rem;
+  color:#439b95;
+}
+.sp-stat-value{display:block;color:#243d3b;font-size:1.65rem;line-height:1.1;margin-bottom:4px}
+.sp-stat-note{display:block;color:#879491;font-size:.72rem}
+.sp-panel{
+  background:#fff;
+  border:1px solid #e5eceb;
+  border-radius:14px;
+  box-shadow:0 5px 20px rgba(29,70,68,.055);
+  overflow:hidden;
+}
+.sp-main-head{padding:22px 24px 18px;border-bottom:1px solid #edf1f0}
+.sp-main-head h2{
+  margin:0 0 5px;
+  color:#263b3a;
+  font-size:1.15rem;
+  font-weight:650;
+}
+.sp-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-top:19px;
+  flex-wrap:wrap;
+}
+.sp-tabs{display:flex;gap:5px}
+.sp-tab{
+  border:1px solid #dbe5e3;
+  background:#f8faf9;
+  color:#61716f;
+  padding:8px 13px;
+  border-radius:7px;
+  font-family:inherit;
+  font-size:.75rem;
+  cursor:pointer;
+}
+.sp-tab:hover,.sp-tab.active{background:#439b95;border-color:#439b95;color:#fff}
+.sp-tools{display:flex;align-items:center;gap:9px}
+.sp-search,.sp-filter{
+  height:38px;
+  border:1px solid #dce6e4;
+  border-radius:7px;
+  background:#fff;
+  color:#4c5d5b;
+  font-family:inherit;
+  font-size:.76rem;
+  outline:none;
+}
+.sp-search{width:240px;padding:0 12px}
+.sp-filter{padding:0 10px;min-width:105px}
+.sp-search:focus,.sp-filter:focus{border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.1)}
+.sp-table-wrap{width:100%;overflow-x:auto}
+.sp-table{width:100%;border-collapse:collapse;min-width:760px}
+.sp-table th{
+  padding:13px 20px;
+  background:#f8faf9;
+  border-bottom:1px solid #e8efed;
+  color:#73817f;
+  font-size:.69rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.025em;
+  text-align:left;
+  white-space:nowrap;
+}
+.sp-table td{
+  padding:14px 20px;
+  border-bottom:1px solid #edf1f0;
+  color:#586866;
+  font-size:.77rem;
+  vertical-align:middle;
+}
+.sp-table tbody tr:hover{background:#fbfdfc}
+.sp-table tbody tr:last-child td{border-bottom:0}
+.sp-name{display:flex;align-items:center;gap:11px;min-width:230px}
+.sp-icon{
+  width:36px;height:36px;flex:0 0 36px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:9px;background:#e8f4f2;color:#439b95;font-size:1rem;
+}
+.sp-name strong{display:block;color:#30413f;font-size:.8rem;font-weight:650}
+.sp-name small{display:block;margin-top:3px;color:#9aa6a4;font-size:.67rem}
+.sp-count{font-weight:650;color:#3e514e}
+.sp-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 9px;border-radius:999px;
+  font-size:.68rem;font-weight:650;white-space:nowrap;
+}
+.sp-badge.active{background:#e9f6ee;color:#287047}
+.sp-badge.inactive{background:#fff3d9;color:#8a671d}
+.sp-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.sp-action{
+  width:32px;height:32px;
+  border:1px solid #dce5e3;
+  border-radius:7px;
+  background:#fff;
+  color:#71807e;
+  cursor:pointer;
+}
+.sp-action:hover{background:#eef7f5;color:#439b95;border-color:#b9d8d4}
+.sp-empty{padding:55px 20px;text-align:center;color:#84918f}
+.sp-empty i{display:block;font-size:2rem;color:#9fc7c2;margin-bottom:10px}
+.sp-empty strong{display:block;color:#536360;margin-bottom:4px}
+@media (max-width:991px){
+  .specialties-page{padding:24px 22px 40px}
+  .sp-stats{grid-template-columns:1fr}
+}
+@media (max-width:767px){
+  .specialties-page{padding:20px 14px 32px}
+  .sp-header{flex-direction:column}
+  .sp-header h1{font-size:1.7rem}
+  .sp-actions,.sp-btn{width:100%}
+  .sp-btn{justify-content:center}
+  .sp-main-head{padding:18px 15px 16px}
+  .sp-toolbar{align-items:stretch}
+  .sp-tabs{width:100%}
+  .sp-tab{flex:1}
+  .sp-tools{width:100%;flex-direction:column}
+  .sp-search,.sp-filter{width:100%}
+}
+</style>
 <section class="specialties-page">
   <header class="sp-header">
     <div>
