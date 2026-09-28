@@ -106,6 +106,7 @@ def homeinprofesionales(request):
     profesionales = Profesional.objects.select_related("usuario").all()
     q = request.GET.get("q", "").strip()
     estado = request.GET.get("estado", "").strip()
+    especialidad = request.GET.get("especialidad", "").strip()
 
     if q:
         profesionales = profesionales.filter(
@@ -120,6 +121,9 @@ def homeinprofesionales(request):
         profesionales = profesionales.filter(activo=True)
     elif estado == "INACTIVO":
         profesionales = profesionales.filter(activo=False)
+
+    if especialidad:
+        profesionales = profesionales.filter(especialidad=especialidad)
 
     total_profesionales = Profesional.objects.count()
     activos = Profesional.objects.filter(activo=True).count()
@@ -137,6 +141,8 @@ def homeinprofesionales(request):
             "profesionales": profesionales,
             "q": q,
             "estado": estado,
+            "especialidad": especialidad,
+            "especialidades_opciones": Profesional.ESPECIALIDADES,
             "total_profesionales": total_profesionales,
             "activos": activos,
             "inactivos": inactivos,
