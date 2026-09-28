@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import CitaForm, PacienteForm
-from .models import Cita, DocumentoPaciente, Paciente, Post
+from .models import Cita, DocumentoPaciente, Paciente, Post, Profesional
 
 
 def home(request):
@@ -99,6 +99,44 @@ def homein(request):
 def homeincalendario(request):
     citas = Cita.objects.select_related("paciente", "profesional").order_by("fecha_hora")
     return render(request, "frm-calendario.html", {"citas": citas})
+
+
+@staff_required
+def homeinprofesionales(request):
+    profesionales = Profesional.objects.select_related("usuario").all()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+
+    if q:
+        profesionales = profesionales.filter(
+            models.Q(nombre__icontains=q)
+            | models.Q(apellido__icontains=q)
+            | models.Q(telefono__icontains=q)
+            | models.Q(usuario__username__icontains=q)
+            | models.Q(usuario__email__icontains=q)
+        )
+
+    if estado == "ACTIVO":
+        profesionales = profesionales.filter(activo=True)
+    elif estado == "INACTIVO":
+        profesionales = profesionales.filter(activo=False)
+
+    total_profesionales = Profesional.objects.count()
+    activos = Profesional.objects.filter(activo=True).count()
+    inactivos = Profesional.objects.filter(activo=False).count()
+
+    return render(
+        request,
+        "frm-profesionales.html",
+        {
+            "profesionales": profesionales,
+            "q": q,
+            "estado": estado,
+            "total_profesionales": total_profesionales,
+            "activos": activos,
+            "inactivos": inactivos,
+        },
+    )
 
 
 @staff_required
