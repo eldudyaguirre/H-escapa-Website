@@ -4,15 +4,22 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 
-class Profesional(models.Model):
-    ESPECIALIDADES = [
-        ("PSICOLOGIA", "Psicología"),
-        ("PSICOLOGIA_CLINICA", "Psicología Clínica"),
-        ("TERAPIA_FAMILIAR", "Terapia Familiar"),
-        ("TERAPIA_PAREJA", "Terapia de Pareja"),
-        ("OTRA", "Otra"),
-    ]
+class Especialidad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    activa = models.BooleanField(default=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["nombre"]
+        verbose_name = "Especialidad"
+        verbose_name_plural = "Especialidades"
+
+    def __str__(self):
+        return self.nombre
+
+
+class Profesional(models.Model):
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,10 +27,10 @@ class Profesional(models.Model):
     )
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    especialidad = models.CharField(
-        max_length=30,
-        choices=ESPECIALIDADES,
-        default="PSICOLOGIA_CLINICA",
+    especialidad = models.ForeignKey(
+        Especialidad,
+        on_delete=models.PROTECT,
+        related_name="profesionales",
     )
     telefono = models.CharField(max_length=30, blank=True)
     activo = models.BooleanField(default=True)
