@@ -135,6 +135,40 @@ def homeinespecialidades(request):
 
 
 @staff_required
+def homeineditarespecialidad(request, especialidad_id):
+    especialidad = get_object_or_404(Especialidad, pk=especialidad_id)
+
+    if request.method == "POST":
+        form = EspecialidadForm(request.POST, instance=especialidad)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Especialidad «{especialidad.nombre}» actualizada correctamente.")
+            return redirect("homeinespecialidades")
+    else:
+        form = EspecialidadForm(instance=especialidad)
+
+    return render(request, "frm-nuevaespecialidad.html", {
+        "form": form,
+        "editar": True,
+        "especialidad": especialidad,
+    })
+
+
+@staff_required
+def cambiar_estado_especialidad(request, especialidad_id):
+    especialidad = get_object_or_404(Especialidad, pk=especialidad_id)
+
+    if request.method != "POST":
+        return redirect("homeinespecialidades")
+
+    especialidad.activa = not especialidad.activa
+    especialidad.save(update_fields=["activa", "actualizado_en"])
+    estado = "activada" if especialidad.activa else "desactivada"
+    messages.success(request, f"Especialidad «{especialidad.nombre}» {estado} correctamente.")
+    return redirect("homeinespecialidades")
+
+
+@staff_required
 def homeinnuevaespecialidad(request):
     if request.method == "POST":
         form = EspecialidadForm(request.POST)
