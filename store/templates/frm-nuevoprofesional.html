@@ -1,0 +1,157 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Agregar profesional{% endblock %}
+
+{% block extra_head %}
+<style>
+  .new-pro-page{padding:26px 28px 45px;max-width:1180px;margin:auto;color:#3e4645}
+  .new-pro-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+  .new-pro-head h1{margin:0 0 6px;font-family:Marcellus,serif;font-size:1.9rem;color:#263b3a}
+  .new-pro-head p{margin:0;color:#71817f;font-size:.84rem}
+  .new-pro-back{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;border:1px solid #dce5e3;border-radius:7px;background:#fff;color:#52615f;text-decoration:none;font-size:.76rem;font-weight:600}
+  .new-pro-back:hover{border-color:#439b95;color:#005855;background:#f7fbfa}
+  .new-pro-tabs{display:flex;gap:4px;padding:4px;background:#edf3f1;border-radius:8px;margin-bottom:15px}
+  .new-pro-tab{flex:1;border:0;background:transparent;color:#667572;border-radius:6px;padding:10px 12px;font:600 .74rem 'Sora',sans-serif}
+  .new-pro-tab.active{background:#fff;color:#005855;box-shadow:0 1px 4px rgba(30,55,53,.08)}
+  .new-pro-card{background:#fff;border:1px solid #e5eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.055);overflow:hidden}
+  .new-pro-section{padding:22px 24px;border-bottom:1px solid #edf1f0}
+  .new-pro-section:last-child{border-bottom:0}
+  .new-pro-section h2{margin:0 0 4px;font-size:1rem;color:#263b3a}
+  .new-pro-section p{margin:0 0 18px;color:#84918f;font-size:.72rem}
+  .new-pro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .new-pro-field{display:flex;flex-direction:column;gap:6px}
+  .new-pro-field.full{grid-column:1/-1}
+  .new-pro-field label{font-size:.72rem;font-weight:650;color:#465653}
+  .new-pro-field input,.new-pro-field select{width:100%;height:39px;border:1px solid #dce5e3;border-radius:7px;background:#fff;color:#3e4645;padding:0 11px;font:400 .76rem 'Sora',sans-serif;outline:none}
+  .new-pro-field input:focus,.new-pro-field select:focus{border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.1)}
+  .new-pro-help{font-size:.66rem;color:#8b9694}
+  .new-pro-error{font-size:.68rem;color:#b42318}
+  .new-pro-access{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .new-pro-access-box{padding:15px;border:1px solid #e5eceb;border-radius:9px;background:#f9fbfa}
+  .new-pro-access-box strong{display:block;color:#30413f;font-size:.76rem;margin-bottom:4px}
+  .new-pro-access-box span{display:block;color:#84918f;font-size:.66rem;line-height:1.45}
+  .new-pro-check{display:flex;align-items:center;gap:9px;margin-top:16px;padding:12px 13px;border:1px solid #dce8e5;border-radius:8px;background:#f5faf8;color:#42534f;font-size:.73rem;font-weight:600}
+  .new-pro-check input{accent-color:#439b95;width:16px;height:16px}
+  .new-pro-actions{display:flex;justify-content:flex-end;gap:9px;padding:18px 24px;background:#fbfcfc;border-top:1px solid #edf1f0}
+  .new-pro-cancel,.new-pro-save{height:39px;padding:0 16px;border-radius:7px;font:600 .75rem 'Sora',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+  .new-pro-cancel{border:1px solid #dce5e3;background:#fff;color:#61706d}
+  .new-pro-save{border:1px solid #005855;background:#005855;color:#fff}
+  .new-pro-save:hover{background:#00433f}
+  @media(max-width:700px){
+    .new-pro-page{padding:18px 12px 30px}
+    .new-pro-head h1{font-size:1.6rem}
+    .new-pro-grid,.new-pro-access{grid-template-columns:1fr}
+    .new-pro-field.full{grid-column:auto}
+    .new-pro-tabs{overflow:auto}
+    .new-pro-tab{min-width:125px}
+    .new-pro-section{padding:18px 15px}
+    .new-pro-actions{padding:15px;flex-direction:column}
+    .new-pro-cancel,.new-pro-save{justify-content:center;width:100%}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="new-pro-page">
+  <header class="new-pro-head">
+    <div>
+      <h1>Agregar profesional</h1>
+      <p>Crea el perfil del profesional y configura su acceso al consultorio.</p>
+    </div>
+    <a class="new-pro-back" href="{% url 'homeinprofesionales' %}"><i class="bx bx-arrow-back"></i> Volver a profesionales</a>
+  </header>
+
+  <div class="new-pro-tabs">
+    <button type="button" class="new-pro-tab active"><i class="bx bx-user"></i> Información personal</button>
+    <button type="button" class="new-pro-tab"><i class="bx bx-briefcase"></i> Información profesional</button>
+    <button type="button" class="new-pro-tab"><i class="bx bx-lock-alt"></i> Acceso y cuenta</button>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="new-pro-error" style="margin:0 0 12px">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="new-pro-card">
+      <section class="new-pro-section">
+        <h2>Información personal</h2>
+        <p>Ingresa los datos básicos del profesional.</p>
+        <div class="new-pro-grid">
+          <div class="new-pro-field">
+            <label for="{{ form.nombre.id_for_label }}">Nombres *</label>
+            {{ form.nombre }}
+            {% for error in form.nombre.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div class="new-pro-field">
+            <label for="{{ form.apellido.id_for_label }}">Apellidos *</label>
+            {{ form.apellido }}
+            {% for error in form.apellido.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div class="new-pro-field">
+            <label for="{{ form.email.id_for_label }}">Correo electrónico *</label>
+            {{ form.email }}
+            {% for error in form.email.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div class="new-pro-field">
+            <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
+            {{ form.telefono }}
+            {% for error in form.telefono.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="new-pro-section">
+        <h2>Información profesional</h2>
+        <p>Asigna la especialidad registrada en el catálogo del consultorio.</p>
+        <div class="new-pro-grid">
+          <div class="new-pro-field">
+            <label for="{{ form.especialidad.id_for_label }}">Especialidad *</label>
+            {{ form.especialidad }}
+            <span class="new-pro-help">Solo aparecen especialidades activas.</span>
+            {% for error in form.especialidad.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div class="new-pro-field">
+            <label>Estado</label>
+            <label class="new-pro-check" style="margin-top:0">
+              {{ form.activo }} Profesional activo
+            </label>
+            {% for error in form.activo.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <section class="new-pro-section">
+        <h2>Acceso y cuenta</h2>
+        <p>El profesional tendrá una cuenta para ingresar al panel interno.</p>
+        <div class="new-pro-access">
+          <div class="new-pro-access-box"><strong>Cuenta interna</strong><span>Se crea como usuario del sistema y con acceso de personal.</span></div>
+          <div class="new-pro-access-box"><strong>Seguridad</strong><span>La contraseña se almacena mediante el sistema de autenticación de Django.</span></div>
+        </div>
+        <div class="new-pro-grid" style="margin-top:16px">
+          <div class="new-pro-field">
+            <label for="{{ form.username.id_for_label }}">Usuario *</label>
+            {{ form.username }}
+            {% for error in form.username.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div></div>
+          <div class="new-pro-field">
+            <label for="{{ form.password1.id_for_label }}">Contraseña *</label>
+            {{ form.password1 }}
+            {% for error in form.password1.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+          <div class="new-pro-field">
+            <label for="{{ form.password2.id_for_label }}">Confirmar contraseña *</label>
+            {{ form.password2 }}
+            {% for error in form.password2.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <div class="new-pro-actions">
+        <a class="new-pro-cancel" href="{% url 'homeinprofesionales' %}">Cancelar</a>
+        <button class="new-pro-save" type="submit"><i class="bx bx-save"></i> Guardar profesional</button>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
