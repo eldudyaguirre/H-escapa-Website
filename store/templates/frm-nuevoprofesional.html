@@ -51,19 +51,21 @@
   .access-role label span{display:block;margin-top:3px;font-size:.62rem;color:#84918f}
   .access-role input:checked+label{border-color:#439b95;background:#f1faf8;box-shadow:0 0 0 2px rgba(67,155,149,.08)}
   .permission-table{border:1px solid #e3ebe9;border-radius:10px;overflow:hidden}
-  .permission-row{display:grid;grid-template-columns:1fr repeat(4,72px);align-items:center;min-height:42px;border-bottom:1px solid #edf1f0;padding:0 12px}
+  .permission-row{display:grid;grid-template-columns:minmax(220px,1fr) repeat(4,90px);align-items:center;min-height:48px;border-bottom:1px solid #edf1f0;padding:0 14px}
   .permission-row:last-child{border-bottom:0}
-  .permission-row.head{background:#f5f8f7;color:#667572;font-weight:700;font-size:.65rem}
-  .permission-row span{font-size:.69rem;color:#42534f}
-  .permission-row label{text-align:center}
-  .permission-row input{accent-color:#005855;width:15px;height:15px}
+  .permission-row.head{background:#f5f8f7;color:#667572;font-weight:700;font-size:.65rem;min-height:42px}
+  .permission-row .module-name{font-size:.7rem;color:#42534f}
+  .permission-row .permission-cell{display:flex;align-items:center;justify-content:center}
+  .permission-row .permission-cell input{accent-color:#005855;width:15px;height:15px;margin:0}
+  .permission-row.disabled .module-name{color:#9aa6a3}
+  .permission-row.disabled .permission-cell input{opacity:.55}
   .access-settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px}
   .access-setting{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #e3ebe9;border-radius:8px;background:#fff}
   .access-setting input{accent-color:#005855;margin-top:2px}
   .access-setting strong{display:block;font-size:.69rem;color:#30413f}
   .access-setting span{display:block;font-size:.6rem;color:#84918f;margin-top:2px}
   .access-note{margin-top:12px;padding:10px 12px;border-radius:8px;background:#f5faf8;color:#657572;font-size:.64rem}
-  @media(max-width:700px){.access-grid,.access-role-grid,.access-settings{grid-template-columns:1fr}.permission-row{grid-template-columns:1fr repeat(4,48px);padding:0 7px}.permission-row span{font-size:.62rem}}
+  @media(max-width:700px){.access-grid,.access-role-grid,.access-settings{grid-template-columns:1fr}.permission-row{grid-template-columns:minmax(130px,1fr) repeat(4,55px);padding:0 7px}.permission-row .module-name{font-size:.62rem}}
   .new-pro-access-box{padding:15px;border:1px solid #e5eceb;border-radius:9px;background:#f9fbfa}
   .new-pro-access-box strong{display:block;color:#30413f;font-size:.76rem;margin-bottom:4px}
   .new-pro-access-box span{display:block;color:#84918f;font-size:.66rem;line-height:1.45}
@@ -242,11 +244,41 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
   <div class="permission-table">
     <div class="permission-row head"><span>Módulo</span><span>Ver</span><span>Agregar</span><span>Editar</span><span>Eliminar</span></div>
-    <div class="permission-row"><span>Pacientes</span><label>{{form.permisos.0}}</label><label>{{form.permisos.1}}</label><label>{{form.permisos.2}}</label><label>{{form.permisos.3}}</label></div>
-    <div class="permission-row"><span>Citas</span><label>{{form.permisos.4}}</label><label>{{form.permisos.5}}</label><label>{{form.permisos.6}}</label><label>{{form.permisos.7}}</label></div>
-    <div class="permission-row"><span>Profesionales</span><label>{{form.permisos.8}}</label><label>{{form.permisos.9}}</label><label>{{form.permisos.10}}</label><label>{{form.permisos.11}}</label></div>
-    <div class="permission-row"><span>Prescripciones</span><label><input type="checkbox" disabled title="Módulo aún no implementado"></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label></div>
-    <div class="permission-row"><span>Facturación</span><label><input type="checkbox" disabled title="Módulo aún no implementado"></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label><label><input type="checkbox" disabled></label></div>
+    <div class="permission-row">
+      <span class="module-name">Pacientes</span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="pacientes_view"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="pacientes_add"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="pacientes_change"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="pacientes_delete"></span>
+    </div>
+    <div class="permission-row">
+      <span class="module-name">Citas</span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="citas_view"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="citas_add"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="citas_change"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="citas_delete"></span>
+    </div>
+    <div class="permission-row">
+      <span class="module-name">Profesionales</span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="profesionales_view"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="profesionales_add"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="profesionales_change"></span>
+      <span class="permission-cell"><input type="checkbox" name="permisos" value="profesionales_delete"></span>
+    </div>
+    <div class="permission-row disabled">
+      <span class="module-name">Prescripciones</span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+    </div>
+    <div class="permission-row disabled">
+      <span class="module-name">Facturación</span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+      <span class="permission-cell"><input type="checkbox" disabled></span>
+    </div>
   </div>
   <div class="access-note">Los permisos disponibles se guardan en la cuenta mediante el sistema de permisos de Django. Prescripciones y Facturación quedarán habilitados cuando esos módulos estén implementados.</div>
 </div>
