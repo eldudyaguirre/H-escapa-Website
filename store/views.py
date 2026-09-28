@@ -125,6 +125,11 @@ def homeinprofesionales(request):
     activos = Profesional.objects.filter(activo=True).count()
     inactivos = Profesional.objects.filter(activo=False).count()
 
+    especialidades = []
+    for codigo, nombre in Profesional.ESPECIALIDADES:
+        cantidad = Profesional.objects.filter(especialidad=codigo).count()
+        especialidades.append({"nombre": nombre, "cantidad": cantidad})
+
     return render(
         request,
         "frm-profesionales.html",
@@ -135,6 +140,7 @@ def homeinprofesionales(request):
             "total_profesionales": total_profesionales,
             "activos": activos,
             "inactivos": inactivos,
+            "especialidades": especialidades,
         },
     )
 
