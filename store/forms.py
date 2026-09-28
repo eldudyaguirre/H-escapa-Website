@@ -253,25 +253,53 @@ class EspecialidadForm(forms.ModelForm):
 
 
 class ProfesionalForm(forms.Form):
-    nombre = forms.CharField(label="Nombres", max_length=100, widget=forms.TextInput(attrs={"placeholder": "Ingrese los nombres", "autocomplete": "given-name"}))
-    apellido = forms.CharField(label="Apellidos", max_length=100, widget=forms.TextInput(attrs={"placeholder": "Ingrese los apellidos", "autocomplete": "family-name"}))
+    foto = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={"accept":"image/jpeg,image/png,image/webp"}))
+    cedula = forms.CharField(label="Cédula", max_length=10, required=False, widget=forms.TextInput(attrs={"maxlength":"10","inputmode":"numeric","placeholder":"10 dígitos"}))
+    nombre = forms.CharField(label="Nombres", max_length=100, widget=forms.TextInput(attrs={"placeholder":"Ingrese los nombres"}))
+    apellido = forms.CharField(label="Apellidos", max_length=100, widget=forms.TextInput(attrs={"placeholder":"Ingrese los apellidos"}))
+    fecha_nacimiento = forms.DateField(label="Fecha de nacimiento", required=False, widget=forms.DateInput(attrs={"type":"date"}))
+    genero = forms.ChoiceField(label="Género", required=False, choices=[("", "Seleccione género")] + Profesional.GENEROS)
+    telefono = forms.CharField(label="Teléfono", max_length=30, required=False, widget=forms.TextInput(attrs={"placeholder":"Ej.: 099 999 9999"}))
+    email = forms.EmailField(label="Correo electrónico", required=True, widget=forms.EmailInput(attrs={"placeholder":"profesional@correo.com"}))
+    direccion = forms.CharField(label="Dirección", max_length=250, required=False)
+    ciudad = forms.CharField(label="Ciudad", max_length=100, required=False)
+    provincia = forms.CharField(label="Provincia", max_length=100, required=False)
+    contacto_emergencia_nombre = forms.CharField(label="Contacto de emergencia", max_length=150, required=False)
+    contacto_emergencia_telefono = forms.CharField(label="Teléfono de emergencia", max_length=30, required=False)
+    contacto_emergencia_relacion = forms.CharField(label="Relación", max_length=80, required=False)
+    profesion = forms.CharField(label="Profesión", max_length=150, required=False, widget=forms.TextInput(attrs={"placeholder":"Ej.: Psicólogo"}))
     especialidad = forms.ModelChoiceField(label="Especialidad", queryset=Especialidad.objects.none(), empty_label="Seleccione una especialidad")
-    telefono = forms.CharField(label="Teléfono", max_length=30, required=False, widget=forms.TextInput(attrs={"placeholder": "Ej.: 099 999 9999", "autocomplete": "tel"}))
-    email = forms.EmailField(label="Correo electrónico", required=True, widget=forms.EmailInput(attrs={"placeholder": "profesional@correo.com", "autocomplete": "email"}))
-    username = forms.CharField(label="Usuario de acceso", max_length=150, widget=forms.TextInput(attrs={"placeholder": "Ej.: jgarcia", "autocomplete": "username"}))
-    password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder": "Mínimo 8 caracteres", "autocomplete": "new-password"}))
-    password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder": "Repita la contraseña", "autocomplete": "new-password"}))
+    especializacion = forms.CharField(label="Especialización", max_length=150, required=False)
+    titulo = forms.CharField(label="Título / certificación", max_length=150, required=False)
+    institucion_titulo = forms.CharField(label="Institución", max_length=200, required=False)
+    anio_titulo = forms.IntegerField(label="Año de titulación", required=False, min_value=1900, max_value=2100)
+    tipo_licencia = forms.CharField(label="Tipo de licencia", max_length=150, required=False)
+    numero_licencia = forms.CharField(label="Número de licencia", max_length=100, required=False)
+    fecha_emision_licencia = forms.DateField(label="Fecha de emisión", required=False, widget=forms.DateInput(attrs={"type":"date"}))
+    fecha_vencimiento_licencia = forms.DateField(label="Fecha de vencimiento", required=False, widget=forms.DateInput(attrs={"type":"date"}))
+    biografia = forms.CharField(label="Biografía / descripción", required=False, widget=forms.Textarea(attrs={"rows":4}))
+    codigo_empleado = forms.CharField(label="Código de empleado", max_length=50, required=False)
+    tipo_contrato = forms.ChoiceField(label="Tipo de contrato", required=False, choices=[("", "Seleccione tipo")] + Profesional.TIPOS_CONTRATO)
+    fecha_ingreso = forms.DateField(label="Fecha de ingreso", required=False, widget=forms.DateInput(attrs={"type":"date"}))
+    username = forms.CharField(label="Usuario de acceso", max_length=150, widget=forms.TextInput(attrs={"placeholder":"Ej.: jgarcia"}))
+    password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Mínimo 8 caracteres"}))
+    password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Repita la contraseña"}))
     activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["especialidad"].queryset = Especialidad.objects.filter(activa=True).order_by("nombre")
 
+    def clean_cedula(self):
+        cedula = self.cleaned_data.get("cedula", "").strip()
+        if cedula and (not cedula.isdigit() or len(cedula) != 10):
+            raise forms.ValidationError("La cédula debe tener exactamente 10 dígitos.")
+        return cedula
+
     def clean_username(self):
         from django.contrib.auth import get_user_model
         username = self.cleaned_data["username"].strip()
-        User = get_user_model()
-        if User.objects.filter(username__iexact=username).exists():
+        if get_user_model().objects.filter(username__iexact=username).exists():
             raise forms.ValidationError("Ese usuario ya existe.")
         return username
 
