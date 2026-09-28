@@ -1,17 +1,5 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Agregar profesional<script>
-document.addEventListener('DOMContentLoaded',function(){
-  const tabs=document.querySelectorAll('.new-pro-tab');
-  const panels=document.querySelectorAll('.new-pro-tab-content');
-  function showTab(name){
-    tabs.forEach(function(tab){tab.classList.toggle('active',tab.dataset.tab===name)});
-    panels.forEach(function(panel){panel.classList.toggle('active',panel.dataset.content===name)});
-  }
-  tabs.forEach(function(tab){tab.addEventListener('click',function(){showTab(tab.dataset.tab)})});
-  showTab('personal');
-});
-</script>
-{% endblock %}
+{% block title %}H-Escapa | Agregar profesional{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -62,6 +50,20 @@ document.addEventListener('DOMContentLoaded',function(){
     .new-pro-cancel,.new-pro-save{justify-content:center;width:100%}
   }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const tabs = document.querySelectorAll('.new-pro-tab');
+  const panels = document.querySelectorAll('.new-pro-tab-content');
+  function showTab(name){
+    tabs.forEach(function(tab){ tab.classList.toggle('active', tab.dataset.tab === name); });
+    panels.forEach(function(panel){ panel.classList.toggle('active', panel.dataset.content === name); });
+  }
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){ showTab(tab.dataset.tab); });
+  });
+  showTab('personal');
+});
+</script>
 {% endblock %}
 
 {% block content %}
