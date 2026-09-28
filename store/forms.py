@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Cita, Paciente, Profesional
+from .models import Cita, Especialidad, Paciente, Profesional
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -238,3 +238,15 @@ class CitaForm(forms.ModelForm):
             activo=True
         ).order_by("apellido", "nombre")
         self.fields["fecha_hora"].input_formats = ["%Y-%m-%dT%H:%M"]
+
+
+class EspecialidadForm(forms.ModelForm):
+    class Meta:
+        model = Especialidad
+        fields = ["nombre", "activa"]
+        widgets = {
+            "nombre": forms.TextInput(attrs={
+                "placeholder": "Ej.: Psicología Infantil",
+                "maxlength": "100",
+            }),
+        }
