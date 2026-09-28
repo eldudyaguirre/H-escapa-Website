@@ -106,7 +106,28 @@ def homeincalendario(request):
 @staff_required
 def homeinespecialidades(request):
     especialidades = Especialidad.objects.all()
-    return render(request, "frm-especialidades.html", {"especialidades": especialidades})
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+
+    if q:
+        especialidades = especialidades.filter(nombre__icontains=q)
+    if estado == "ACTIVA":
+        especialidades = especialidades.filter(activa=True)
+    elif estado == "INACTIVA":
+        especialidades = especialidades.filter(activa=False)
+
+    total = Especialidad.objects.count()
+    activas = Especialidad.objects.filter(activa=True).count()
+    inactivas = Especialidad.objects.filter(activa=False).count()
+
+    return render(request, "frm-especialidades.html", {
+        "especialidades": especialidades,
+        "q": q,
+        "estado": estado,
+        "total": total,
+        "activas": activas,
+        "inactivas": inactivas,
+    })
 
 
 @staff_required
