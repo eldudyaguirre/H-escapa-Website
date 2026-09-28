@@ -250,3 +250,33 @@ class EspecialidadForm(forms.ModelForm):
                 "maxlength": "100",
             }),
         }
+
+
+class ProfesionalForm(forms.Form):
+    nombre = forms.CharField(label="Nombres", max_length=100, widget=forms.TextInput(attrs={"placeholder": "Ingrese los nombres", "autocomplete": "given-name"}))
+    apellido = forms.CharField(label="Apellidos", max_length=100, widget=forms.TextInput(attrs={"placeholder": "Ingrese los apellidos", "autocomplete": "family-name"}))
+    especialidad = forms.ModelChoiceField(label="Especialidad", queryset=Especialidad.objects.none(), empty_label="Seleccione una especialidad")
+    telefono = forms.CharField(label="Teléfono", max_length=30, required=False, widget=forms.TextInput(attrs={"placeholder": "Ej.: 099 999 9999", "autocomplete": "tel"}))
+    email = forms.EmailField(label="Correo electrónico", required=True, widget=forms.EmailInput(attrs={"placeholder": "profesional@correo.com", "autocomplete": "email"}))
+    username = forms.CharField(label="Usuario de acceso", max_length=150, widget=forms.TextInput(attrs={"placeholder": "Ej.: jgarcia", "autocomplete": "username"}))
+    password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder": "Mínimo 8 caracteres", "autocomplete": "new-password"}))
+    password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder": "Repita la contraseña", "autocomplete": "new-password"}))
+    activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["especialidad"].queryset = Especialidad.objects.filter(activa=True).order_by("nombre")
+
+    def clean_username(self):
+        from django.contrib.auth import get_user_model
+        username = self.cleaned_data["username"].strip()
+        User = get_user_model()
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError("Ese usuario ya existe.")
+        return username
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("password1") and cleaned_data.get("password2") and cleaned_data["password1"] != cleaned_data["password2"]:
+            self.add_error("password2", "Las contraseñas no coinciden.")
+        return cleaned_data
