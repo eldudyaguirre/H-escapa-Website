@@ -115,8 +115,8 @@
                 <label for="filterEspecialidad">Especialidad</label>
                 <select id="filterEspecialidad" name="especialidad">
                   <option value="">Todas</option>
-                  {% for codigo, nombre in especialidades_opciones %}
-                    <option value="{{ codigo }}" {% if especialidad == codigo %}selected{% endif %}>{{ nombre }}</option>
+                  {% for item in especialidades_opciones %}
+                    <option value="{{ item.id }}" {% if especialidad == item.id|stringformat:"s" %}selected{% endif %}>{{ item.nombre }}</option>
                   {% endfor %}
                 </select>
               </div>
