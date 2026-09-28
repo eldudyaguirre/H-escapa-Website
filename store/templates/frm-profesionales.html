@@ -1,5 +1,15 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Profesionales{% endblock %}
+{% block title %}H-Escapa | Profesionales<script>
+document.addEventListener("DOMContentLoaded",function(){
+ const moreBtn=document.getElementById("proMoreBtn"), moreMenu=document.getElementById("proMoreMenu");
+ if(moreBtn&&moreMenu){moreBtn.addEventListener("click",function(e){e.stopPropagation();moreMenu.classList.toggle("open")});document.addEventListener("click",function(){moreMenu.classList.remove("open")})}
+ const reset=document.getElementById("proResetFilters");
+ if(reset) reset.addEventListener("click",function(){window.location.href="{% url 'homeinprofesionales' %}"});
+ const filter=document.getElementById("proFilterBtn"), panel=document.getElementById("proFilterPanel");
+ if(filter&&panel){filter.addEventListener("click",function(e){e.stopPropagation();panel.classList.toggle("open")});document.addEventListener("click",function(){panel.classList.remove("open")})}
+});
+</script>
+{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -13,6 +23,7 @@
   .pro-btn.primary:hover{background:#fff;color:#141716}
   .pro-btn.secondary{background:#fff;color:#3e4645}
   .pro-btn.secondary:hover{background:#1c2020;border-color:#4a5250}
+  .pro-more-options{position:relative}.pro-more-menu{position:absolute;right:0;top:44px;width:185px;background:#fff;border:1px solid #e1e7e5;border-radius:8px;box-shadow:0 12px 28px rgba(30,55,53,.14);padding:5px;z-index:60;display:none}.pro-more-menu.open{display:block}.pro-more-menu a{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:5px;text-decoration:none;color:#3e4645;font-size:.72rem;font-weight:600}.pro-more-menu a:hover{background:#f1f7f6;color:#005855}
   .pro-layout{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:18px;align-items:start}
   .pro-panel{background:#fff;border:1px solid #e8eceb;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06);overflow:hidden}
   .pro-directory-head{padding:19px 18px 12px}
@@ -91,8 +102,8 @@
       <p>Administra profesionales, especialidades y estado del consultorio</p>
     </div>
     <div class="pro-actions">
-      <a class="pro-btn primary" href="#"><i class="bx bx-user-plus"></i> Agregar profesional</a>
-      <button type="button" class="pro-btn secondary"><i class="bx bx-file"></i> Más opciones <i class="bx bx-chevron-down"></i></button>
+      <a class="pro-btn primary" href="{% url 'homeinnuevoprofesional' %}"><i class="bx bx-user-plus"></i> Agregar profesional</a>
+      <div class="pro-more-options"><button type="button" class="pro-btn secondary" id="proMoreBtn"><i class="bx bx-file"></i> Más opciones <i class="bx bx-chevron-down"></i></button><div class="pro-more-menu" id="proMoreMenu"><a href="{% url 'homeinespecialidades' %}"><i class="bx bx-list-ul"></i> Especialidades</a><a href="{% url 'homeinnuevoprofesional' %}"><i class="bx bx-user-plus"></i> Agregar profesional</a></div></div>
     </div>
   </header>
 
