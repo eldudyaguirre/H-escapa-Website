@@ -62,6 +62,13 @@
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+  const provinceInput = document.getElementById('id_provincia');
+  if (provinceInput) {
+    provinceInput.setAttribute('autocomplete', 'off');
+    provinceInput.setAttribute('readonly', 'readonly');
+    provinceInput.addEventListener('focus', function(){ this.removeAttribute('readonly'); });
+    provinceInput.addEventListener('click', function(){ this.removeAttribute('readonly'); });
+  }
   const tabs = document.querySelectorAll('.new-pro-tab');
   const panels = document.querySelectorAll('.new-pro-tab-content');
   function showTab(name){
@@ -110,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <button type="button" class="new-pro-tab" data-tab="access"><i class="bx bx-lock-alt"></i> Acceso y cuenta</button>
   </div>
 
-  <form method="post" enctype="multipart/form-data" novalidate>
+  <form method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
     {% csrf_token %}
     {% if form.non_field_errors %}
       <div class="new-pro-error" style="margin:0 0 12px">{{ form.non_field_errors }}</div>
