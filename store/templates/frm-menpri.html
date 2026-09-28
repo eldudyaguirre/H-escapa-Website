@@ -40,6 +40,19 @@
     .workspace-day{padding:12px 5px;text-align:center;border:1px solid rgba(120,120,120,.18);border-radius:9px;font-size:.85rem}
     .workspace-day strong{display:block;font-size:1.05rem;margin-top:5px}
     .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
+    /* Estado activo del módulo actual */
+    .nav__link.nav-module-active .nav__name,
+    .nav__link.nav-module-active .nav__icon,
+    .nav__dropdown > .nav__link.nav-module-active .nav__name,
+    .nav__dropdown > .nav__link.nav-module-active .nav__icon{
+      color:#2f7d73 !important;
+      font-weight:700 !important;
+    }
+    .nav__dropdown-item.nav-module-active{
+      color:#2f7d73 !important;
+      font-weight:700 !important;
+      background:rgba(47,125,115,.10);
+    }
     .nav__dropdown > button.nav__link{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer}
     .nav__dropdown > button.nav__link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
     /* Un solo control visible en móvil; el icono se dibuja en CSS, sin fuentes ni glifos duplicados. */
@@ -112,7 +125,32 @@
     </div>
     <section class="dashboard-agenda" id="calendario" aria-labelledby="workspace-title"><div class="workspace-card"><h4 id="workspace-title">Vista rápida de la semana</h4><p>Espacio visual de ejemplo. El calendario y las citas reales se conectarán en una siguiente etapa.</p><div class="workspace-placeholder" aria-label="Semana demostrativa"><div class="workspace-day">Lun<strong>—</strong></div><div class="workspace-day">Mar<strong>—</strong></div><div class="workspace-day today">Mié<strong>Hoy</strong></div><div class="workspace-day">Jue<strong>—</strong></div><div class="workspace-day">Vie<strong>—</strong></div><div class="workspace-day">Sáb<strong>—</strong></div><div class="workspace-day">Dom<strong>—</strong></div></div></div></section>
   {% endblock %}</div></main>
-  <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script><script src="{% static 'js/bootstrap.min.js' %}"></script><script src="{% static 'js/validator.min.js' %}"></script><script src="{% static 'js/jquery.slicknav.js' %}"></script><script src="{% static 'js/swiper-bundle.min.js' %}"></script><script src="{% static 'js/jquery.waypoints.min.js' %}"></script><script src="{% static 'js/jquery.counterup.min.js' %}"></script><script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script><script src="{% static 'js/SmoothScroll.js' %}"></script><script src="{% static 'js/parallaxie.js' %}"></script><script src="{% static 'js/gsap.min.js' %}"></script><script src="{% static 'js/magiccursor.js' %}"></script><script src="{% static 'js/SplitText.js' %}"></script><script src="{% static 'js/ScrollTrigger.min.js' %}"></script><script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script><script src="{% static 'js/wow.min.js' %}"></script><script src="{% static 'js/function.js' %}"></script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
+  <script>
+(function(){
+  const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+  document.querySelectorAll('.nav__link[href], .nav__dropdown-item[href]').forEach(function(link){
+    const href = link.getAttribute('href');
+    if(!href || href === '#') return;
+    try {
+      const url = new URL(href, window.location.origin);
+      const linkPath = url.pathname.replace(/\/$/, '') || '/';
+      if(linkPath === currentPath){
+        link.classList.add('nav-module-active');
+        const dropdown = link.closest('.nav__dropdown');
+        if(dropdown){
+          dropdown.classList.add('show-dropdown');
+          const parent = dropdown.querySelector(':scope > .nav__link');
+          if(parent) {
+            parent.classList.add('nav-module-active');
+            parent.setAttribute('aria-expanded','true');
+          }
+        }
+      }
+    } catch(e) {}
+  });
+})();
+</script>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script><script src="{% static 'js/bootstrap.min.js' %}"></script><script src="{% static 'js/validator.min.js' %}"></script><script src="{% static 'js/jquery.slicknav.js' %}"></script><script src="{% static 'js/swiper-bundle.min.js' %}"></script><script src="{% static 'js/jquery.waypoints.min.js' %}"></script><script src="{% static 'js/jquery.counterup.min.js' %}"></script><script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script><script src="{% static 'js/SmoothScroll.js' %}"></script><script src="{% static 'js/parallaxie.js' %}"></script><script src="{% static 'js/gsap.min.js' %}"></script><script src="{% static 'js/magiccursor.js' %}"></script><script src="{% static 'js/SplitText.js' %}"></script><script src="{% static 'js/ScrollTrigger.min.js' %}"></script><script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script><script src="{% static 'js/wow.min.js' %}"></script><script src="{% static 'js/function.js' %}"></script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
