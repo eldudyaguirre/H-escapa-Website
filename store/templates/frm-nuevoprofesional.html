@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="new-pro-field"><label>Género</label>{{form.genero}}</div><div class="new-pro-field"><label>Teléfono</label>{{form.telefono}}</div>
 <div class="new-pro-field"><label>Correo electrónico *</label>{{form.email}}</div><div class="new-pro-field full"><label>Dirección</label>{{form.direccion}}</div>
 <div class="new-pro-field"><label>Ciudad</label>{{form.ciudad}}</div><div class="new-pro-field"><label>Provincia</label>{{form.provincia}}</div>
+<div class="new-pro-field"><label>Código postal</label>{{form.codigo_postal}}</div><div class="new-pro-field"><label>País</label>{{form.pais}}</div>
 </div></section>
 <section class="new-pro-section new-pro-tab-content" data-content="professional">
 <h2>Información profesional</h2><p>Profesión, especialidad, formación y credenciales.</p>
@@ -284,8 +285,8 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 
 <div class="access-settings">
-  <label class="access-setting"><input type="checkbox" name="forzar_cambio_clave" checked><span><strong>Forzar cambio de contraseña</strong><span>Recomendado para cuentas nuevas.</span></span></label>
-  <label class="access-setting"><input type="checkbox" name="dos_factores"><span><strong>Autenticación de dos factores</strong><span>Preparado para futura implementación.</span></span></label>
+  <label class="access-setting">{{form.forzar_cambio_clave}}<span><strong>Forzar cambio de contraseña</strong><span>Se registra para controlar el primer acceso.</span></span></label>
+  <label class="access-setting">{{form.dos_factores}}<span><strong>Autenticación de dos factores</strong><span>Queda registrado para la futura validación 2FA.</span></span></label>
   <label class="access-setting">{{form.activo}}<span><strong>Cuenta activa</strong><span>Permite iniciar sesión.</span></span></label>
 </div>
 </section>
