@@ -30,6 +30,7 @@ urlpatterns = [
     path("homein/", views.homein, name="homein"),
     path("homein-calendario/", views.homeincalendario, name="homeincalendario"),
     path("homein-profesionales/", views.homeinprofesionales, name="homeinprofesionales"),
+    path("homein-profesionales/nuevo/", views.homeinnuevoprofesional, name="homeinnuevoprofesional"),
     path("homein-especialidades/", views.homeinespecialidades, name="homeinespecialidades"),
     path("homein-especialidades/nueva/", views.homeinnuevaespecialidad, name="homeinnuevaespecialidad"),
     path("homein-especialidades/editar/<int:especialidad_id>/", views.homeineditarespecialidad, name="homeineditarespecialidad"),
