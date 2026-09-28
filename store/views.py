@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -209,6 +209,8 @@ def homeinnuevoprofesional(request):
                     direccion=form.cleaned_data.get("direccion", "").strip(),
                     ciudad=form.cleaned_data.get("ciudad", "").strip(),
                     provincia=form.cleaned_data.get("provincia", "").strip(),
+                    codigo_postal=form.cleaned_data.get("codigo_postal", "").strip(),
+                    pais=form.cleaned_data.get("pais", "Ecuador").strip(),
                     contacto_emergencia_nombre=form.cleaned_data.get("contacto_emergencia_nombre", "").strip(),
                     contacto_emergencia_telefono=form.cleaned_data.get("contacto_emergencia_telefono", "").strip(),
                     contacto_emergencia_relacion=form.cleaned_data.get("contacto_emergencia_relacion", "").strip(),
@@ -227,7 +229,20 @@ def homeinnuevoprofesional(request):
                     tipo_contrato=form.cleaned_data.get("tipo_contrato", ""),
                     fecha_ingreso=form.cleaned_data.get("fecha_ingreso"),
                     activo=form.cleaned_data["activo"],
+                    forzar_cambio_clave=form.cleaned_data["forzar_cambio_clave"],
+                    dos_factores=form.cleaned_data["dos_factores"],
                 )
+                # Crear/asignar el grupo correspondiente al rol del sistema.
+                role = form.cleaned_data.get("rol_sistema", "PROFESIONAL")
+                role_names = {
+                    "ADMINISTRADOR": "Administradores",
+                    "GESTOR": "Gestores",
+                    "PROFESIONAL": "Profesionales",
+                    "RECEPCION": "Recepción",
+                    "PERSONAL": "Personal",
+                }
+                group, _ = Group.objects.get_or_create(name=role_names[role])
+
                 # Aplicar permisos Django seleccionados desde la pestaña Acceso y cuenta.
                 permisos = form.cleaned_data.get("permisos", [])
                 permission_map = {
@@ -248,6 +263,8 @@ def homeinnuevoprofesional(request):
                         if permiso:
                             selected_permissions.append(permiso)
                 usuario.user_permissions.set(selected_permissions)
+                group.permissions.set(selected_permissions)
+                usuario.groups.set([group])
             messages.success(request, f"Profesional {form.cleaned_data['nombre']} {form.cleaned_data['apellido']} creado correctamente.")
             return redirect("homeinprofesionales")
     else:
