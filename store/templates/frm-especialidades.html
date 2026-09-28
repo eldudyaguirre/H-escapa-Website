@@ -1,57 +1,79 @@
-{% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Especialidades{% endblock %}
+{% exte
 
-{% block content %}
-<style>
-  .specialties-page{padding:24px 28px 40px;background:#f7f8f8;min-height:calc(100vh - 70px)}
-  .sp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px}
-  .sp-header h1{margin:0 0 3px;font-family:Marcellus,serif;font-size:1.65rem;color:#19181b}
-  .sp-header p{margin:0;color:#747c7a;font-size:.78rem}
-  .sp-btn{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border-radius:7px;text-decoration:none;font-size:.75rem;font-weight:700;border:1px solid #dce3e1}
-  .sp-btn.primary{background:#005855;color:#fff;border-color:#005855}
-  .sp-btn.primary:hover{background:#00433f;color:#fff}
-  .sp-btn.secondary{background:#fff;color:#37413f}
-  .sp-btn.secondary:hover{border-color:#439b95;color:#005855}
+<section class="specialties-page">
+  <header class="sp-header">
+    <div>
+      <h1>Especialidades</h1>
+      <p>Administra las especialidades del consultorio y sus asignaciones profesionales</p>
+    </div>
+    <div class="sp-actions">
+      <a class="sp-btn primary" href="{% url 'homeinnuevaespecialidad' %}"><i class="bx bx-plus"></i> Nueva Especialidad</a>
+    </div>
+  </header>
 
-  .sp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
-  .sp-stat{background:#fff;border:1px solid #e2e7e5;border-radius:8px;padding:18px 18px 16px;min-height:112px;position:relative}
-  .sp-stat-title{font-size:.73rem;font-weight:700;color:#3e4645}
-  .sp-stat-icon{position:absolute;right:17px;top:18px;color:#9aa5a2;font-size:1.35rem}
-  .sp-stat-value{display:block;margin-top:26px;font-size:1.65rem;line-height:1;font-weight:800;color:#005855}
-  .sp-stat-note{display:block;margin-top:7px;font-size:.62rem;color:#89918f}
+  <div class="sp-stats">
+    <article class="sp-stat">
+      <span class="sp-stat-title">Total Especialidades</span>
+      <i class="bx bx-plus-medical sp-stat-icon"></i>
+      <strong class="sp-stat-value">{{ total }}</strong>
+      <span class="sp-stat-note">{{ activas }} activas en el catálogo</span>
+    </article>
+    <article class="sp-stat">
+      <span class="sp-stat-title">Total Profesionales</span>
+      <i class="bx bx-group sp-stat-icon"></i>
+      <strong class="sp-stat-value">{{ total_profesionales }}</strong>
+      <span class="sp-stat-note">{{ profesionales_asignados }} con especialidad asignada</span>
+    </article>
+    <article class="sp-stat">
+      <span class="sp-stat-title">Especialidades Activas</span>
+      <i class="bx bx-check-circle sp-stat-icon"></i>
+      <strong class="sp-stat-value">{{ activas }}</strong>
+      <span class="sp-stat-note">{{ inactivas }} inactivas en el catálogo</span>
+    </article>
+  </div>
 
-  .sp-panel{background:#fff;border:1px solid #e2e7e5;border-radius:8px;overflow:hidden}
-  .sp-main-head{padding:19px 18px 13px}
-  .sp-main-head h2{margin:0;color:#19181b;font-size:1.05rem;font-weight:800}
-  .sp-main-head p{margin:4px 0 0;color:#7b8481;font-size:.7rem}
-  .sp-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
-  .sp-tabs{display:flex;background:#ecefed;border-radius:5px;padding:3px}
-  .sp-tab{border:0;background:transparent;color:#697370;height:29px;padding:0 13px;border-radius:4px;font-size:.68rem;font-weight:700}
-  .sp-tab.active{background:#005855;color:#fff}
-  .sp-tools{display:flex;align-items:center;gap:7px}
-  .sp-search{height:31px;width:225px;border:1px solid #dce3e1;border-radius:6px;padding:0 10px;color:#3e4645;outline:none;font-size:.69rem;background:#fff}
-  .sp-search:focus{border-color:#439b95;box-shadow:0 0 0 2px rgba(67,155,149,.1)}
-  .sp-filter{height:31px;border:1px solid #dce3e1;border-radius:6px;background:#fff;color:#63706e;padding:0 8px;font-size:.69rem}
-
-  .sp-table-wrap{overflow:auto;margin:0 18px 18px}
-  .sp-table{width:100%;border-collapse:collapse;min-width:650px}
-  .sp-table th{height:39px;color:#697370;text-align:left;padding:0 12px;font-size:.66rem;font-weight:700;border-bottom:1px solid #e2e7e5}
-  .sp-table td{height:55px;padding:0 12px;border-bottom:1px solid #edf0ef;color:#3e4645;font-size:.7rem}
-  .sp-table tbody tr:hover{background:#fbfcfc}
-  .sp-table tbody tr:last-child td{border-bottom:0}
-  .sp-name{display:flex;align-items:center;gap:10px}
-  .sp-icon{width:31px;height:31px;border-radius:7px;background:#e8f4f2;color:#005855;display:grid;place-items:center;font-size:.9rem}
-  .sp-name strong{display:block;color:#202625;font-size:.73rem}
-  .sp-name small{display:block;color:#929b98;font-size:.59rem;margin-top:2px}
-  .sp-count{font-weight:800;color:#202625}
-  .sp-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:.59rem;font-weight:800}
-  .sp-badge.active{background:#dff4e9;color:#267047}
-  .sp-badge.inactive{background:#fff1b8;color:#8a6500}
-  .sp-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
-  .sp-action{border:0;background:transparent;color:#737d7a;font-size:1rem;cursor:pointer;padding:4px 7px;border-radius:5px}
-  .sp-action:hover{background:#eef4f2;color:#005855}
-  .sp-empty{padding:42px 20px;text-align:center;color:#7c8583}
-  .sp-empty i{display:block;font-size:2.3rem;color:#9cafaa;margin-bottom:7px}
-
+  <section class="sp-panel">
+    <div class="sp-main-head">
+      <h2>Listado de especialidades</h2>
+      <p>Consulta y administra las especialidades registradas en el consultorio</p>
+      <div class="sp-toolbar">
+        <div class="sp-tabs">
+          <button class="sp-tab active" type="button">Todas</button>
+          <button class="sp-tab" type="button" onclick="document.querySelector('[name=estado]').value='ACTIVA';this.closest('form').submit()">Activas</button>
+          <button class="sp-tab" type="button" onclick="document.querySelector('[name=estado]').value='INACTIVA';this.closest('form').submit()">Inactivas</button>
+        </div>
+        <form method="get" class="sp-tools">
+          <input class="sp-search" type="search" name="q" value="{{ q }}" placeholder="Buscar especialidades...">
+          <select class="sp-filter" name="estado" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            <option value="ACTIVA" {% if estado == "ACTIVA" %}selected{% endif %}>Activas</option>
+            <option value="INACTIVA" {% if estado == "INACTIVA" %}selected{% endif %}>Inactivas</option>
+          </select>
+        </form>
+      </div>
+    </div>
+    <div class="sp-table-wrap">
+      <table class="sp-table">
+        <thead>
+          <tr>
+            <th>Nombre de especialidad</th><th>Profesionales</th><th>Estado</th><th>Fecha de creación</th><th style="text-align:center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for especialidad in especialidades %}
+          <tr>
+            <td><div class="sp-name"><span class="sp-icon"><i class="bx bx-plus-medical"></i></span><div><strong>{{ especialidad.nombre }}</strong><small>Especialidad del consultorio</small></div></div></td>
+            <td><span class="sp-count">{{ especialidad.profesionales.count }}</span></td>
+            <td>{% if especialidad.activa %}<span class="sp-badge active"><span class="sp-dot"></span>Activa</span>{% else %}<span class="sp-badge inactive"><span class="sp-dot"></span>Inactiva</span>{% endif %}</td>
+            <td>{{ especialidad.creado_en|date:"d/m/Y" }}</td>
+            <td style="text-align:center"><button type="button" class="sp-action" title="Más opciones"><i class="bx bx-dots-horizontal-rounded"></i></button></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5"><div class="sp-empty"><i class="bx bx-plus-medical"></i><strong>No hay especialidades registradas</strong><div>Agrega la primera especialidad para comenzar.</div></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </section>
 {% endblock %}
