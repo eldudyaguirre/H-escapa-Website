@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <section class="new-pro-section new-pro-tab-content" data-content="employment">
 <h2>Información laboral</h2><p>Datos de vinculación laboral.</p>
 <div class="new-pro-grid"><div class="new-pro-field"><label>Código de empleado</label>{{form.codigo_empleado}}</div><div class="new-pro-field"><label>Tipo de contrato</label>{{form.tipo_contrato}}</div>
-<div class="new-pro-field"><label>Fecha de ingreso</label>{{form.fecha_ingreso}}</div><div class="new-pro-field"><label>Estado</label><label class="new-pro-check" style="margin-top:0">{{form.activo}} Profesional activo</label></div></div>
+<div class="new-pro-field"><label>Fecha de ingreso</label>{{form.fecha_ingreso}}</div></div>
 </section>
 <section class="new-pro-section new-pro-tab-content" data-content="emergency">
 <h2>Contacto de emergencia</h2><p>Persona a contactar en caso de emergencia.</p>
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="access-settings">
   <label class="access-setting"><input type="checkbox" name="forzar_cambio_clave" checked><span><strong>Forzar cambio de contraseña</strong><span>Recomendado para cuentas nuevas.</span></span></label>
   <label class="access-setting"><input type="checkbox" name="dos_factores"><span><strong>Autenticación de dos factores</strong><span>Preparado para futura implementación.</span></span></label>
-  <label class="access-setting"><input type="checkbox" name="activo" checked><span><strong>Cuenta activa</strong><span>Permite iniciar sesión.</span></span></label>
+  <label class="access-setting">{{form.activo}}<span><strong>Cuenta activa</strong><span>Permite iniciar sesión.</span></span></label>
 </div>
 </section>
 <div class="new-pro-actions"><a class="new-pro-cancel" href="{% url 'homeinprofesionales' %}">Cancelar</a><button class="new-pro-save" type="submit"><i class="bx bx-save"></i> Guardar profesional</button></div>
