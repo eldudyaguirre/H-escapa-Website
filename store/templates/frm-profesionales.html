@@ -1,5 +1,29 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Profesionales{% endblock %}
+{% block title %}H-Escapa | Profesionales<script>
+(function(){
+  const btn=document.getElementById('proFilterBtn');
+  const panel=document.getElementById('proFilterPanel');
+  const reset=document.getElementById('proResetFilters');
+  if(!btn||!panel)return;
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    const open=panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded',String(open));
+  });
+  panel.addEventListener('click',function(e){e.stopPropagation()});
+  document.addEventListener('click',function(){
+    panel.classList.remove('open');
+    btn.setAttribute('aria-expanded','false');
+  });
+  if(reset){
+    reset.addEventListener('click',function(){
+      document.getElementById('filterEspecialidad').value='';
+      document.getElementById('filterEstado').value='';
+    });
+  }
+})();
+</script>
+{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -21,7 +45,21 @@
   .pro-tabs{display:flex;background:#f1f4f3;border-radius:5px;padding:3px;width:400px;max-width:100%}
   .pro-tab{flex:1;height:29px;border:0;border-radius:3px;background:transparent;color:#63706e;font-size:.72rem;font-weight:600}
   .pro-tab.active{background:#fff;color:#19181B}
-  .pro-search-wrap{display:flex;gap:7px}
+  .pro-search-wrap{display:flex;gap:7px;position:relative}
+  .pro-filter-btn{height:31px;width:36px;border:1px solid #dfe5e3;background:#fff;color:#63706e;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .pro-filter-btn:hover{border-color:#439b95;color:#005855;background:#f8fbfa}
+  .pro-filter-panel{position:absolute;right:0;top:38px;width:255px;background:#fff;border:1px solid #dfe5e3;border-radius:9px;box-shadow:0 12px 30px rgba(30,55,53,.14);z-index:50;padding:0;display:none;overflow:hidden}
+  .pro-filter-panel.open{display:block}
+  .pro-filter-title{padding:13px 14px;border-bottom:1px solid #edf0ef;font-size:.78rem;font-weight:700;color:#19181B}
+  .pro-filter-group{padding:11px 14px;border-bottom:1px solid #edf0ef}
+  .pro-filter-group label{display:block;font-size:.72rem;font-weight:600;color:#3e4645;margin-bottom:7px}
+  .pro-filter-group select{width:100%;height:34px;border:1px solid #dfe5e3;border-radius:6px;background:#fff;color:#3e4645;padding:0 9px;outline:0;font-size:.72rem}
+  .pro-filter-group select:focus{border-color:#439b95;box-shadow:0 0 0 2px rgba(67,155,149,.10)}
+  .pro-filter-actions{padding:10px;display:flex;justify-content:flex-end;gap:8px}
+  .pro-reset{height:34px;padding:0 12px;border:1px solid #dfe5e3;background:#fff;border-radius:6px;color:#63706e;font-size:.72rem;font-weight:600;cursor:pointer}
+  .pro-apply{height:34px;padding:0 13px;border:1px solid #005855;background:#005855;border-radius:6px;color:#fff;font-size:.72rem;font-weight:600;cursor:pointer}
+  .pro-reset:hover{background:#f7f9f9;color:#005855}
+  .pro-apply:hover{background:#00433f}
   .pro-search{height:31px;width:225px;max-width:100%;background:#fff;border:1px solid #dfe5e3;border-radius:5px;color:#333;padding:0 10px 0 31px;font-size:.72rem;outline:0}
   .pro-search::placeholder{color:#8b9694}
   .pro-search:focus{border-color:#439b95;box-shadow:0 0 0 2px rgba(67,155,149,.12)}
@@ -94,11 +132,31 @@
           <form method="get" class="pro-search-wrap">
             <i class="bx bx-search pro-search-icon"></i>
             <input class="pro-search" type="search" name="q" value="{{ q }}" placeholder="Buscar profesional...">
-            <select class="pro-filter" name="estado" title="Filtrar por estado" onchange="this.form.submit()">
-              <option value="">Todos</option>
-              <option value="ACTIVO" {% if estado == "ACTIVO" %}selected{% endif %}>Activos</option>
-              <option value="INACTIVO" {% if estado == "INACTIVO" %}selected{% endif %}>Inactivos</option>
-            </select>
+            <button type="button" class="pro-filter-btn" id="proFilterBtn" aria-label="Abrir filtros" aria-expanded="false"><i class="bx bx-filter-alt"></i></button>
+            <div class="pro-filter-panel" id="proFilterPanel">
+              <div class="pro-filter-title">Filtrar por</div>
+              <div class="pro-filter-group">
+                <label for="filterEspecialidad">Especialidad</label>
+                <select id="filterEspecialidad" name="especialidad">
+                  <option value="">Todas</option>
+                  {% for codigo, nombre in especialidades_opciones %}
+                    <option value="{{ codigo }}" {% if especialidad == codigo %}selected{% endif %}>{{ nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="pro-filter-group">
+                <label for="filterEstado">Estado</label>
+                <select id="filterEstado" name="estado">
+                  <option value="">Todos</option>
+                  <option value="ACTIVO" {% if estado == "ACTIVO" %}selected{% endif %}>Activos</option>
+                  <option value="INACTIVO" {% if estado == "INACTIVO" %}selected{% endif %}>Inactivos</option>
+                </select>
+              </div>
+              <div class="pro-filter-actions">
+                <button type="button" class="pro-reset" id="proResetFilters"><i class="bx bx-reset"></i> Restablecer</button>
+                <button type="submit" class="pro-apply">Aplicar</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
