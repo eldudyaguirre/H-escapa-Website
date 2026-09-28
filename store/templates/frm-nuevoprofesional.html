@@ -76,96 +76,54 @@ document.addEventListener('DOMContentLoaded',function(){
 
   <div class="new-pro-tabs">
     <button type="button" class="new-pro-tab active" data-tab="personal"><i class="bx bx-user"></i> Información personal</button>
-    <button type="button" class="new-pro-tab" data-tab="professional"><i class="bx bx-briefcase"></i> Información profesional</button>
+    <button type="button" class="new-pro-tab" data-tab="professional"><i class="bx bx-briefcase"></i> Profesional</button>
+    <button type="button" class="new-pro-tab" data-tab="employment"><i class="bx bx-id-card"></i> Laboral</button>
+    <button type="button" class="new-pro-tab" data-tab="emergency"><i class="bx bx-phone-call"></i> Emergencia</button>
     <button type="button" class="new-pro-tab" data-tab="access"><i class="bx bx-lock-alt"></i> Acceso y cuenta</button>
   </div>
 
-  <form method="post" novalidate>
+  <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
     {% if form.non_field_errors %}
       <div class="new-pro-error" style="margin:0 0 12px">{{ form.non_field_errors }}</div>
     {% endif %}
 
     <div class="new-pro-card">
-      <section class="new-pro-section new-pro-tab-content" data-content="personal">
-        <h2>Información personal</h2>
-        <p>Ingresa los datos básicos del profesional.</p>
-        <div class="new-pro-grid">
-          <div class="new-pro-field">
-            <label for="{{ form.nombre.id_for_label }}">Nombres *</label>
-            {{ form.nombre }}
-            {% for error in form.nombre.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div class="new-pro-field">
-            <label for="{{ form.apellido.id_for_label }}">Apellidos *</label>
-            {{ form.apellido }}
-            {% for error in form.apellido.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div class="new-pro-field">
-            <label for="{{ form.email.id_for_label }}">Correo electrónico *</label>
-            {{ form.email }}
-            {% for error in form.email.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div class="new-pro-field">
-            <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
-            {{ form.telefono }}
-            {% for error in form.telefono.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-        </div>
-      </section>
-
-      <section class="new-pro-section new-pro-tab-content" data-content="professional">
-        <h2>Información profesional</h2>
-        <p>Asigna la especialidad registrada en el catálogo del consultorio.</p>
-        <div class="new-pro-grid">
-          <div class="new-pro-field">
-            <label for="{{ form.especialidad.id_for_label }}">Especialidad *</label>
-            {{ form.especialidad }}
-            <span class="new-pro-help">Solo aparecen especialidades activas.</span>
-            {% for error in form.especialidad.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div class="new-pro-field">
-            <label>Estado</label>
-            <label class="new-pro-check" style="margin-top:0">
-              {{ form.activo }} Profesional activo
-            </label>
-            {% for error in form.activo.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-        </div>
-      </section>
-
-      <section class="new-pro-section new-pro-tab-content" data-content="access">
-        <h2>Acceso y cuenta</h2>
-        <p>El profesional tendrá una cuenta para ingresar al panel interno.</p>
-        <div class="new-pro-access">
-          <div class="new-pro-access-box"><strong>Cuenta interna</strong><span>Se crea como usuario del sistema y con acceso de personal.</span></div>
-          <div class="new-pro-access-box"><strong>Seguridad</strong><span>La contraseña se almacena mediante el sistema de autenticación de Django.</span></div>
-        </div>
-        <div class="new-pro-grid" style="margin-top:16px">
-          <div class="new-pro-field">
-            <label for="{{ form.username.id_for_label }}">Usuario *</label>
-            {{ form.username }}
-            {% for error in form.username.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div></div>
-          <div class="new-pro-field">
-            <label for="{{ form.password1.id_for_label }}">Contraseña *</label>
-            {{ form.password1 }}
-            {% for error in form.password1.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-          <div class="new-pro-field">
-            <label for="{{ form.password2.id_for_label }}">Confirmar contraseña *</label>
-            {{ form.password2 }}
-            {% for error in form.password2.errors %}<span class="new-pro-error">{{ error }}</span>{% endfor %}
-          </div>
-        </div>
-      </section>
-
-      <div class="new-pro-actions">
-        <a class="new-pro-cancel" href="{% url 'homeinprofesionales' %}">Cancelar</a>
-        <button class="new-pro-save" type="submit"><i class="bx bx-save"></i> Guardar profesional</button>
-      </div>
-    </div>
+<section class="new-pro-section new-pro-tab-content" data-content="personal">
+<h2>Información personal</h2><p>Datos básicos y contacto del profesional.</p>
+<div class="new-pro-grid">
+<div class="new-pro-field full"><label>Fotografía</label>{{ form.foto }}</div>
+<div class="new-pro-field"><label>Nombres *</label>{{form.nombre}}</div><div class="new-pro-field"><label>Apellidos *</label>{{form.apellido}}</div>
+<div class="new-pro-field"><label>Cédula</label>{{form.cedula}}</div><div class="new-pro-field"><label>Fecha de nacimiento</label>{{form.fecha_nacimiento}}</div>
+<div class="new-pro-field"><label>Género</label>{{form.genero}}</div><div class="new-pro-field"><label>Teléfono</label>{{form.telefono}}</div>
+<div class="new-pro-field"><label>Correo electrónico *</label>{{form.email}}</div><div class="new-pro-field full"><label>Dirección</label>{{form.direccion}}</div>
+<div class="new-pro-field"><label>Ciudad</label>{{form.ciudad}}</div><div class="new-pro-field"><label>Provincia</label>{{form.provincia}}</div>
+</div></section>
+<section class="new-pro-section new-pro-tab-content" data-content="professional">
+<h2>Información profesional</h2><p>Profesión, especialidad, formación y credenciales.</p>
+<div class="new-pro-grid">
+<div class="new-pro-field"><label>Profesión</label>{{form.profesion}}</div><div class="new-pro-field"><label>Especialidad *</label>{{form.especialidad}}</div>
+<div class="new-pro-field"><label>Especialización</label>{{form.especializacion}}</div><div class="new-pro-field"><label>Título / certificación</label>{{form.titulo}}</div>
+<div class="new-pro-field"><label>Institución</label>{{form.institucion_titulo}}</div><div class="new-pro-field"><label>Año de titulación</label>{{form.anio_titulo}}</div>
+<div class="new-pro-field"><label>Tipo de licencia</label>{{form.tipo_licencia}}</div><div class="new-pro-field"><label>Número de licencia</label>{{form.numero_licencia}}</div>
+<div class="new-pro-field"><label>Fecha de emisión</label>{{form.fecha_emision_licencia}}</div><div class="new-pro-field"><label>Fecha de vencimiento</label>{{form.fecha_vencimiento_licencia}}</div>
+<div class="new-pro-field full"><label>Biografía / descripción</label>{{form.biografia}}</div>
+</div></section>
+<section class="new-pro-section new-pro-tab-content" data-content="employment">
+<h2>Información laboral</h2><p>Datos de vinculación laboral.</p>
+<div class="new-pro-grid"><div class="new-pro-field"><label>Código de empleado</label>{{form.codigo_empleado}}</div><div class="new-pro-field"><label>Tipo de contrato</label>{{form.tipo_contrato}}</div>
+<div class="new-pro-field"><label>Fecha de ingreso</label>{{form.fecha_ingreso}}</div><div class="new-pro-field"><label>Estado</label><label class="new-pro-check" style="margin-top:0">{{form.activo}} Profesional activo</label></div></div>
+</section>
+<section class="new-pro-section new-pro-tab-content" data-content="emergency">
+<h2>Contacto de emergencia</h2><p>Persona a contactar en caso de emergencia.</p>
+<div class="new-pro-grid"><div class="new-pro-field"><label>Nombre</label>{{form.contacto_emergencia_nombre}}</div><div class="new-pro-field"><label>Teléfono</label>{{form.contacto_emergencia_telefono}}</div><div class="new-pro-field"><label>Relación</label>{{form.contacto_emergencia_relacion}}</div></div>
+</section>
+<section class="new-pro-section new-pro-tab-content" data-content="access">
+<h2>Acceso y cuenta</h2><p>Credenciales para ingresar al panel interno.</p>
+<div class="new-pro-grid"><div class="new-pro-field"><label>Usuario *</label>{{form.username}}</div><div></div><div class="new-pro-field"><label>Contraseña *</label>{{form.password1}}</div><div class="new-pro-field"><label>Confirmar contraseña *</label>{{form.password2}}</div></div>
+</section>
+<div class="new-pro-actions"><a class="new-pro-cancel" href="{% url 'homeinprofesionales' %}">Cancelar</a><button class="new-pro-save" type="submit"><i class="bx bx-save"></i> Guardar profesional</button></div>
+</div>
   </form>
 </section>
 {% endblock %}
