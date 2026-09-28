@@ -81,39 +81,87 @@
 .nav__dropdown:hover .nav__dropdown-icon, .nav__dropdown.show-dropdown .nav__dropdown-icon { transform: rotate(180deg); }
 .show-menu { left: 0; }
 
-/* Estado activo: mismo color y peso para el menú padre y el submenú seleccionado. */
+/* Estado activo del módulo: verde oscuro; los módulos inactivos usan el mismo tono claro del menú. */
 .nav .nav__link.active,
 .nav .nav__link[aria-current="page"],
+.nav .nav__link.nav-module-active,
 .nav .nav__dropdown > button.nav__link.active,
-.nav .nav__dropdown > button.nav__link[aria-current="page"] {
-  color: #ffffff !important;
+.nav .nav__dropdown > button.nav__link[aria-current="page"],
+.nav .nav__dropdown > button.nav__link.nav-module-active {
+  color: var(--h-escapa3-color) !important;
   font-weight: var(--font-semi-bold) !important;
+  -webkit-text-fill-color: var(--h-escapa3-color) !important;
 }
+
 .nav .nav__link.active .nav__icon,
 .nav .nav__link.active .nav__name,
 .nav .nav__link[aria-current="page"] .nav__icon,
-.nav .nav__link[aria-current="page"] .nav__name {
-  color: #ffffff !important;
+.nav .nav__link[aria-current="page"] .nav__name,
+.nav .nav__link.nav-module-active .nav__icon,
+.nav .nav__link.nav-module-active .nav__name {
+  color: var(--h-escapa3-color) !important;
   opacity: 1 !important;
+  -webkit-text-fill-color: var(--h-escapa3-color) !important;
 }
+
 .nav .nav__dropdown-item.active,
-.nav .nav__dropdown-item[aria-current="page"] {
-  color: #ffffff !important;
+.nav .nav__dropdown-item[aria-current="page"],
+.nav .nav__dropdown-item.nav-module-active {
+  color: var(--h-escapa3-color) !important;
   font-weight: var(--font-semi-bold) !important;
   background-color: rgba(67, 155, 149, .16);
   border-radius: .25rem;
 }
-.nav__dropdown > button.nav__link { appearance: none; -webkit-appearance: none; display: flex; align-items: center; width: 100%; min-height: 21px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent !important; color: var(--h-escapa2-color); font: inherit; line-height: normal; text-align: left; opacity: 1; cursor: pointer; }
+
+.nav__dropdown > button.nav__link {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 21px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--h-escapa2-color);
+  font: inherit;
+  line-height: normal;
+  text-align: left;
+  opacity: 1;
+  cursor: pointer;
+}
+
 .nav__dropdown > button.nav__link .nav__icon,
-.nav__dropdown > button.nav__link .nav__name { color: inherit; opacity: 1; }
-.nav__dropdown > button.nav__link:hover { color: var(--h-escapa4-color) !important; }
-.nav__dropdown > button.nav__link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.nav__dropdown > button.nav__link .nav__name {
+  color: inherit;
+  opacity: 1;
+}
+
+.nav__dropdown > button.nav__link:hover {
+  color: var(--h-escapa4-color) !important;
+}
+
+.nav__dropdown > button.nav__link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
 .nav__dropdown:has(.nav__dropdown-item.active) > .nav__link,
-.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link { color: #ffffff !important; font-weight: var(--font-semi-bold) !important; }
+.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link {
+  color: var(--h-escapa3-color) !important;
+  font-weight: var(--font-semi-bold) !important;
+}
+
 .nav__dropdown:has(.nav__dropdown-item.active) > .nav__link .nav__icon,
 .nav__dropdown:has(.nav__dropdown-item.active) > .nav__link .nav__name,
 .nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link .nav__icon,
-.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link .nav__name { color: #ffffff !important; opacity: 1 !important; }
+.nav__dropdown:has(.nav__dropdown-item[aria-current="page"]) > .nav__link .nav__name {
+  color: var(--h-escapa3-color) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: var(--h-escapa3-color) !important;
+}
 
 /*===== Dashboard Home =====*/
 .dashboard-home { padding: .5rem; }
@@ -146,23 +194,19 @@
   .nav:hover .logo-hover { display: block; }
 }
 
-/* Corrección definitiva: el botón padre de Pacientes no activo debe conservar el color claro del menú. */
-
-
-/* Pacientes es un botón (no un enlace), por eso recibe estilos de botón distintos en algunos navegadores. */
-.nav .nav__dropdown > button.nav__link:not(.active) {
-  color: #ffffff !important;
+/* Los botones de los desplegables respetan el color normal del menú. */
+.nav .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) {
+  color: var(--h-escapa2-color) !important;
   opacity: 1 !important;
-  -webkit-text-fill-color: #ffffff !important;
+  -webkit-text-fill-color: var(--h-escapa2-color) !important;
 }
-.nav .nav__dropdown > button.nav__link:not(.active) .nav__icon,
-.nav .nav__dropdown > button.nav__link:not(.active) .nav__name,
-.nav .nav__dropdown > button.nav__link:not(.active) .nav__dropdown-icon {
-  color: #ffffff !important;
+.nav .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__icon,
+.nav .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__name,
+.nav .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__dropdown-icon {
+  color: var(--h-escapa2-color) !important;
   opacity: 1 !important;
-  -webkit-text-fill-color: #ffffff !important;
+  -webkit-text-fill-color: var(--h-escapa2-color) !important;
 }
-
 
 /* En PC el menú lateral permanece siempre desplegado. La contracción queda reservada para responsive. */
 @media screen and (min-width: 768px) {
@@ -257,34 +301,25 @@
 }
 
 
-/* PACIENTES - CORRECCIÓN RESPONSIVE FINAL */
+/* Responsive: mismo comportamiento de color que en PC. */
 @media screen and (max-width: 767px) {
-  #navbar .nav__dropdown > button.nav__link,
-  #navbar .nav__dropdown > button.nav__link.active,
-  #navbar .nav__dropdown.show-dropdown > button.nav__link,
-  #navbar .nav__dropdown.show-dropdown > button.nav__link.active {
-    color: #ffffff !important;
+  #navbar .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active),
+  #navbar .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__icon,
+  #navbar .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__name,
+  #navbar .nav__dropdown > button.nav__link:not(.active):not(.nav-module-active) .nav__dropdown-icon {
+    color: var(--h-escapa2-color) !important;
     opacity: 1 !important;
-    filter: none !important;
-    -webkit-text-fill-color: #ffffff !important;
+    -webkit-text-fill-color: var(--h-escapa2-color) !important;
   }
 
-  #navbar .nav__dropdown > button.nav__link .nav__icon,
-  #navbar .nav__dropdown > button.nav__link .nav__name,
-  #navbar .nav__dropdown > button.nav__link .nav__dropdown-icon,
+  #navbar .nav__dropdown > button.nav__link.active,
+  #navbar .nav__dropdown > button.nav__link.nav-module-active,
   #navbar .nav__dropdown > button.nav__link.active .nav__icon,
   #navbar .nav__dropdown > button.nav__link.active .nav__name,
-  #navbar .nav__dropdown > button.nav__link.active .nav__dropdown-icon {
-    color: #ffffff !important;
+  #navbar .nav__dropdown > button.nav__link.nav-module-active .nav__icon,
+  #navbar .nav__dropdown > button.nav__link.nav-module-active .nav__name {
+    color: var(--h-escapa3-color) !important;
     opacity: 1 !important;
-    filter: none !important;
-    -webkit-text-fill-color: #ffffff !important;
-  }
-
-  #navbar .nav__dropdown > button.nav__link:hover,
-  #navbar .nav__dropdown > button.nav__link:focus,
-  #navbar .nav__dropdown > button.nav__link:active {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
+    -webkit-text-fill-color: var(--h-escapa3-color) !important;
   }
 }
