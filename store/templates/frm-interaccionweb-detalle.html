@@ -1,0 +1,30 @@
+{% extends "frm-menpri.html" %}
+{% block title %}Detalle de interacción | H-Escapa{% endblock %}
+{% block extra_head %}
+<style>
+.id-wrap{padding:28px;max-width:1050px;margin:auto}.id-back{color:#287c74;text-decoration:none}.id-head{margin:18px 0 20px}.id-head h1{font-family:Marcellus,serif;margin:0}.id-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:18px}.id-card{background:#fff;border:1px solid #dfe9e7;border-radius:14px;padding:22px}.id-card h3{margin:0 0 15px;font-family:Marcellus,serif}.data{display:grid;grid-template-columns:1fr 1fr;gap:13px}.data div{padding:12px;border:1px solid #e7eeec;border-radius:9px}.label{display:block;font-size:.7rem;color:#7d8b88;text-transform:uppercase;margin-bottom:4px}.message{margin-top:14px;background:#f6faf9;border-left:4px solid #439b95;padding:15px;border-radius:0 9px 9px 0;white-space:pre-line}.status{display:flex;flex-direction:column;gap:8px}.status label{border:1px solid #dfe9e7;padding:11px;border-radius:8px;cursor:pointer}.status input{margin-right:8px}.id-card textarea{width:100%;min-height:110px;border:1px solid #d7e2df;border-radius:8px;padding:10px}.save{margin-top:12px;background:#00615c;color:#fff;border:0;border-radius:7px;padding:11px 18px;font-weight:600}.history{margin-top:18px}.history-item{padding:12px 0;border-bottom:1px solid #edf1f0}.history-item:last-child{border:0}.small{font-size:.76rem;color:#7d8b88}@media(max-width:760px){.id-wrap{padding:17px 11px}.id-grid,.data{grid-template-columns:1fr}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="id-wrap">
+<a class="id-back" href="{% url 'homeininteraccionesweb' %}">← Volver a interacciones web</a>
+<div class="id-head"><h1>{{ interaccion.get_tipo_display }}</h1><div class="small">Recibido {{ interaccion.creado_en|date:"d/m/Y H:i" }}</div></div>
+<div class="id-grid">
+<div>
+<div class="id-card"><h3>Datos de la solicitud</h3><div class="data">
+<div><span class="label">Nombre</span>{{ interaccion.nombres }} {{ interaccion.apellidos }}</div>
+<div><span class="label">Teléfono</span>{{ interaccion.telefono }}</div>
+<div><span class="label">Correo</span>{{ interaccion.email }}</div>
+<div><span class="label">Servicio</span>{{ interaccion.servicio|default:"Consulta general" }}</div>
+{% if interaccion.fecha_solicitada %}<div><span class="label">Fecha solicitada</span>{{ interaccion.fecha_solicitada|date:"d/m/Y" }}</div>{% endif %}
+</div>{% if interaccion.mensaje %}<div class="message">{{ interaccion.mensaje }}</div>{% endif %}</div>
+<div class="id-card history"><h3>Historial</h3>{% for h in historial %}<div class="history-item"><strong>{{ h.get_estado_nuevo_display }}</strong><div class="small">{{ h.creado_en|date:"d/m/Y H:i" }}{% if h.usuario %} · {{ h.usuario.get_full_name|default:h.usuario.username }}{% endif %}</div>{% if h.comentario %}<div>{{ h.comentario }}</div>{% endif %}</div>{% empty %}<div class="small">Todavía no hay cambios registrados.</div>{% endfor %}</div>
+</div>
+<div class="id-card"><h3>Seguimiento</h3><form method="post">{% csrf_token %}<div class="status">
+<label><input type="radio" name="estado" value="PENDIENTE" {% if interaccion.estado == "PENDIENTE" %}checked{% endif %}> Pendiente</label>
+<label><input type="radio" name="estado" value="CONTACTADO" {% if interaccion.estado == "CONTACTADO" %}checked{% endif %}> Contactado</label>
+<label><input type="radio" name="estado" value="CONFIRMADO" {% if interaccion.estado == "CONFIRMADO" %}checked{% endif %}> Confirmado</label>
+<label><input type="radio" name="estado" value="NO_CONCRETADO" {% if interaccion.estado == "NO_CONCRETADO" %}checked{% endif %}> No concretado</label>
+</div><div style="margin-top:15px"><span class="label">Observación / interacción</span><textarea name="comentario" placeholder="Ej.: Se contactó por WhatsApp y confirmó disponibilidad."></textarea></div><button class="save" type="submit">Guardar seguimiento</button></form></div>
+</div></div>
+{% endblock %}
