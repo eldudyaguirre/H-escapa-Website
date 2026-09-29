@@ -19,7 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm
-from .models import Cita, DocumentoPaciente, Especialidad, Paciente, Post, Profesional
+from .models import Cita, DocumentoPaciente, Especialidad, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
 
 
 def home(request):
@@ -143,6 +143,8 @@ def agendamiento(request):
             sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
             datos = form.cleaned_data
 
+            InteraccionWeb.objects.create(tipo="AGENDAMIENTO", nombres=datos["nombres"], apellidos=datos["apellidos"], email=datos["email"], telefono=datos["telefono"], servicio=datos["servicio"], fecha_solicitada=datos["fecha"])
+
             subject = f"H-Escapa | Solicitud de cita - {datos['nombres']} {datos['apellidos']}"
             text_body = (
                 f"Nombres: {datos['nombres']}\n"
@@ -260,6 +262,9 @@ def homein(request):
     pacientes_activos = Paciente.objects.filter(estado="ACTIVO").count()
     profesionales_activos = Profesional.objects.filter(activo=True).count()
     posts_publicados = Post.objects.filter(estado="PUBLICADO").count()
+    solicitudes_web_pendientes = InteraccionWeb.objects.filter(estado="PENDIENTE").count()
+    solicitudes_web_contacto = InteraccionWeb.objects.filter(tipo="CONTACTO").count()
+    solicitudes_web_agendamiento = InteraccionWeb.objects.filter(tipo="AGENDAMIENTO").count()
 
     pacientes_recientes = Paciente.objects.order_by("-creado_en")[:3]
     profesionales_recientes = Profesional.objects.select_related("especialidad").order_by("-creado_en")[:3]
@@ -277,6 +282,9 @@ def homein(request):
         "pacientes_activos": pacientes_activos,
         "profesionales_activos": profesionales_activos,
         "posts_publicados": posts_publicados,
+        "solicitudes_web_pendientes": solicitudes_web_pendientes,
+        "solicitudes_web_contacto": solicitudes_web_contacto,
+        "solicitudes_web_agendamiento": solicitudes_web_agendamiento,
         "pacientes_recientes": pacientes_recientes,
         "profesionales_recientes": profesionales_recientes,
         "citas_proximas": citas_proximas,
@@ -753,3 +761,51 @@ def subir_documento_paciente(request, paciente_id):
     )
     messages.success(request, "Documento cargado correctamente.")
     return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+@staff_required
+def homeininteraccionesweb(request):
+    interacciones = InteraccionWeb.objects.all()
+    tipo = request.GET.get("tipo", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    q = request.GET.get("q", "").strip()
+    if tipo:
+        interacciones = interacciones.filter(tipo=tipo)
+    if estado:
+        interacciones = interacciones.filter(estado=estado)
+    if q:
+        interacciones = interacciones.filter(
+            models.Q(nombres__icontains=q) |
+            models.Q(apellidos__icontains=q) |
+            models.Q(email__icontains=q) |
+            models.Q(telefono__icontains=q)
+        )
+    return render(request, "frm-interaccionesweb.html", {
+        "interacciones": interacciones,
+        "tipo": tipo,
+        "estado": estado,
+        "q": q,
+        "total": InteraccionWeb.objects.count(),
+        "pendientes": InteraccionWeb.objects.filter(estado="PENDIENTE").count(),
+        "contactos": InteraccionWeb.objects.filter(tipo="CONTACTO").count(),
+        "agendamientos": InteraccionWeb.objects.filter(tipo="AGENDAMIENTO").count(),
+    })
+
+
+@staff_required
+def homeininteraccionweb(request, interaccion_id):
+    interaccion = get_object_or_404(InteraccionWeb, pk=interaccion_id)
+    if request.method == "POST":
+        nuevo_estado = request.POST.get("estado", "").strip()
+        comentario = request.POST.get("comentario", "").strip()
+        if nuevo_estado in dict(InteraccionWeb.ESTADOS):
+            anterior = interaccion.estado
+            if nuevo_estado != anterior or comentario:
+                interaccion.estado = nuevo_estado
+                if comentario:
+                    interaccion.observaciones = comentario
+                interaccion.save(update_fields=["estado", "observaciones", "actualizado_en"])
+                InteraccionWebHistorial.objects.create(interaccion=interaccion, estado_anterior=anterior, estado_nuevo=nuevo_estado, comentario=comentario, usuario=request.user)
+                messages.success(request, "Seguimiento actualizado correctamente.")
+        return redirect("homeininteraccionweb", interaccion_id=interaccion.id)
+    return render(request, "frm-interaccionweb-detalle.html", {"interaccion": interaccion, "historial": interaccion.historial.all()})
+
+
