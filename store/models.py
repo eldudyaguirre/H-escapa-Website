@@ -389,3 +389,42 @@ class Post(models.Model):
 
     def __str__(self):
         return self.titulo
+
+
+class InteraccionWeb(models.Model):
+    TIPOS = [("CONTACTO", "Contacto"), ("AGENDAMIENTO", "Solicitud de agendamiento")]
+    ESTADOS = [("PENDIENTE", "Pendiente"), ("CONTACTADO", "Contactado"), ("CONFIRMADO", "Confirmado"), ("NO_CONCRETADO", "No concretado")]
+    tipo = models.CharField(max_length=20, choices=TIPOS)
+    nombres = models.CharField(max_length=100)
+    apellidos = models.CharField(max_length=100)
+    email = models.EmailField()
+    telefono = models.CharField(max_length=30)
+    servicio = models.CharField(max_length=150, blank=True)
+    fecha_solicitada = models.DateField(null=True, blank=True)
+    mensaje = models.TextField(blank=True)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default="PENDIENTE")
+    observaciones = models.TextField(blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+        verbose_name = "Interacción web"
+        verbose_name_plural = "Interacciones web"
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} - {self.nombres} {self.apellidos}"
+
+
+class InteraccionWebHistorial(models.Model):
+    interaccion = models.ForeignKey(InteraccionWeb, on_delete=models.CASCADE, related_name="historial")
+    estado_anterior = models.CharField(max_length=20)
+    estado_nuevo = models.CharField(max_length=20)
+    comentario = models.TextField(blank=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+        verbose_name = "Historial de interacción web"
+        verbose_name_plural = "Historial de interacciones web"
