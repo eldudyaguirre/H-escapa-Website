@@ -123,7 +123,7 @@
                         <!-- Page Contact Form Start -->
                         <div class="contact-form">
                             <!-- Contact Form Start -->
-                            <form id="contactForm" action="{% url 'contact' %}" method="POST" class="wow fadeInUp" data-wow-delay="0.25s">
+                            <form id="contactFormDjango" action="{% url 'contact' %}" method="POST" class="wow fadeInUp" data-wow-delay="0.25s" novalidate>
                                 {% csrf_token %}
                                 {% if messages %}
                                     {% for message in messages %}
