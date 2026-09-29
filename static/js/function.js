@@ -272,45 +272,7 @@
 	 * enviar a form-process.php, que ya no existe en este proyecto.
 	 */
 
-	/* Appointment form validation */
-	var $appointmentForm = $("#appointmentForm");
-	$appointmentForm.validator({focus: false}).on("submit", function (event) {
-		if (!event.isDefaultPrevented()) {
-			event.preventDefault();
-			submitappointmentForm();
-		}
-	});
-
-	function submitappointmentForm(){
-		/* Ajax call to submit form */
-		$.ajax({
-			type: "POST",
-			url: "form-appointment.php",
-			data: $appointmentForm.serialize(),
-			success : function(text){
-				if (text === "success"){
-					appointmentformSuccess();
-				} else {
-					appointmentsubmitMSG(false,text);
-				}
-			}
-		});
-	}
-
-	function appointmentformSuccess(){
-		$appointmentForm[0].reset();
-		appointmentsubmitMSG(true, "Message Sent Successfully!")
-	}
-
-	function appointmentsubmitMSG(valid, msg){
-		if(valid){
-			var msgClasses = "h3 text-success";
-		} else {
-			var msgClasses = "h3 text-danger";
-		}
-		$("#msgSubmit").removeClass().addClass(msgClasses).text(msg);
-	}
-	/* Appointment form validation end */
+	/* Appointment form validation handled by Django. */
 
 	/* Animated Wow Js */	
 	new WOW().init();
