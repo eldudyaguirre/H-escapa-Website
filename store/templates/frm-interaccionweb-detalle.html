@@ -18,7 +18,7 @@
 <div><span class="label">Servicio</span>{{ interaccion.servicio|default:"Consulta general" }}</div>
 {% if interaccion.fecha_solicitada %}<div><span class="label">Fecha solicitada</span>{{ interaccion.fecha_solicitada|date:"d/m/Y" }}</div>{% endif %}
 </div>{% if interaccion.mensaje %}<div class="message">{{ interaccion.mensaje }}</div>{% endif %}</div>
-<div class="id-card history"><h3>Historial</h3>{% for h in historial %}<div class="history-item"><strong>{{ h.get_estado_nuevo_display }}</strong><div class="small">{{ h.creado_en|date:"d/m/Y H:i" }}{% if h.usuario %} · {{ h.usuario.get_full_name|default:h.usuario.username }}{% endif %}</div>{% if h.comentario %}<div>{{ h.comentario }}</div>{% endif %}</div>{% empty %}<div class="small">Todavía no hay cambios registrados.</div>{% endfor %}</div>
+<div class="id-card history"><h3>Historial</h3>{% for h in historial %}<div class="history-item"><strong>{% if h.estado_nuevo == "PENDIENTE" %}Pendiente{% elif h.estado_nuevo == "CONTACTADO" %}Contactado{% elif h.estado_nuevo == "CONFIRMADO" %}Confirmado{% else %}No concretado{% endif %}</strong><div class="small">{{ h.creado_en|date:"d/m/Y H:i" }}{% if h.usuario %} · {{ h.usuario.get_full_name|default:h.usuario.username }}{% endif %}</div>{% if h.comentario %}<div>{{ h.comentario }}</div>{% endif %}</div>{% empty %}<div class="small">Todavía no hay cambios registrados.</div>{% endfor %}</div>
 </div>
 <div class="id-card"><h3>Seguimiento</h3><form method="post">{% csrf_token %}<div class="status">
 <label><input type="radio" name="estado" value="PENDIENTE" {% if interaccion.estado == "PENDIENTE" %}checked{% endif %}> Pendiente</label>
