@@ -123,20 +123,25 @@
                         <!-- Page Contact Form Start -->
                         <div class="contact-form">
                             <!-- Contact Form Start -->
-                            <form id="contactForm" action="{% url 'contact' %}" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.25s">
+                            <form id="contactForm" action="{% url 'contact' %}" method="POST" class="wow fadeInUp" data-wow-delay="0.25s">
                                 {% csrf_token %}
                                 {% if messages %}
                                     {% for message in messages %}
                                         <div class="alert alert-success mb-4">{{ message }}</div>
                                     {% endfor %}
                                 {% endif %}
-                                {% if form.non_field_errors %}
-                                    <div class="alert alert-danger mb-4">{{ form.non_field_errors }}</div>
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} mb-4">{{ message }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if form.errors %}
+                                    <div class="alert alert-danger mb-4">Revisa los campos marcados e intenta nuevamente.</div>
                                 {% endif %}
                                 <div class="row">
                                     <div class="form-group col-md-6 mb-4">
                                         <input type="text" name="nombres" class="form-control" id="fname" placeholder="Nombres" value="{{ form.nombres.value|default:'' }}" required>
-                                        <div class="help-block with-errors"></div>
+                                        <div class="help-block with-errors"></div>{% if form.mensaje.errors %}<small class="text-danger">{{ form.mensaje.errors|striptags }}</small>{% endif %}{% if form.email.errors %}<small class="text-danger">{{ form.email.errors|striptags }}</small>{% endif %}{% if form.telefono.errors %}<small class="text-danger">{{ form.telefono.errors|striptags }}</small>{% endif %}{% if form.apellidos.errors %}<small class="text-danger">{{ form.apellidos.errors|striptags }}</small>{% endif %}{% if form.nombres.errors %}<small class="text-danger">{{ form.nombres.errors|striptags }}</small>{% endif %}
                                     </div>
         
                                     <div class="form-group col-md-6 mb-4">
@@ -155,7 +160,7 @@
                                     </div>
         
                                     <div class="form-group col-md-12 mb-5">
-                                        <textarea name="mensaje" class="form-control" id="message" rows="4" placeholder="Escribe tu mensaje"></textarea>
+                                        <textarea name="mensaje" class="form-control" id="message" rows="4" placeholder="Escribe tu mensaje" required>{{ form.mensaje.value|default:"" }}</textarea>
                                         <div class="help-block with-errors"></div>
                                     </div>
         
