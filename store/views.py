@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.http import FileResponse, Http404
 from django.core.mail import EmailMessage
 from django.contrib import messages
-from .forms import ContactoForm
+from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -134,7 +134,69 @@ def contactanos(request):
 
     return render(request, "contact.html", {"form": form})
 
-def agendamiento(request): return render(request, "book-appointment.html")
+def agendamiento(request):
+    form = AgendamientoForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            recipient = os.getenv("CONTACT_FORM_RECIPIENT", "palaciohester@hotmail.com")
+            sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
+            datos = form.cleaned_data
+
+            subject = f"H-Escapa | Solicitud de cita - {datos['nombres']} {datos['apellidos']}"
+            text_body = (
+                f"Nombres: {datos['nombres']}\n"
+                f"Apellidos: {datos['apellidos']}\n"
+                f"Correo: {datos['email']}\n"
+                f"Teléfono: {datos['telefono']}\n"
+                f"Servicio: {datos['servicio']}\n"
+                f"Fecha solicitada: {datos['fecha'].strftime('%d/%m/%Y')}\n"
+            )
+            html_body = f"""
+            <div style="margin:0;padding:0;background:#f3f7f6;font-family:Arial,Helvetica,sans-serif;color:#263b3a">
+              <div style="max-width:680px;margin:30px auto;background:#fff;border:1px solid #dce9e6;border-radius:16px;overflow:hidden">
+                <div style="background:#439b95;padding:28px;text-align:center;color:#fff">
+                  <div style="font-size:32px;font-weight:700">h<span style="font-weight:400">-escapa</span></div>
+                  <div style="font-size:13px;color:#e8f7f5">Psicología y Salud Mental</div>
+                </div>
+                <div style="padding:32px">
+                  <div style="font-size:12px;font-weight:700;color:#439b95;letter-spacing:1px;text-transform:uppercase">Agenda tu cita</div>
+                  <h1 style="margin:7px 0 8px;font-size:25px">Nueva solicitud de cita</h1>
+                  <p style="color:#758481;font-size:14px">Una persona ha solicitado una cita desde el sitio web.</p>
+                  <div style="background:#f5faf9;border:1px solid #e1ece9;border-radius:12px;padding:20px;margin-top:24px">
+                    <div style="font-size:12px;color:#7b8986">PACIENTE</div>
+                    <div style="font-size:18px;font-weight:600;margin-top:5px">{datos['nombres']} {datos['apellidos']}</div>
+                  </div>
+                  <table width="100%" cellspacing="0" cellpadding="0" style="margin-top:18px">
+                    <tr>
+                      <td style="padding-right:8px"><div style="border:1px solid #e1e8e6;border-radius:10px;padding:15px"><small style="color:#87928f">TELÉFONO</small><div>{datos['telefono']}</div></div></td>
+                      <td style="padding-left:8px"><div style="border:1px solid #e1e8e6;border-radius:10px;padding:15px"><small style="color:#87928f">CORREO</small><div style="word-break:break-word">{datos['email']}</div></div></td>
+                    </tr>
+                  </table>
+                  <div style="margin-top:18px;padding:18px;background:#fafcfc;border-left:4px solid #439b95;border-radius:0 10px 10px 0">
+                    <div><strong>Servicio:</strong> {datos['servicio']}</div>
+                    <div style="margin-top:8px"><strong>Fecha solicitada:</strong> {datos['fecha'].strftime('%d/%m/%Y')}</div>
+                  </div>
+                  <div style="text-align:center;margin-top:25px"><a href="mailto:{datos['email']}" style="background:#00615c;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600">Contactar al paciente</a></div>
+                </div>
+                <div style="background:#f5f8f7;padding:20px;text-align:center;font-size:12px;color:#6f7d79">H-Escapa · Psicología y Salud Mental<br>Roberto Crespo 5-34 y Av 10 de Agosto · Cuenca, Ecuador</div>
+              </div>
+            </div>
+            """
+            email = EmailMessage(subject=subject, body=text_body, from_email=sender, to=[recipient], reply_to=[datos["email"]])
+            email.content_subtype = "html"
+            email.body = html_body
+            try:
+                email.send(fail_silently=False)
+            except Exception:
+                messages.error(request, "No se pudo enviar la solicitud. Revisa la configuración del correo del servidor.")
+            else:
+                messages.success(request, "Tu solicitud de cita fue enviada correctamente. Nos pondremos en contacto contigo para confirmar disponibilidad.")
+                return redirect("agendamiento")
+
+    return render(request, "book-appointment.html", {"form": form})
+
+
 def ayudasos(request): return render(request, "ayuda-sos.html")
 def coupletherapy(request): return render(request, "couple-therapy.html")
 def depansitherapy(request): return render(request, "depansi-therapy.html")
