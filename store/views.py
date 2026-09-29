@@ -11,6 +11,9 @@ from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
 from django.utils import timezone
 from django.http import FileResponse, Http404
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from .forms import ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -46,7 +49,31 @@ def signin(request):
 
 
 def about(request): return render(request, "about.html")
-def contactanos(request): return render(request, "contact.html")
+def contactanos(request):
+    form = ContactoForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        recipient = os.getenv("CONTACT_FORM_RECIPIENT", "palaciohester@hotmail.com")
+        sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
+
+        email = EmailMessage(
+            subject=f"Nuevo mensaje de contacto - {form.cleaned_data['nombres']} {form.cleaned_data['apellidos']}",
+            body=(
+                f"Nombres: {form.cleaned_data['nombres']}\\n"
+                f"Apellidos: {form.cleaned_data['apellidos']}\\n"
+                f"Teléfono: {form.cleaned_data['telefono']}\\n"
+                f"Correo: {form.cleaned_data['email']}\\n\\n"
+                f"Mensaje:\\n{form.cleaned_data['mensaje']}"
+            ),
+            from_email=sender,
+            to=[recipient],
+            reply_to=[form.cleaned_data["email"]],
+        )
+        email.send(fail_silently=False)
+        messages.success(request, "Tu mensaje fue enviado correctamente. Te responderemos lo antes posible.")
+        return redirect("contact")
+
+    return render(request, "contact.html", {"form": form})
 def agendamiento(request): return render(request, "book-appointment.html")
 def ayudasos(request): return render(request, "ayuda-sos.html")
 def coupletherapy(request): return render(request, "couple-therapy.html")
