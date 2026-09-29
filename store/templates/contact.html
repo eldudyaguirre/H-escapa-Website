@@ -127,11 +127,6 @@
                                 {% csrf_token %}
                                 {% if messages %}
                                     {% for message in messages %}
-                                        <div class="alert alert-success mb-4">{{ message }}</div>
-                                    {% endfor %}
-                                {% endif %}
-                                {% if messages %}
-                                    {% for message in messages %}
                                         <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} mb-4">{{ message }}</div>
                                     {% endfor %}
                                 {% endif %}
