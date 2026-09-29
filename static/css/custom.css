@@ -6888,3 +6888,23 @@ html, body {
     user-select: text;
     -webkit-user-select: text;
 }
+
+/* Corrección definitiva: el formulario de citas debe quedar por encima del header */
+body.appointment-page .appointment-form {
+    position: relative !important;
+    z-index: 1001 !important;
+}
+
+body.appointment-page #appointmentFormDjango {
+    position: relative !important;
+    z-index: 1002 !important;
+}
+
+body.appointment-page #appointmentFormDjango input,
+body.appointment-page #appointmentFormDjango select,
+body.appointment-page #appointmentFormDjango textarea,
+body.appointment-page #appointmentFormDjango button {
+    position: relative !important;
+    z-index: 1003 !important;
+    pointer-events: auto !important;
+}
