@@ -99,7 +99,7 @@
                         <!-- Appointment Form Start -->
                         <div class="appointment-form">
                             <!-- Contact Us Form Start -->
-                            <form id="appointmentFormDjango" action="{% url 'agendamiento' %}" method="POST" class="wow fadeInUp" data-wow-delay="0.25s">
+                            <form id="appointmentFormDjango" action="{% url 'agendamiento' %}" method="POST" class="appointment-django-form">
                                 {% csrf_token %}
                                 {% if messages %}
                                     {% for message in messages %}
