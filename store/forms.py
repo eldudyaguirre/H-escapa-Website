@@ -351,3 +351,12 @@ class ContactoForm(forms.Form):
     telefono = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(required=True)
     mensaje = forms.CharField(max_length=5000, required=True, widget=forms.Textarea)
+
+
+class AgendamientoForm(forms.Form):
+    nombres = forms.CharField(max_length=100, required=True)
+    apellidos = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(required=True)
+    telefono = forms.CharField(max_length=30, required=True)
+    servicio = forms.CharField(max_length=100, required=True)
+    fecha = forms.DateField(required=True)
