@@ -6952,3 +6952,12 @@ body.appointment-page #appointmentFormDjango button {
     z-index: 22 !important;
     pointer-events: auto !important;
 }
+
+/* La página de citas no usa capas/animaciones globales sobre el formulario */
+body.appointment-page .preloader {
+    display: none !important;
+}
+body.appointment-page .appointment-django-form input,
+body.appointment-page .appointment-django-form select {
+    cursor: text !important;
+}
