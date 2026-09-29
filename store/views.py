@@ -75,7 +75,7 @@ def contactanos(request):
         <div style="margin:0;padding:0;background:#f3f7f6;font-family:Arial,Helvetica,sans-serif;color:#263b3a">
           <div style="max-width:680px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #dce9e6">
             <div style="background:#439b95;padding:28px 32px;text-align:center">
-              <img src="https://www.h-escapa.com/static/img/logo.svg" alt="H-Escapa" style="display:block;width:180px;height:auto;max-height:74px;margin:0 auto;">
+              <img src="https://www.h-escapa.com/static/img/logo-blanco.png" alt="H-Escapa" style="display:block;width:190px;height:auto;max-height:80px;object-fit:contain;margin:0 auto;">
               <div style="margin-top:8px;color:#e8f7f5;font-size:13px">Psicología y Salud Mental</div>
             </div>
             <div style="padding:32px">
