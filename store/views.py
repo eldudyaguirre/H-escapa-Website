@@ -56,25 +56,84 @@ def contactanos(request):
     if request.method == "POST" and form.is_valid():
         recipient = os.getenv("CONTACT_FORM_RECIPIENT", "palaciohester@hotmail.com")
         sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
+        nombres = form.cleaned_data["nombres"]
+        apellidos = form.cleaned_data["apellidos"]
+        telefono = form.cleaned_data["telefono"]
+        correo = form.cleaned_data["email"]
+        mensaje = form.cleaned_data["mensaje"]
+
+        subject = f"H-Escapa | Nuevo mensaje de contacto de {nombres} {apellidos}"
+        text_body = (
+            f"Nombres: {nombres}\n"
+            f"Apellidos: {apellidos}\n"
+            f"Teléfono: {telefono}\n"
+            f"Correo: {correo}\n\n"
+            f"Mensaje:\n{mensaje}"
+        )
+        html_body = f"""
+        <div style="margin:0;padding:0;background:#f3f7f6;font-family:Arial,Helvetica,sans-serif;color:#263b3a">
+          <div style="max-width:680px;margin:30px auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #dce9e6">
+            <div style="background:#439b95;padding:28px 32px;text-align:center">
+              <div style="font-size:34px;font-weight:700;color:#ffffff;letter-spacing:-1px">h<span style="font-weight:400">-escapa</span></div>
+              <div style="margin-top:5px;color:#e8f7f5;font-size:13px">Psicología y Salud Mental</div>
+            </div>
+            <div style="padding:32px">
+              <div style="font-size:12px;font-weight:700;color:#439b95;text-transform:uppercase;letter-spacing:1px">Contáctanos</div>
+              <h1 style="margin:7px 0 8px;font-size:25px;color:#263b3a">Nuevo mensaje de contacto</h1>
+              <p style="margin:0 0 25px;color:#758481;font-size:14px">Una persona ha enviado un mensaje desde el sitio web de H-Escapa.</p>
+              
+              <div style="background:#f5faf9;border:1px solid #e1ece9;border-radius:12px;padding:20px;margin-bottom:22px">
+                <div style="font-size:12px;color:#7b8986;margin-bottom:5px">NOMBRE COMPLETO</div>
+                <div style="font-size:17px;font-weight:600;color:#263b3a">{nombres} {apellidos}</div>
+              </div>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:22px">
+                <tr>
+                  <td width="50%" style="padding:0 8px 0 0;vertical-align:top">
+                    <div style="border:1px solid #e1e8e6;border-radius:10px;padding:15px">
+                      <div style="font-size:11px;color:#87928f;margin-bottom:5px">TELÉFONO</div>
+                      <div style="font-size:14px;color:#263b3a">{telefono}</div>
+                    </div>
+                  </td>
+                  <td width="50%" style="padding:0 0 0 8px;vertical-align:top">
+                    <div style="border:1px solid #e1e8e6;border-radius:10px;padding:15px">
+                      <div style="font-size:11px;color:#87928f;margin-bottom:5px">CORREO ELECTRÓNICO</div>
+                      <div style="font-size:14px;color:#263b3a;word-break:break-word">{correo}</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="font-size:11px;color:#87928f;margin-bottom:8px">MENSAJE</div>
+              <div style="background:#fafcfc;border-left:4px solid #439b95;border-radius:0 10px 10px 0;padding:18px 20px;color:#40504d;font-size:14px;line-height:1.65;white-space:pre-line">{mensaje}</div>
+
+              <div style="margin-top:26px;text-align:center">
+                <a href="mailto:{correo}" style="display:inline-block;background:#00615c;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600">Responder al usuario</a>
+              </div>
+            </div>
+            <div style="background:#f5f8f7;padding:20px 32px;text-align:center;border-top:1px solid #e1e8e6">
+              <div style="font-size:12px;color:#6f7d79">H-Escapa · Psicología y Salud Mental</div>
+              <div style="font-size:12px;color:#87928f;margin-top:4px">Roberto Crespo 5-34 y Av 10 de Agosto · Cuenca, Ecuador</div>
+            </div>
+          </div>
+        </div>
+        """
 
         email = EmailMessage(
-            subject=f"Nuevo mensaje de contacto - {form.cleaned_data['nombres']} {form.cleaned_data['apellidos']}",
-            body=(
-                f"Nombres: {form.cleaned_data['nombres']}\\n"
-                f"Apellidos: {form.cleaned_data['apellidos']}\\n"
-                f"Teléfono: {form.cleaned_data['telefono']}\\n"
-                f"Correo: {form.cleaned_data['email']}\\n\\n"
-                f"Mensaje:\\n{form.cleaned_data['mensaje']}"
-            ),
+            subject=subject,
+            body=text_body,
             from_email=sender,
             to=[recipient],
-            reply_to=[form.cleaned_data["email"]],
+            reply_to=[correo],
         )
+        email.content_subtype = "html"
+        email.body = html_body
         email.send(fail_silently=False)
         messages.success(request, "Tu mensaje fue enviado correctamente. Te responderemos lo antes posible.")
         return redirect("contact")
 
     return render(request, "contact.html", {"form": form})
+
 def agendamiento(request): return render(request, "book-appointment.html")
 def ayudasos(request): return render(request, "ayuda-sos.html")
 def coupletherapy(request): return render(request, "couple-therapy.html")
