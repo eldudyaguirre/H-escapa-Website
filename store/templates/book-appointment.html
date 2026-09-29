@@ -111,22 +111,22 @@
                                 {% endif %}
                                 <div class="row">
                                     <div class="form-group col-md-6 mb-4">
-                                        <input type="text" name="nombres" class="form-control" id="fname" placeholder="Nombres" required>
-                                        <div class="help-block with-errors"></div>
+                                        <input type="text" name="nombres" class="form-control" id="appointment-nombres" placeholder="Nombres" value="{{ form.nombres.value|default:'' }}" autocomplete="given-name" required>
+                                        {% if form.nombres.errors %}<small class="text-danger">{{ form.nombres.errors|striptags }}</small>{% endif %}
                                     </div>
 
                                     <div class="form-group col-md-6 mb-4">
-                                        <input type="text" name="apellidos" class="form-control" id="lname" placeholder="Apellidos" required>
-                                        <div class="help-block with-errors"></div>
+                                        <input type="text" name="apellidos" class="form-control" id="appointment-apellidos" placeholder="Apellidos" value="{{ form.apellidos.value|default:'' }}" autocomplete="family-name" required>
+                                        {% if form.apellidos.errors %}<small class="text-danger">{{ form.apellidos.errors|striptags }}</small>{% endif %}
                                     </div>
 
                                     <div class="form-group col-md-12 mb-4">
-                                        <input type="email" name="email" class="form-control" id="email" placeholder="Email" required>
-                                        <div class="help-block with-errors"></div>
+                                        <input type="email" name="email" class="form-control" id="appointment-email" placeholder="Email" value="{{ form.email.value|default:'' }}" autocomplete="email" required>
+                                        {% if form.email.errors %}<small class="text-danger">{{ form.email.errors|striptags }}</small>{% endif %}
                                     </div>
                                     
                                     <div class="form-group col-md-12 mb-4">
-                                        <input type="text" name="telefono" class="form-control" id="phone" placeholder="Número de Celular" required>
+                                        <input type="text" name="telefono" class="form-control" id="appointment-telefono" placeholder="Número de Celular" value="{{ form.telefono.value|default:'' }}" autocomplete="tel" required>
                                         <div class="help-block with-errors"></div>
                                     </div>
 
