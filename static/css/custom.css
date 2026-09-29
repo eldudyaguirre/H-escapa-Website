@@ -6908,3 +6908,47 @@ body.appointment-page #appointmentFormDjango button {
     z-index: 1003 !important;
     pointer-events: auto !important;
 }
+
+/* Página de citas: eliminar capas absolutas que interfieren con la escritura */
+body.appointment-page .main-header,
+body.appointment-page header.main-header,
+body.appointment-page header.main-header .header-sticky {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    z-index: 10 !important;
+    transform: none !important;
+}
+
+body.appointment-page header.main-header .header-sticky::before,
+body.appointment-page .page-header1,
+body.appointment-page .page-header1::before {
+    pointer-events: none !important;
+}
+
+body.appointment-page .page-header1 {
+    display: none !important;
+}
+
+body.appointment-page .our-appointment {
+    position: relative !important;
+    z-index: 20 !important;
+}
+
+body.appointment-page .our-appointment-box {
+    position: relative !important;
+    z-index: 21 !important;
+}
+
+body.appointment-page .appointment-form,
+body.appointment-page #appointmentFormDjango,
+body.appointment-page #appointmentFormDjango .form-group,
+body.appointment-page #appointmentFormDjango input,
+body.appointment-page #appointmentFormDjango select,
+body.appointment-page #appointmentFormDjango button {
+    position: relative !important;
+    z-index: 22 !important;
+    pointer-events: auto !important;
+}
