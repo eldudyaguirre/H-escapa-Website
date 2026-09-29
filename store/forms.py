@@ -343,3 +343,11 @@ class ProfesionalForm(forms.Form):
         if cleaned_data.get("password1") and cleaned_data.get("password2") and cleaned_data["password1"] != cleaned_data["password2"]:
             self.add_error("password2", "Las contraseñas no coinciden.")
         return cleaned_data
+
+
+class ContactoForm(forms.Form):
+    nombres = forms.CharField(max_length=100, required=True)
+    apellidos = forms.CharField(max_length=100, required=True)
+    telefono = forms.CharField(max_length=30, required=True)
+    email = forms.EmailField(required=True)
+    mensaje = forms.CharField(max_length=5000, required=True, widget=forms.Textarea)
