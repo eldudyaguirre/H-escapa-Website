@@ -61,6 +61,7 @@ def contactanos(request):
         telefono = form.cleaned_data["telefono"]
         correo = form.cleaned_data["email"]
         mensaje = form.cleaned_data["mensaje"]
+        InteraccionWeb.objects.create(tipo="CONTACTO", nombres=nombres, apellidos=apellidos, email=correo, telefono=telefono, mensaje=mensaje)
 
         subject = f"H-Escapa | Nuevo mensaje de contacto de {nombres} {apellidos}"
         text_body = (
