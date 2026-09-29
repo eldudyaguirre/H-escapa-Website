@@ -6865,3 +6865,25 @@ html, body {
     max-width: 700px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
+
+/* Formulario de agendamiento: asegurar que los campos reciban el foco y la escritura */
+#appointmentFormDjango.appointment-django-form {
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+#appointmentFormDjango.appointment-django-form .form-group,
+#appointmentFormDjango.appointment-django-form input,
+#appointmentFormDjango.appointment-django-form select,
+#appointmentFormDjango.appointment-django-form textarea,
+#appointmentFormDjango.appointment-django-form button {
+    position: relative;
+    z-index: 21;
+    pointer-events: auto;
+}
+
+#appointmentFormDjango.appointment-django-form input {
+    user-select: text;
+    -webkit-user-select: text;
+}
