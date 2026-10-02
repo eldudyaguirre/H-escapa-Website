@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Cita, Especialidad, Paciente, Profesional
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -360,3 +360,58 @@ class AgendamientoForm(forms.Form):
     telefono = forms.CharField(max_length=30, required=True)
     servicio = forms.CharField(max_length=100, required=True)
     fecha = forms.DateField(required=True)
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+            "titulo", "resumen", "contenido", "imagen_destacada",
+            "categoria", "etiquetas", "estado",
+            "meta_titulo", "meta_descripcion",
+        ]
+        widgets = {
+            "titulo": forms.TextInput(attrs={
+                "class": "blog-input",
+                "placeholder": "Ej.: Cómo manejar la ansiedad en el día a día",
+                "maxlength": "200",
+            }),
+            "resumen": forms.Textarea(attrs={
+                "class": "blog-input",
+                "rows": 3,
+                "placeholder": "Un resumen breve que aparecerá en la portada del blog.",
+            }),
+            "contenido": forms.Textarea(attrs={
+                "class": "blog-input blog-content-editor",
+                "rows": 18,
+                "placeholder": "Escribe aquí el contenido del artículo...",
+            }),
+            "imagen_destacada": forms.ClearableFileInput(attrs={
+                "class": "blog-input",
+                "accept": "image/jpeg,image/png,image/webp",
+            }),
+            "categoria": forms.Select(attrs={"class": "blog-input"}),
+            "etiquetas": forms.SelectMultiple(attrs={
+                "class": "blog-input",
+                "size": "5",
+            }),
+            "estado": forms.Select(attrs={"class": "blog-input"}),
+            "meta_titulo": forms.TextInput(attrs={
+                "class": "blog-input",
+                "placeholder": "Título para buscadores (opcional)",
+                "maxlength": "200",
+            }),
+            "meta_descripcion": forms.Textarea(attrs={
+                "class": "blog-input",
+                "rows": 2,
+                "placeholder": "Descripción para buscadores (opcional)",
+                "maxlength": "300",
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categoria"].queryset = CategoriaBlog.objects.filter(activa=True).order_by("nombre")
+        self.fields["categoria"].required = False
+        self.fields["etiquetas"].queryset = EtiquetaBlog.objects.all().order_by("nombre")
+        self.fields["etiquetas"].required = False
