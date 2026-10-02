@@ -1,0 +1,57 @@
+{% extends "frm-menpri.html" %}
+{% block title %}Blog | H-Escapa{% endblock %}
+{% block extra_head %}
+<style>
+.blog-wrap{padding:28px;max-width:1450px;margin:auto}
+.blog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.blog-head h1{margin:0;font-family:Marcellus,serif;color:#19181b}.blog-head p{margin:5px 0;color:#71817e}
+.blog-btn{height:42px;border:0;border-radius:8px;padding:0 17px;background:#00615c;color:#fff;font-weight:650;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+.blog-btn.secondary{background:#fff;color:#00615c;border:1px solid #d7e3e0}
+.blog-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+.blog-stat{background:#fff;border:1px solid #dfe9e7;border-radius:12px;padding:17px}.blog-stat strong{font-size:1.5rem;color:#276f69}.blog-stat span{display:block;color:#71817e;font-size:.82rem;margin-top:3px}
+.blog-tools{background:#fff;border:1px solid #dfe9e7;border-radius:12px;padding:14px;margin-bottom:15px}.blog-tools form{display:flex;gap:9px;flex-wrap:wrap}.blog-tools input,.blog-tools select{height:40px;border:1px solid #d7e2df;border-radius:7px;padding:0 11px;background:#fff}.blog-search{flex:1;min-width:220px}
+.blog-table{background:#fff;border:1px solid #dfe9e7;border-radius:12px;overflow:hidden}.blog-table table{width:100%;border-collapse:collapse}.blog-table th,.blog-table td{padding:13px 15px;border-bottom:1px solid #edf1f0;text-align:left;font-size:.84rem}.blog-table th{background:#f4f8f7;color:#52625f;font-size:.76rem;text-transform:uppercase}.blog-table tr:last-child td{border-bottom:0}
+.blog-thumb{width:64px;height:48px;border-radius:7px;object-fit:cover;background:#eef3f1}.blog-title{font-weight:700;color:#29423f}.blog-sub{font-size:.75rem;color:#82908d;margin-top:3px}
+.blog-badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.72rem;font-weight:650}.published{background:#e5f5eb;color:#287047}.draft{background:#fff1d6;color:#8a6113}.archived{background:#eef0f0;color:#687572}
+.blog-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.blog-action{padding:7px 10px;border-radius:7px;border:1px solid #dfe7e5;background:#fff;color:#287c74;text-decoration:none;font-size:.78rem;font-weight:650}.blog-action.danger{color:#994848}.blog-action.publish{background:#00615c;color:#fff;border-color:#00615c}
+.blog-empty{padding:45px;text-align:center;color:#7b8986}
+@media(max-width:900px){.blog-stats{grid-template-columns:repeat(2,1fr)}.blog-table{overflow-x:auto}.blog-table table{min-width:1000px}}
+@media(max-width:600px){.blog-wrap{padding:18px 11px}.blog-stats{grid-template-columns:1fr 1fr}.blog-head h1{font-size:1.45rem}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="blog-wrap">
+  <div class="blog-head">
+    <div><h1>Blog</h1><p>Administra los artículos que se publican en H-Escapa.</p></div>
+    <a class="blog-btn" href="{% url 'homeinnuevopost' %}"><i class="bx bx-plus"></i>Nuevo post</a>
+  </div>
+  <div class="blog-stats">
+    <div class="blog-stat"><strong>{{ publicados }}</strong><span>Publicados</span></div>
+    <div class="blog-stat"><strong>{{ borradores }}</strong><span>Borradores</span></div>
+    <div class="blog-stat"><strong>{{ archivados }}</strong><span>Archivados</span></div>
+    <div class="blog-stat"><strong>{{ total_posts }}</strong><span>Total de posts</span></div>
+  </div>
+  <div class="blog-tools"><form method="get">
+    <input class="blog-search" name="q" value="{{ q }}" placeholder="Buscar por título o contenido">
+    <select name="estado"><option value="">Todos los estados</option><option value="PUBLICADO" {% if estado == "PUBLICADO" %}selected{% endif %}>Publicados</option><option value="BORRADOR" {% if estado == "BORRADOR" %}selected{% endif %}>Borradores</option><option value="ARCHIVADO" {% if estado == "ARCHIVADO" %}selected{% endif %}>Archivados</option></select>
+    <button class="blog-btn" type="submit">Filtrar</button><a class="blog-action" href="{% url 'homeinblog' %}">Limpiar</a>
+  </form></div>
+  <div class="blog-table"><table><thead><tr><th>Imagen</th><th>Publicación</th><th>Categoría</th><th>Autor</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>
+  {% for post in posts %}
+  <tr>
+    <td>{% if post.imagen_destacada %}<img class="blog-thumb" src="{{ post.imagen_destacada.url }}" alt="{{ post.titulo }}">{% else %}<div class="blog-thumb"></div>{% endif %}</td>
+    <td><div class="blog-title">{{ post.titulo }}</div>{% if post.resumen %}<div class="blog-sub">{{ post.resumen|truncatewords:14 }}</div>{% endif %}</td>
+    <td>{% if post.categoria %}{{ post.categoria.nombre }}{% else %}<span class="blog-sub">Sin categoría</span>{% endif %}</td>
+    <td>{{ post.autor.get_full_name|default:post.autor.username }}</td>
+    <td><span class="blog-badge {% if post.estado == 'PUBLICADO' %}published{% elif post.estado == 'BORRADOR' %}draft{% else %}archived{% endif %}">{{ post.get_estado_display }}</span></td>
+    <td>{% if post.fecha_publicacion %}{{ post.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}—{% endif %}</td>
+    <td><div class="blog-actions">
+      <a class="blog-action" href="{% url 'homeineditarpost' post.id %}">Editar</a>
+      {% if post.estado == "PUBLICADO" %}<a class="blog-action" target="_blank" href="{% url 'blogdetalle' post.slug %}">Ver</a>{% else %}<form method="post" action="{% url 'cambiar_estado_post' post.id %}" style="display:inline">{% csrf_token %}<input type="hidden" name="estado" value="PUBLICADO"><button class="blog-action publish" type="submit">Publicar</button></form>{% endif %}
+      <form method="post" action="{% url 'eliminarpost' post.id %}" style="display:inline" onsubmit="return confirm('¿Eliminar este post definitivamente?');">{% csrf_token %}<button class="blog-action danger" type="submit">Eliminar</button></form>
+    </div></td>
+  </tr>
+  {% empty %}<tr><td colspan="7" class="blog-empty">Todavía no hay publicaciones. Crea el primer artículo.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endblock %}
