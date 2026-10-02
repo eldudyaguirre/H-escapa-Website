@@ -6928,10 +6928,6 @@ body.appointment-page .page-header1::before {
     pointer-events: none !important;
 }
 
-body.appointment-page .page-header1 {
-    display: none !important;
-}
-
 body.appointment-page .our-appointment {
     position: relative !important;
     z-index: 20 !important;
@@ -6962,20 +6958,3 @@ body.appointment-page .appointment-django-form select {
     cursor: text !important;
 }
 
-/* Prueba de posición en la página de citas: bajar el bloque completo para descartar solapamientos */
-body.appointment-page .our-appointment {
-    margin-top: 260px !important;
-}
-
-/* Diagnóstico definitivo de foco: en la página de citas solo el formulario puede recibir clics */
-body.appointment-page * {
-    pointer-events: none !important;
-}
-
-body.appointment-page #appointmentFormDjango,
-body.appointment-page #appointmentFormDjango *,
-body.appointment-page #appointmentFormDjango input,
-body.appointment-page #appointmentFormDjango select,
-body.appointment-page #appointmentFormDjango button {
-    pointer-events: auto !important;
-}
