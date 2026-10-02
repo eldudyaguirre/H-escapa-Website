@@ -762,7 +762,6 @@ def subir_documento_paciente(request, paciente_id):
     )
     messages.success(request, "Documento cargado correctamente.")
     return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
-@staff_required
 
 
 @staff_required
