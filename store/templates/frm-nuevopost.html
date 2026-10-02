@@ -1,0 +1,36 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | {% if editar %}Editar post{% else %}Nuevo post{% endif %}{% endblock %}
+{% block extra_head %}
+<style>
+.post-wrap{padding:28px;max-width:1050px;margin:auto}.post-head{margin-bottom:20px}.post-head h1{margin:0;font-family:Marcellus,serif;color:#19181b}.post-head p{margin:6px 0;color:#71817e}
+.post-card{background:#fff;border:1px solid #e3eae8;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06);padding:26px}
+.post-grid{display:grid;grid-template-columns:1fr 310px;gap:24px}.post-field{margin-bottom:18px}.post-field label{display:block;color:#3e4645;font-weight:650;margin-bottom:7px}.post-help{font-size:.78rem;color:#7b8986;margin-top:5px}.blog-input{width:100%;border:1px solid #d7e2df;border-radius:8px;padding:10px 12px;background:#fff;color:#263b3a;box-sizing:border-box}.blog-input:focus{outline:none;border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.12)}textarea.blog-input{resize:vertical}.blog-content-editor{min-height:420px;line-height:1.7;font-size:15px}.post-side{background:#f7faf9;border:1px solid #e1ebe8;border-radius:10px;padding:17px;height:max-content}.post-side h3{font-size:1rem;margin:0 0 15px;color:#29423f}.post-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:18px;border-top:1px solid #edf1f0}.post-btn{border:0;border-radius:8px;padding:11px 17px;font-weight:650;text-decoration:none;display:inline-flex;align-items:center}.post-btn.cancel{background:#fff;border:1px solid #d7e2df;color:#63706e}.post-btn.save{background:#00615c;color:#fff}.errorlist{list-style:none;padding:0;margin:5px 0 0;color:#b42318;font-size:.8rem}
+@media(max-width:850px){.post-grid{grid-template-columns:1fr}}@media(max-width:600px){.post-wrap{padding:18px 11px}.post-card{padding:18px}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="post-wrap">
+  <div class="post-head"><h1>{% if editar %}Editar publicación{% else %}Nuevo post{% endif %}</h1><p>{% if editar %}Actualiza el contenido y estado del artículo.{% else %}Crea un artículo para publicarlo en el blog de H-Escapa.{% endif %}</p></div>
+  <div class="post-card"><form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="post-grid">
+      <div>
+        <div class="post-field"><label for="{{ form.titulo.id_for_label }}">Título</label>{{ form.titulo }}{{ form.titulo.errors }}</div>
+        <div class="post-field"><label for="{{ form.resumen.id_for_label }}">Resumen</label>{{ form.resumen }}<div class="post-help">Aparece como introducción en la portada del blog.</div>{{ form.resumen.errors }}</div>
+        <div class="post-field"><label for="{{ form.contenido.id_for_label }}">Contenido</label>{{ form.contenido }}<div class="post-help">Puedes escribir el artículo completo. Los saltos de línea se conservarán al publicarlo.</div>{{ form.contenido.errors }}</div>
+      </div>
+      <aside class="post-side">
+        <h3>Publicación</h3>
+        <div class="post-field"><label for="{{ form.imagen_destacada.id_for_label }}">Imagen destacada</label>{{ form.imagen_destacada }}<div class="post-help">JPG, PNG o WebP.</div>{{ form.imagen_destacada.errors }}</div>
+        <div class="post-field"><label for="{{ form.categoria.id_for_label }}">Categoría</label>{{ form.categoria }}{{ form.categoria.errors }}</div>
+        <div class="post-field"><label for="{{ form.etiquetas.id_for_label }}">Etiquetas</label>{{ form.etiquetas }}<div class="post-help">Puedes seleccionar varias con Ctrl/Cmd.</div>{{ form.etiquetas.errors }}</div>
+        <div class="post-field"><label for="{{ form.estado.id_for_label }}">Estado</label>{{ form.estado }}{{ form.estado.errors }}</div>
+        <h3 style="margin-top:22px">SEO</h3>
+        <div class="post-field"><label for="{{ form.meta_titulo.id_for_label }}">Meta título</label>{{ form.meta_titulo }}</div>
+        <div class="post-field"><label for="{{ form.meta_descripcion.id_for_label }}">Meta descripción</label>{{ form.meta_descripcion }}</div>
+      </aside>
+    </div>
+    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+    <div class="post-actions"><a class="post-btn cancel" href="{% url 'homeinblog' %}">Cancelar</a><button class="post-btn save" type="submit">{% if editar %}Guardar cambios{% else %}Guardar publicación{% endif %}</button></div>
+  </form></div>
+</div>
+{% endblock %}
