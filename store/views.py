@@ -18,8 +18,8 @@ from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm
-from .models import Cita, DocumentoPaciente, Especialidad, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
+from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
 
 
 def home(request):
@@ -762,6 +762,105 @@ def subir_documento_paciente(request, paciente_id):
     )
     messages.success(request, "Documento cargado correctamente.")
     return redirect("homeinperfilpaciente", paciente_id=paciente.pk)
+@staff_required
+
+
+@staff_required
+def homeinblog(request):
+    posts = Post.objects.select_related("autor", "categoria").prefetch_related("etiquetas").all()
+    estado = request.GET.get("estado", "").strip()
+    q = request.GET.get("q", "").strip()
+
+    if estado in {"BORRADOR", "PUBLICADO", "ARCHIVADO"}:
+        posts = posts.filter(estado=estado)
+    if q:
+        posts = posts.filter(
+            models.Q(titulo__icontains=q)
+            | models.Q(resumen__icontains=q)
+            | models.Q(contenido__icontains=q)
+        )
+
+    return render(request, "frm-blog.html", {
+        "posts": posts,
+        "estado": estado,
+        "q": q,
+        "total_posts": Post.objects.count(),
+        "publicados": Post.objects.filter(estado="PUBLICADO").count(),
+        "borradores": Post.objects.filter(estado="BORRADOR").count(),
+        "archivados": Post.objects.filter(estado="ARCHIVADO").count(),
+        "active_menu": "blog",
+    })
+
+
+@staff_required
+def homeinnuevopost(request):
+    if request.method == "POST":
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.autor = request.user
+            post.save()
+            form.save_m2m()
+            messages.success(request, "Publicación guardada correctamente.")
+            return redirect("homeinblog")
+    else:
+        form = PostForm()
+    return render(request, "frm-nuevopost.html", {
+        "form": form,
+        "editar": False,
+        "active_menu": "blog",
+    })
+
+
+@staff_required
+def homeineditarpost(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == "POST":
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            if not post.autor_id:
+                post.autor = request.user
+            post.save()
+            form.save_m2m()
+            messages.success(request, "Publicación actualizada correctamente.")
+            return redirect("homeinblog")
+    else:
+        form = PostForm(instance=post)
+    return render(request, "frm-nuevopost.html", {
+        "form": form,
+        "editar": True,
+        "post": post,
+        "active_menu": "blog",
+    })
+
+
+@staff_required
+def eliminarpost(request, post_id):
+    if request.method != "POST":
+        return redirect("homeinblog")
+    post = get_object_or_404(Post, pk=post_id)
+    titulo = post.titulo
+    post.delete()
+    messages.success(request, f"El post «{titulo}» fue eliminado.")
+    return redirect("homeinblog")
+
+
+@staff_required
+def cambiar_estado_post(request, post_id):
+    if request.method != "POST":
+        return redirect("homeinblog")
+    post = get_object_or_404(Post, pk=post_id)
+    nuevo_estado = request.POST.get("estado", "")
+    if nuevo_estado not in dict(Post.ESTADOS):
+        messages.error(request, "Estado de publicación no válido.")
+        return redirect("homeinblog")
+    post.estado = nuevo_estado
+    post.save()
+    messages.success(request, f"El post «{post.titulo}» ahora está {post.get_estado_display().lower()}.")
+    return redirect("homeinblog")
+
+
 @staff_required
 def homeininteraccionesweb(request):
     interacciones = InteraccionWeb.objects.all()
