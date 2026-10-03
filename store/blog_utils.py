@@ -10,6 +10,17 @@ ALLOWED_TAGS = {
     "blockquote", "a",
 }
 
+# El navegador usa etiquetas distintas según el comando de contenteditable.
+# Se normalizan aquí para que el formato aplicado en el editor no se pierda
+# al guardar el artículo.
+TAG_ALIASES = {
+    "b": "strong",
+    "i": "em",
+    "strike": "s",
+    "del": "s",
+    "div": "p",
+}
+
 
 class BlogHTMLSanitizer(HTMLParser):
     def __init__(self):
@@ -18,6 +29,7 @@ class BlogHTMLSanitizer(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
+        tag = TAG_ALIASES.get(tag, tag)
         if tag not in ALLOWED_TAGS:
             return
 
@@ -45,6 +57,7 @@ class BlogHTMLSanitizer(HTMLParser):
 
     def handle_endtag(self, tag):
         tag = tag.lower()
+        tag = TAG_ALIASES.get(tag, tag)
         if tag in ALLOWED_TAGS and tag != "br":
             self.parts.append(f"</{tag}>")
 
