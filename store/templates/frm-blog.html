@@ -13,7 +13,7 @@
 .blog-table{background:#fff;border:1px solid #dfe9e7;border-radius:12px;overflow:hidden}.blog-table table{width:100%;border-collapse:collapse}.blog-table th,.blog-table td{padding:13px 15px;border-bottom:1px solid #edf1f0;text-align:left;font-size:.84rem}.blog-table th{background:#f4f8f7;color:#52625f;font-size:.76rem;text-transform:uppercase}.blog-table tr:last-child td{border-bottom:0}
 .blog-thumb{width:64px;height:48px;border-radius:7px;object-fit:cover;background:#eef3f1}.blog-title{font-weight:700;color:#29423f}.blog-sub{font-size:.75rem;color:#82908d;margin-top:3px}
 .blog-badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.72rem;font-weight:650}.published{background:#e5f5eb;color:#287047}.draft{background:#fff1d6;color:#8a6113}.archived{background:#eef0f0;color:#687572}
-.blog-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.blog-action{padding:7px 10px;border-radius:7px;border:1px solid #dfe7e5;background:#fff;color:#287c74;text-decoration:none;font-size:.78rem;font-weight:650}.blog-action.danger{color:#994848}.blog-action.publish{background:#00615c;color:#fff;border-color:#00615c}
+.blog-actions{position:relative;display:flex;justify-content:flex-end;align-items:center}.blog-more{width:38px;height:38px;border:1px solid #dfe7e5;border-radius:8px;background:#fff;color:#52625f;font-size:21px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}.blog-more:hover{background:#f4f8f7;color:#00615c}.blog-menu{position:absolute;right:0;top:44px;z-index:20;min-width:150px;padding:6px;background:#fff;border:1px solid #dfe7e5;border-radius:9px;box-shadow:0 10px 25px rgba(30,55,53,.12)}.blog-menu a,.blog-menu button{display:block;width:100%;box-sizing:border-box;padding:9px 11px;border:0;border-radius:6px;background:transparent;color:#287c74;text-decoration:none;text-align:left;font-size:.8rem;font-weight:650;cursor:pointer}.blog-menu a:hover,.blog-menu button:hover{background:#f1f7f5}.blog-menu .danger{color:#994848}.blog-menu .publish{color:#00615c}.blog-menu form{margin:0}.blog-action{padding:7px 10px;border-radius:7px;border:1px solid #dfe7e5;background:#fff;color:#287c74;text-decoration:none;font-size:.78rem;font-weight:650}.blog-action.danger{color:#994848}.blog-action.publish{background:#00615c;color:#fff;border-color:#00615c}
 .blog-empty{padding:45px;text-align:center;color:#7b8986}
 @media(max-width:900px){.blog-stats{grid-template-columns:repeat(2,1fr)}.blog-table{overflow-x:auto}.blog-table table{min-width:1000px}}
 @media(max-width:600px){.blog-wrap{padding:18px 11px}.blog-stats{grid-template-columns:1fr 1fr}.blog-head h1{font-size:1.45rem}}
@@ -42,13 +42,22 @@
     <td>{% if post.imagen_destacada %}<img class="blog-thumb" src="{{ post.imagen_destacada.url }}" alt="{{ post.titulo }}">{% else %}<div class="blog-thumb"></div>{% endif %}</td>
     <td><div class="blog-title">{{ post.titulo }}</div>{% if post.resumen %}<div class="blog-sub">{{ post.resumen|truncatewords:14 }}</div>{% endif %}</td>
     <td>{% if post.categoria %}{{ post.categoria.nombre }}{% else %}<span class="blog-sub">Sin categoría</span>{% endif %}</td>
-    <td>{{ post.autor.get_full_name|default:post.autor.username }}</td>
+    <td>{% if post.autor_nombre %}{{ post.autor_nombre }}{% else %}{{ post.autor.get_full_name|default:post.autor.username }}{% endif %}</td>
     <td><span class="blog-badge {% if post.estado == 'PUBLICADO' %}published{% elif post.estado == 'BORRADOR' %}draft{% else %}archived{% endif %}">{{ post.get_estado_display }}</span></td>
     <td>{% if post.fecha_publicacion %}{{ post.fecha_publicacion|date:"d/m/Y H:i" }}{% else %}—{% endif %}</td>
     <td><div class="blog-actions">
-      <a class="blog-action" href="{% url 'homeineditarpost' post.id %}">Editar</a>
-      {% if post.estado == "PUBLICADO" %}<a class="blog-action" target="_blank" href="{% url 'blogdetalle' post.slug %}">Ver</a>{% else %}<form method="post" action="{% url 'cambiar_estado_post' post.id %}" style="display:inline">{% csrf_token %}<input type="hidden" name="estado" value="PUBLICADO"><button class="blog-action publish" type="submit">Publicar</button></form>{% endif %}
-      <form method="post" action="{% url 'eliminarpost' post.id %}" style="display:inline" onsubmit="return confirm('¿Eliminar este post definitivamente?');">{% csrf_token %}<button class="blog-action danger" type="submit">Eliminar</button></form>
+      <details>
+        <summary class="blog-more" aria-label="Más acciones" title="Más acciones">⋮</summary>
+        <div class="blog-menu">
+          <a href="{% url 'homeineditarpost' post.id %}">Editar</a>
+          {% if post.estado == "PUBLICADO" %}
+          <a target="_blank" href="{% url 'blogdetalle' post.slug %}">Ver publicación</a>
+          {% else %}
+          <form method="post" action="{% url 'cambiar_estado_post' post.id %}">{% csrf_token %}<input type="hidden" name="estado" value="PUBLICADO"><button class="publish" type="submit">Publicar</button></form>
+          {% endif %}
+          <form method="post" action="{% url 'eliminarpost' post.id %}" onsubmit="return confirm('¿Eliminar este post definitivamente?');">{% csrf_token %}<button class="danger" type="submit">Eliminar</button></form>
+        </div>
+      </details>
     </div></td>
   </tr>
   {% empty %}<tr><td colspan="7" class="blog-empty">Todavía no hay publicaciones. Crea el primer artículo.</td></tr>{% endfor %}
