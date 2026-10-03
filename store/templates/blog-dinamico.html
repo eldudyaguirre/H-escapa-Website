@@ -10,17 +10,43 @@
 <link href="{% static 'css/custom.css' %}" rel="stylesheet">
 </head>
 <body>
-<header class="main-header"><div class="header-sticky"><nav class="navbar navbar-expand-lg"><div class="container">
-<a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa"></a>
-<div class="collapse navbar-collapse main-menu"><div class="nav-menu-wrapper"><ul class="navbar-nav mr-auto">
-<li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
-<li class="nav-item active"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio de Sesión</a></li>
-<li class="nav-item highlighted-menu"><a class="nav-link" href="{% url 'agendamiento' %}">Reservar una cita</a></li>
-</ul></div></div><div class="navbar-toggle"></div></div></nav><div class="responsive-menu"></div></div></header>
+<header class="main-header">
+        <div class="header-sticky">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container">
+                    <!-- Logo Start -->
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <img src="{% static 'img/logo.svg' %}" alt="Logo">
+                    </a>
+                    <!-- Logo End -->
+
+                    <!-- Main Menu Start -->
+                    <div class="collapse navbar-collapse main-menu">
+                        <div class="nav-menu-wrapper">
+                            <ul class="navbar-nav mr-auto" id="menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca De</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link active" href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio De Sesión</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="{% url 'agendamiento' %}">Reservar una cita</a></li>
+                            </ul>
+                        </div>
+                        <!-- Header Btn Start -->
+                        <div class="header-btn d-inline-flex">
+                            <a href="{% url 'agendamiento' %}" class="btn-default">Reservar una cita</a>
+                        </div>
+                        <!-- Header Btn End -->
+                    </div>
+                    <!-- Main Menu End -->
+                    <div class="navbar-toggle"></div>
+                </div>
+            </nav>
+            <div class="responsive-menu"></div>
+        </div>
+    </header>
+    <!-- Header End -->
 <div class="page-header header-blog"><div class="container"><div class="page-header-box"><h1>Blog</h1><nav><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li><li class="breadcrumb-item active">Blog</li></ol></nav></div></div></div>
 <section class="our-blog page-blog"><div class="container"><div class="row">
 {% for post in posts %}
