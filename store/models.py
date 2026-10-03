@@ -363,6 +363,8 @@ class Post(models.Model):
     categoria = models.ForeignKey(CategoriaBlog, on_delete=models.SET_NULL, null=True, blank=True, related_name="posts")
     etiquetas = models.ManyToManyField(EtiquetaBlog, blank=True, related_name="posts")
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="posts_blog")
+    # Nombre público del escritor; el usuario que creó el registro se conserva en `autor`.
+    autor_nombre = models.CharField(max_length=150, blank=True)
     estado = models.CharField(max_length=10, choices=ESTADOS, default="BORRADOR")
     meta_titulo = models.CharField(max_length=200, blank=True)
     meta_descripcion = models.CharField(max_length=300, blank=True)
