@@ -236,7 +236,13 @@ def blogdetalle(request, slug):
         slug=slug,
         estado="PUBLICADO",
     )
-    return render(request, "blog-detalle-dinamico.html", {"post": post})
+    imagen_url = request.build_absolute_uri(post.imagen_destacada.url) if post.imagen_destacada else request.build_absolute_uri(static("img/logo-blanco.png"))
+    canonical_url = request.build_absolute_uri()
+    return render(request, "blog-detalle-dinamico.html", {
+        "post": post,
+        "og_image": imagen_url,
+        "canonical_url": canonical_url,
+    })
 
 
 def staff_required(view_func):
