@@ -102,7 +102,12 @@
   editor.addEventListener("paste", function(e){
     e.preventDefault();
     const text = (e.clipboardData || window.clipboardData).getData("text/plain");
-    document.execCommand("insertText", false, text);
+    const lines = text.split(/\r?\n/);
+    const html = lines.map(function(line){
+      const safe = line.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return "<p>" + (safe || "<br>") + "</p>";
+    }).join("");
+    document.execCommand("insertHTML", false, html);
     sync();
   });
 
