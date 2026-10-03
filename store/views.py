@@ -17,6 +17,7 @@ from django.contrib import messages
 from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.templatetags.static import static
 
 from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
