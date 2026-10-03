@@ -10,13 +10,43 @@
 <link href="{% static 'css/custom.css' %}" rel="stylesheet">
 </head>
 <body>
-<header class="main-header"><div class="header-sticky"><nav class="navbar navbar-expand-lg"><div class="container">
-<a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'img/logo.svg' %}" alt="H-Escapa"></a>
-<div class="collapse navbar-collapse main-menu"><div class="nav-menu-wrapper"><ul class="navbar-nav mr-auto">
-<li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'bloggeneral' %}">Blog</a></li>
-<li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio de Sesión</a></li>
-</ul></div></div><div class="navbar-toggle"></div></div></nav><div class="responsive-menu"></div></div></header>
+<header class="main-header">
+        <div class="header-sticky">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container">
+                    <!-- Logo Start -->
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <img src="{% static 'img/logo.svg' %}" alt="Logo">
+                    </a>
+                    <!-- Logo End -->
+
+                    <!-- Main Menu Start -->
+                    <div class="collapse navbar-collapse main-menu">
+                        <div class="nav-menu-wrapper">
+                            <ul class="navbar-nav mr-auto" id="menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca De</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'services' %}">Servicios</a></li>
+                                <li class="nav-item"><a class="nav-link active" href="{% url 'bloggeneral' %}">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contáctanos</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Inicio De Sesión</a></li>
+                                <li class="nav-item highlighted-menu"><a class="nav-link" href="{% url 'agendamiento' %}">Reservar una cita</a></li>
+                            </ul>
+                        </div>
+                        <!-- Header Btn Start -->
+                        <div class="header-btn d-inline-flex">
+                            <a href="{% url 'agendamiento' %}" class="btn-default">Reservar una cita</a>
+                        </div>
+                        <!-- Header Btn End -->
+                    </div>
+                    <!-- Main Menu End -->
+                    <div class="navbar-toggle"></div>
+                </div>
+            </nav>
+            <div class="responsive-menu"></div>
+        </div>
+    </header>
+    <!-- Header End -->
 <main class="page-single-post"><div class="container"><div class="row justify-content-center"><div class="col-lg-9">
 <div class="section-title mt-5"><h1>{{ post.titulo }}</h1><p>{% if post.fecha_publicacion %}{{ post.fecha_publicacion|date:"d/m/Y" }}{% endif %}{% if post.autor %} · {{ post.autor.get_full_name|default:post.autor.username }}{% endif %}</p></div>
 {% if post.imagen_destacada %}<div class="post-image mb-4"><img src="{{ post.imagen_destacada.url }}" class="img-fluid" alt="{{ post.titulo }}"></div>{% endif %}
