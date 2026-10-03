@@ -7,7 +7,15 @@ def copiar_nombre_autor(apps, schema_editor):
         autor = post.autor
         nombre = ""
         if autor:
-            nombre = (autor.get_full_name() or "").strip() or autor.get_username()
+            # Los modelos históricos de Django no garantizan métodos personalizados.
+            # Usamos únicamente campos disponibles en la migración.
+            partes = [
+                getattr(autor, "first_name", "") or "",
+                getattr(autor, "last_name", "") or "",
+            ]
+            nombre = " ".join(parte.strip() for parte in partes if parte.strip())
+            if not nombre:
+                nombre = getattr(autor, "username", "") or getattr(autor, "email", "") or ""
         if nombre:
             Post.objects.filter(pk=post.pk).update(autor_nombre=nombre)
 
