@@ -23,7 +23,13 @@ from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, Etique
 
 
 def home(request):
-    return render(request, "index.html")
+    posts = (
+        Post.objects.filter(estado="PUBLICADO")
+        .select_related("categoria", "autor")
+        .prefetch_related("etiquetas")
+        .order_by("-fecha_publicacion", "-creado_en")[:3]
+    )
+    return render(request, "index.html", {"posts": posts})
 
 
 def do_signin(request):
