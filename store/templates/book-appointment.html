@@ -34,6 +34,30 @@
 	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
 	<!-- Main Custom Css -->
 	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+<style>
+/* Cabecera del agendamiento: menú con fondo corporativo H-Escapa */
+.appointment-page .main-header,
+.appointment-page .main-header .header-sticky {
+    background: #374E5B !important;
+}
+.appointment-page .main-header {
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.appointment-page .main-menu1 .nav-menu-wrapper {
+    background: transparent;
+}
+.appointment-page .main-menu1 .navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+.appointment-page .main-menu1 .navbar-nav .nav-link:hover,
+.appointment-page .main-menu1 .navbar-nav .nav-link:focus,
+.appointment-page .main-menu1 .navbar-nav .nav-link.active {
+    color: #C5D13B !important;
+}
+.appointment-page .responsive-menu {
+    background: #374E5B;
+}
+</style>
 </head>
 <body class="appointment-page">
 
