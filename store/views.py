@@ -804,12 +804,16 @@ def homeinnuevopost(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.autor = request.user
+            if not post.autor_nombre:
+                post.autor_nombre = request.user.get_full_name().strip() or request.user.get_username()
             post.save()
             form.save_m2m()
             messages.success(request, "Publicación guardada correctamente.")
             return redirect("homeinblog")
     else:
-        form = PostForm()
+        form = PostForm(initial={
+            "autor_nombre": request.user.get_full_name().strip() or request.user.get_username(),
+        })
     return render(request, "frm-nuevopost.html", {
         "form": form,
         "editar": False,
