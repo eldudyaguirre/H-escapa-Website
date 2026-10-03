@@ -1,5 +1,7 @@
 from django import forms
 
+from .blog_utils import sanitize_blog_html
+
 from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog
 
 class SignUpForm(forms.Form):
@@ -381,10 +383,8 @@ class PostForm(forms.ModelForm):
                 "rows": 3,
                 "placeholder": "Un resumen breve que aparecerá en la portada del blog.",
             }),
-            "contenido": forms.Textarea(attrs={
-                "class": "blog-input blog-content-editor",
-                "rows": 18,
-                "placeholder": "Escribe aquí el contenido del artículo...",
+            "contenido": forms.HiddenInput(attrs={
+                "id": "id_contenido",
             }),
             "imagen_destacada": forms.ClearableFileInput(attrs={
                 "class": "blog-input",
@@ -408,6 +408,12 @@ class PostForm(forms.ModelForm):
                 "maxlength": "300",
             }),
         }
+
+    def clean_contenido(self):
+        contenido = sanitize_blog_html(self.cleaned_data.get("contenido") or "").strip()
+        if not contenido:
+            raise forms.ValidationError("El contenido del artículo no puede estar vacío.")
+        return contenido
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
