@@ -2,6 +2,9 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from PIL import Image, ImageOps
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 class Especialidad(models.Model):
@@ -381,6 +384,50 @@ class Post(models.Model):
             self.slug = slugify(self.titulo)
         if self.estado == "PUBLICADO" and self.fecha_publicacion is None:
             self.fecha_publicacion = timezone.now()
+
+        # Normaliza automáticamente la imagen destacada para que todas las
+        # tarjetas y portadas del blog tengan el mismo formato.
+        if self.imagen_destacada and getattr(self.imagen_destacada, "file", None):
+            try:
+                self.imagen_destacada.file.seek(0)
+                imagen = Image.open(self.imagen_destacada.file)
+                imagen = ImageOps.exif_transpose(imagen)
+
+                # Formato panorámico 3:2, adecuado para index, listado y artículo.
+                ancho, alto = 1200, 800
+                origen_ratio = imagen.width / imagen.height
+                destino_ratio = ancho / alto
+
+                if origen_ratio > destino_ratio:
+                    nuevo_ancho = int(imagen.height * destino_ratio)
+                    izquierda = (imagen.width - nuevo_ancho) // 2
+                    imagen = imagen.crop((izquierda, 0, izquierda + nuevo_ancho, imagen.height))
+                elif origen_ratio < destino_ratio:
+                    nuevo_alto = int(imagen.width / destino_ratio)
+                    arriba = (imagen.height - nuevo_alto) // 2
+                    imagen = imagen.crop((0, arriba, imagen.width, arriba + nuevo_alto))
+
+                imagen = imagen.resize((ancho, alto), Image.Resampling.LANCZOS)
+
+                if imagen.mode not in ("RGB", "L"):
+                    fondo = Image.new("RGB", imagen.size, "white")
+                    if "A" in imagen.getbands():
+                        fondo.paste(imagen, mask=imagen.getchannel("A"))
+                    else:
+                        fondo.paste(imagen)
+                    imagen = fondo
+                else:
+                    imagen = imagen.convert("RGB")
+
+                buffer = BytesIO()
+                imagen.save(buffer, format="JPEG", quality=86, optimize=True, progressive=True)
+                nombre = f"{slugify(self.titulo) or 'post'}.jpg"
+                self.imagen_destacada.save(nombre, ContentFile(buffer.getvalue()), save=False)
+            except (OSError, ValueError):
+                # Si el archivo no es una imagen válida, Django conserva el
+                # archivo original y la validación del formulario se encarga.
+                pass
+
         super().save(*args, **kwargs)
 
     @property
