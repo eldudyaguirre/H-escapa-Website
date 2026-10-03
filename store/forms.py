@@ -365,10 +365,21 @@ class AgendamientoForm(forms.Form):
 
 
 class PostForm(forms.ModelForm):
+    autor_nombre = forms.CharField(
+        label="Autor / escritor",
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": "blog-input",
+            "placeholder": "Ej.: Dra. María Pérez",
+        }),
+        help_text="Es el nombre que aparecerá públicamente como escritor del artículo.",
+    )
+
     class Meta:
         model = Post
         fields = [
-            "titulo", "resumen", "contenido", "imagen_destacada",
+            "titulo", "resumen", "contenido", "imagen_destacada", "autor_nombre",
             "categoria", "etiquetas", "estado",
             "meta_titulo", "meta_descripcion",
         ]
