@@ -2,10 +2,12 @@
 {% block title %}H-Escapa | {% if editar %}Editar post{% else %}Nuevo post{% endif %}{% endblock %}
 {% block extra_head %}
 <style>
-.post-wrap{padding:28px;max-width:1050px;margin:auto}.post-head{margin-bottom:20px}.post-head h1{margin:0;font-family:Marcellus,serif;color:#19181b}.post-head p{margin:6px 0;color:#71817e}
+.post-wrap{padding:28px;max-width:1120px;margin:auto}.post-head{margin-bottom:20px}.post-head h1{margin:0;font-family:Marcellus,serif;color:#19181b}.post-head p{margin:6px 0;color:#71817e}
 .post-card{background:#fff;border:1px solid #e3eae8;border-radius:14px;box-shadow:0 5px 20px rgba(30,55,53,.06);padding:26px}
-.post-grid{display:grid;grid-template-columns:1fr 310px;gap:24px}.post-field{margin-bottom:18px}.post-field label{display:block;color:#3e4645;font-weight:650;margin-bottom:7px}.post-help{font-size:.78rem;color:#7b8986;margin-top:5px}.blog-input{width:100%;border:1px solid #d7e2df;border-radius:8px;padding:10px 12px;background:#fff;color:#263b3a;box-sizing:border-box}.blog-input:focus{outline:none;border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.12)}textarea.blog-input{resize:vertical}.blog-content-editor{min-height:420px;line-height:1.7;font-size:15px}.post-side{background:#f7faf9;border:1px solid #e1ebe8;border-radius:10px;padding:17px;height:max-content}.post-side h3{font-size:1rem;margin:0 0 15px;color:#29423f}.post-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:18px;border-top:1px solid #edf1f0}.post-btn{border:0;border-radius:8px;padding:11px 17px;font-weight:650;text-decoration:none;display:inline-flex;align-items:center}.post-btn.cancel{background:#fff;border:1px solid #d7e2df;color:#63706e}.post-btn.save{background:#00615c;color:#fff}.errorlist{list-style:none;padding:0;margin:5px 0 0;color:#b42318;font-size:.8rem}
-@media(max-width:850px){.post-grid{grid-template-columns:1fr}}@media(max-width:600px){.post-wrap{padding:18px 11px}.post-card{padding:18px}}
+.post-grid{display:grid;grid-template-columns:1fr 310px;gap:24px}.post-field{margin-bottom:18px}.post-field label{display:block;color:#3e4645;font-weight:650;margin-bottom:7px}.post-help{font-size:.78rem;color:#7b8986;margin-top:5px}.blog-input{width:100%;border:1px solid #d7e2df;border-radius:8px;padding:10px 12px;background:#fff;color:#263b3a;box-sizing:border-box}.blog-input:focus{outline:none;border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.12)}
+.editor-shell{border:1px solid #d7e2df;border-radius:10px;overflow:hidden;background:#fff}.editor-toolbar{display:flex;gap:4px;flex-wrap:wrap;padding:9px;background:#f5f8f7;border-bottom:1px solid #dfe8e5}.editor-toolbar button,.editor-toolbar select{height:34px;border:1px solid #d5e1de;border-radius:6px;background:#fff;color:#38504d;cursor:pointer;padding:0 9px;font-size:13px}.editor-toolbar button:hover{background:#eaf4f2}.editor-toolbar .separator{width:1px;height:24px;background:#d8e3e0;margin:5px 3px}.editor-toolbar .tool-bold{font-weight:800}.editor-toolbar .tool-italic{font-style:italic}.editor-toolbar .tool-underline{text-decoration:underline}
+.blog-editor{min-height:460px;padding:18px 20px;outline:none;color:#283b39;font-size:16px;line-height:1.8}.blog-editor:focus{box-shadow:inset 0 0 0 2px rgba(67,155,149,.16)}.blog-editor:empty:before{content:"Escribe aquí tu artículo... Puedes usar títulos, negrita, cursiva, listas, citas y enlaces.";color:#9aa8a5;pointer-events:none}.blog-editor h2{font-family:Marcellus,serif;font-size:28px;color:#29423f;margin:26px 0 12px}.blog-editor h3{font-family:Marcellus,serif;font-size:23px;color:#29423f;margin:22px 0 10px}.blog-editor p{margin:0 0 16px}.blog-editor blockquote{margin:20px 0;padding:14px 18px;border-left:4px solid #439b95;background:#f2f8f7;color:#536563}.blog-editor ul,.blog-editor ol{padding-left:28px;margin:10px 0 18px}.blog-editor a{color:#287c74;text-decoration:underline}.editor-status{display:flex;justify-content:space-between;padding:7px 12px;border-top:1px solid #edf1f0;color:#899693;font-size:11px}.post-side{background:#f7faf9;border:1px solid #e1ebe8;border-radius:10px;padding:17px;height:max-content}.post-side h3{font-size:1rem;margin:0 0 15px;color:#29423f}.post-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:18px;border-top:1px solid #edf1f0}.post-btn{border:0;border-radius:8px;padding:11px 17px;font-weight:650;text-decoration:none;display:inline-flex;align-items:center}.post-btn.cancel{background:#fff;border:1px solid #d7e2df;color:#63706e}.post-btn.save{background:#00615c;color:#fff}.errorlist{list-style:none;padding:0;margin:5px 0 0;color:#b42318;font-size:.8rem}
+@media(max-width:850px){.post-grid{grid-template-columns:1fr}}@media(max-width:600px){.post-wrap{padding:18px 11px}.post-card{padding:18px}.blog-editor{min-height:360px;padding:15px}}
 </style>
 {% endblock %}
 {% block content %}
@@ -16,7 +18,31 @@
       <div>
         <div class="post-field"><label for="{{ form.titulo.id_for_label }}">Título</label>{{ form.titulo }}{{ form.titulo.errors }}</div>
         <div class="post-field"><label for="{{ form.resumen.id_for_label }}">Resumen</label>{{ form.resumen }}<div class="post-help">Aparece como introducción en la portada del blog.</div>{{ form.resumen.errors }}</div>
-        <div class="post-field"><label for="{{ form.contenido.id_for_label }}">Contenido</label>{{ form.contenido }}<div class="post-help">Puedes escribir el artículo completo. Los saltos de línea se conservarán al publicarlo.</div>{{ form.contenido.errors }}</div>
+        <div class="post-field">
+          <label for="blogEditor">Contenido del artículo</label>
+          {{ form.contenido }}
+          <div class="editor-shell">
+            <div class="editor-toolbar" role="toolbar" aria-label="Herramientas de formato">
+              <select id="formatBlock" title="Formato"><option value="p">Párrafo</option><option value="h2">Título</option><option value="h3">Subtítulo</option><option value="h4">Encabezado</option></select>
+              <span class="separator"></span>
+              <button type="button" data-cmd="bold" class="tool-bold" title="Negrita">B</button>
+              <button type="button" data-cmd="italic" class="tool-italic" title="Cursiva">I</button>
+              <button type="button" data-cmd="underline" class="tool-underline" title="Subrayado">U</button>
+              <button type="button" data-cmd="strikeThrough" title="Tachado">S</button>
+              <span class="separator"></span>
+              <button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button>
+              <button type="button" data-cmd="insertOrderedList" title="Lista numerada">1. Lista</button>
+              <button type="button" data-cmd="formatBlock" data-value="blockquote" title="Cita">❝ Cita</button>
+              <span class="separator"></span>
+              <button type="button" id="addLink" title="Insertar enlace">🔗 Enlace</button>
+              <button type="button" data-cmd="removeFormat" title="Limpiar formato">Limpiar</button>
+            </div>
+            <div id="blogEditor" class="blog-editor" contenteditable="true" spellcheck="true"></div>
+            <div class="editor-status"><span>El contenido se publicará con este formato.</span><span id="wordCount">0 palabras</span></div>
+          </div>
+          <div class="post-help">Usa el editor como Word: títulos, negrita, listas, citas y enlaces. El formato se conservará al publicar.</div>
+          {{ form.contenido.errors }}
+        </div>
       </div>
       <aside class="post-side">
         <h3>Publicación</h3>
@@ -33,4 +59,58 @@
     <div class="post-actions"><a class="post-btn cancel" href="{% url 'homeinblog' %}">Cancelar</a><button class="post-btn save" type="submit">{% if editar %}Guardar cambios{% else %}Guardar publicación{% endif %}</button></div>
   </form></div>
 </div>
+<script>
+(function(){
+  const editor = document.getElementById("blogEditor");
+  const hidden = document.getElementById("id_contenido");
+  const format = document.getElementById("formatBlock");
+  const count = document.getElementById("wordCount");
+  if(!editor || !hidden) return;
+
+  editor.innerHTML = hidden.value || "";
+
+  function sync(){
+    hidden.value = editor.innerHTML.trim();
+    const text = editor.innerText.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    count.textContent = words + (words === 1 ? " palabra" : " palabras");
+  }
+
+  document.querySelectorAll(".editor-toolbar button[data-cmd]").forEach(function(button){
+    button.addEventListener("mousedown", function(e){ e.preventDefault(); });
+    button.addEventListener("click", function(){
+      editor.focus();
+      document.execCommand(button.dataset.cmd, false, button.dataset.value || null);
+      sync();
+    });
+  });
+
+  format.addEventListener("change", function(){
+    editor.focus();
+    document.execCommand("formatBlock", false, format.value);
+    sync();
+  });
+
+  document.getElementById("addLink").addEventListener("click", function(){
+    editor.focus();
+    const url = prompt("Escribe la dirección del enlace:");
+    if(url) document.execCommand("createLink", false, url);
+    sync();
+  });
+
+  editor.addEventListener("input", sync);
+  editor.addEventListener("paste", function(e){
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+    document.execCommand("insertText", false, text);
+    sync();
+  });
+
+  editor.closest("form").addEventListener("submit", function(){
+    sync();
+  });
+
+  sync();
+})();
+</script>
 {% endblock %}
