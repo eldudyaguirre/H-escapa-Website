@@ -46,6 +46,7 @@
       </div>
       <aside class="post-side">
         <h3>Publicación</h3>
+        <div class="post-field"><label for="{{ form.autor_nombre.id_for_label }}">Autor / escritor</label>{{ form.autor_nombre }}<div class="post-help">Este nombre aparecerá públicamente como escritor del artículo.</div>{{ form.autor_nombre.errors }}</div>
         <div class="post-field"><label for="{{ form.imagen_destacada.id_for_label }}">Imagen destacada</label>{{ form.imagen_destacada }}<div class="post-help">JPG, PNG o WebP.</div>{{ form.imagen_destacada.errors }}</div>
         <div class="post-field"><label for="{{ form.categoria.id_for_label }}">Categoría</label>{{ form.categoria }}{{ form.categoria.errors }}</div>
         <div class="post-field"><label for="{{ form.etiquetas.id_for_label }}">Etiquetas</label>{{ form.etiquetas }}<div class="post-help">Puedes seleccionar varias con Ctrl/Cmd.</div>{{ form.etiquetas.errors }}</div>
