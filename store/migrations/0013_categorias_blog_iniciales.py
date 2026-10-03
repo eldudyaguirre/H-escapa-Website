@@ -14,10 +14,28 @@ def crear_categorias_blog(apps, schema_editor):
     ]
 
     for nombre, descripcion in categorias:
-        CategoriaBlog.objects.get_or_create(
-            nombre=nombre,
-            defaults={"descripcion": descripcion, "activa": True},
-        )
+        categoria, creada = CategoriaBlog.objects.get_or_create(nombre=nombre)
+        if not creada:
+            # Algunas bases antiguas ya tienen categorías con slug vacío.
+            # Solo completamos los datos que falten sin forzar un INSERT.
+            changed = False
+            if not categoria.descripcion:
+                categoria.descripcion = descripcion
+                changed = True
+            if not categoria.activa:
+                categoria.activa = True
+                changed = True
+            if not categoria.slug:
+                from django.utils.text import slugify
+                categoria.slug = slugify(nombre)
+                changed = True
+            if changed:
+                categoria.save(update_fields=["descripcion", "activa", "slug"])
+        else:
+            from django.utils.text import slugify
+            if not categoria.slug:
+                categoria.slug = slugify(nombre)
+                categoria.save(update_fields=["slug"])
 
 
 def eliminar_categorias_blog(apps, schema_editor):
