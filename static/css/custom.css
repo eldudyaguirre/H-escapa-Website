@@ -3495,6 +3495,57 @@ header.main-header .header-sticky.active::before{
 	width: 100%;
 	max-width: 1100px;
 	margin: 0 auto;
+	font-family: var(--default-font);
+	font-size: 17px;
+	line-height: 1.8em;
+	color: var(--text-color);
+}
+
+.post-content p{
+	margin: 0 0 20px;
+}
+
+.post-content h2,
+.post-content h3,
+.post-content h4{
+	font-family: var(--accent-font);
+	font-weight: 400;
+	color: var(--primary-color);
+	line-height: 1.2em;
+	margin: 34px 0 14px;
+}
+
+.post-content h2{font-size: 36px;}
+.post-content h3{font-size: 28px;}
+.post-content h4{font-size: 23px;}
+
+.post-content strong{font-weight: 700;}
+.post-content em{font-style: italic;}
+.post-content u{text-decoration: underline;}
+.post-content s{text-decoration: line-through;}
+
+.post-content ul,
+.post-content ol{
+	margin: 0 0 22px;
+	padding-left: 28px;
+}
+
+.post-content li{
+	margin-bottom: 8px;
+}
+
+.post-content blockquote{
+	margin: 26px 0;
+	padding: 18px 22px;
+	border-left: 4px solid var(--h-escapa1-color);
+	background: #f2f8f7;
+	color: #536563;
+	font-style: italic;
+}
+
+.post-content a{
+	color: var(--h-escapa3-color);
+	text-decoration: underline;
 }
 
 .post-entry{
