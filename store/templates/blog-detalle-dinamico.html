@@ -91,7 +91,7 @@
 <div class="section-title mt-5"><h1>{{ post.titulo }}</h1><p>{% if post.fecha_publicacion %}{{ post.fecha_publicacion|date:"d/m/Y" }}{% endif %}{% if post.autor_nombre %} · {{ post.autor_nombre }}{% elif post.autor %} · {{ post.autor.get_full_name|default:post.autor.username }}{% endif %}</p></div>
 {% if post.imagen_destacada %}<div class="post-image mb-4"><img src="{{ post.imagen_destacada.url }}" class="img-fluid" alt="{{ post.titulo }}"></div>{% endif %}
 {% if post.resumen %}<p class="lead">{{ post.resumen }}</p>{% endif %}
-<div class="post-content">{{ post.contenido|safe }}</div>
+<div class="post-content" style="text-align: justify !important;">{{ post.contenido|safe }}</div>
 {% if post.etiquetas.all %}<div class="mt-4">{% for etiqueta in post.etiquetas.all %}<span class="badge bg-light text-dark me-1">{{ etiqueta.nombre }}</span>{% endfor %}</div>{% endif %}
 <div class="mt-5"><a href="{% url 'bloggeneral' %}" class="btn-default">Volver al blog</a></div>
 </div></div></div></main>
