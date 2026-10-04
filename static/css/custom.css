@@ -6918,6 +6918,11 @@ html, body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
+/* Alinear el contenido de los artículos del blog */
+.post-entry p {
+    text-align: justify;
+}
+
 /* Formulario de agendamiento: asegurar que los campos reciban el foco y la escritura */
 #appointmentFormDjango.appointment-django-form {
     position: relative;
