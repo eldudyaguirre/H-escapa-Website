@@ -2,7 +2,7 @@ from django import forms
 
 from .blog_utils import sanitize_blog_html
 
-from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -218,28 +218,56 @@ class PacienteForm(forms.ModelForm):
 class CitaForm(forms.ModelForm):
     class Meta:
         model = Cita
-        fields = [
-            "paciente", "profesional", "fecha_hora", "duracion_minutos",
-            "modalidad", "motivo", "notas",
-        ]
+        fields = ["paciente", "profesional", "servicio", "fecha_hora", "duracion_minutos", "modalidad", "motivo", "notas"]
         widgets = {
-            "fecha_hora": forms.DateTimeInput(
-                attrs={"type": "datetime-local"},
-                format="%Y-%m-%dT%H:%M",
-            ),
-            "duracion_minutos": forms.NumberInput(attrs={"min": 15, "step": 15}),
+            "fecha_hora": forms.DateTimeInput(attrs={"type": "datetime-local", "step": "300"}, format="%Y-%m-%dT%H:%M"),
+            "duracion_minutos": forms.NumberInput(attrs={"min": 5, "step": 5}),
             "notas": forms.Textarea(attrs={"rows": 4}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["paciente"].queryset = Paciente.objects.filter(
-            estado="ACTIVO"
-        ).order_by("apellidos", "nombres")
-        self.fields["profesional"].queryset = Profesional.objects.filter(
-            activo=True
-        ).order_by("apellido", "nombre")
+        self.fields["paciente"].queryset = Paciente.objects.filter(estado="ACTIVO").order_by("apellidos", "nombres")
+        self.fields["profesional"].queryset = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
+        self.fields["servicio"].queryset = Servicio.objects.filter(activo=True).order_by("nombre")
         self.fields["fecha_hora"].input_formats = ["%Y-%m-%dT%H:%M"]
+
+    def clean(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        cleaned = super().clean()
+        profesional, servicio, inicio = cleaned.get("profesional"), cleaned.get("servicio"), cleaned.get("fecha_hora")
+        if not (profesional and servicio and inicio):
+            return cleaned
+        if inicio.minute % 5:
+            self.add_error("fecha_hora", "La hora debe estar alineada a intervalos de 5 minutos.")
+            return cleaned
+        if inicio.date() < timezone.localdate():
+            self.add_error("fecha_hora", "No se pueden agendar citas en fechas pasadas.")
+        if inicio.weekday() not in profesional.dias_atencion:
+            self.add_error("fecha_hora", "El profesional no atiende ese día.")
+        fin = inicio + timedelta(minutes=servicio.duracion_minutos + profesional.preparacion_minutos)
+        if inicio.time() < profesional.hora_inicio_atencion or fin.time() > profesional.hora_fin_atencion:
+            self.add_error("fecha_hora", "La cita queda fuera del horario de atención.")
+        citas = Cita.objects.filter(profesional=profesional).exclude(estado="CANCELADA")
+        if self.instance.pk:
+            citas = citas.exclude(pk=self.instance.pk)
+        for cita in citas:
+            otro_fin = cita.fecha_hora + timedelta(minutes=cita.duracion_minutos + profesional.preparacion_minutos)
+            if inicio < otro_fin and fin > cita.fecha_hora:
+                self.add_error("fecha_hora", "Ese horario se cruza con otra cita o con su tiempo de preparación.")
+                break
+        cleaned["duracion_minutos"] = servicio.duracion_minutos
+        return cleaned
+
+    def save(self, commit=True):
+        cita = super().save(commit=False)
+        if self.cleaned_data.get("servicio"):
+            cita.duracion_minutos = self.cleaned_data["servicio"].duracion_minutos
+        if commit:
+            cita.save()
+            self.save_m2m()
+        return cita
 
 
 class EspecialidadForm(forms.ModelForm):
@@ -360,75 +388,31 @@ class AgendamientoForm(forms.Form):
     apellidos = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(required=True)
     telefono = forms.CharField(max_length=30, required=True)
-    servicio = forms.CharField(max_length=100, required=True)
+    servicio = forms.ChoiceField(required=True)
+    profesional = forms.ModelChoiceField(queryset=Profesional.objects.none(), required=True)
     fecha = forms.DateField(required=True)
-
-
-class PostForm(forms.ModelForm):
-    autor_nombre = forms.CharField(
-        label="Autor / escritor",
-        max_length=150,
-        required=False,
-        widget=forms.TextInput(attrs={
-            "class": "blog-input",
-            "placeholder": "Ej.: Dra. María Pérez",
-        }),
-        help_text="Es el nombre que aparecerá públicamente como escritor del artículo.",
-    )
-
-    class Meta:
-        model = Post
-        fields = [
-            "titulo", "resumen", "contenido", "imagen_destacada", "autor_nombre",
-            "categoria", "etiquetas", "estado",
-            "meta_titulo", "meta_descripcion",
-        ]
-        widgets = {
-            "titulo": forms.TextInput(attrs={
-                "class": "blog-input",
-                "placeholder": "Ej.: Cómo manejar la ansiedad en el día a día",
-                "maxlength": "200",
-            }),
-            "resumen": forms.Textarea(attrs={
-                "class": "blog-input",
-                "rows": 3,
-                "placeholder": "Un resumen breve que aparecerá en la portada del blog.",
-            }),
-            "contenido": forms.HiddenInput(attrs={
-                "id": "id_contenido",
-            }),
-            "imagen_destacada": forms.ClearableFileInput(attrs={
-                "class": "blog-input",
-                "accept": "image/jpeg,image/png,image/webp",
-            }),
-            "categoria": forms.Select(attrs={"class": "blog-input"}),
-            "etiquetas": forms.SelectMultiple(attrs={
-                "class": "blog-input",
-                "size": "5",
-            }),
-            "estado": forms.Select(attrs={"class": "blog-input"}),
-            "meta_titulo": forms.TextInput(attrs={
-                "class": "blog-input",
-                "placeholder": "Título para buscadores (opcional)",
-                "maxlength": "200",
-            }),
-            "meta_descripcion": forms.Textarea(attrs={
-                "class": "blog-input",
-                "rows": 2,
-                "placeholder": "Descripción para buscadores (opcional)",
-                "maxlength": "300",
-            }),
-        }
-
-    def clean_contenido(self):
-        contenido = sanitize_blog_html(self.cleaned_data.get("contenido") or "").strip()
-        if not contenido:
-            raise forms.ValidationError("El contenido del artículo no puede estar vacío.")
-        return contenido
+    hora = forms.ChoiceField(required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["categoria"].queryset = CategoriaBlog.objects.filter(activa=True).order_by("nombre")
-        self.fields["categoria"].required = False
-        self.fields["etiquetas"].queryset = EtiquetaBlog.objects.all().order_by("nombre")
-        self.fields["etiquetas"].required = False
+        self.fields["servicio"].choices = [("", "Seleccionar servicio")] + [(s.slug, s.nombre) for s in Servicio.objects.filter(activo=True).order_by("nombre")]
+        self.fields["profesional"].queryset = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
+        self.fields["profesional"].empty_label = "Seleccionar profesional"
+        self.fields["hora"].choices = [("", "Selecciona primero profesional, servicio y fecha")]
+        if self.is_bound:
+            try:
+                from datetime import date as date_type
+                profesional = Profesional.objects.get(pk=self.data.get("profesional"), activo=True)
+                servicio = Servicio.objects.get(slug=self.data.get("servicio"), activo=True)
+                dia = date_type.fromisoformat(self.data.get("fecha", ""))
+                self.fields["hora"].choices = [("", "Seleccionar hora")] + [(h, h) for h in horarios_disponibles(profesional, dia, servicio)]
+            except (ValueError, TypeError, Profesional.DoesNotExist, Servicio.DoesNotExist):
+                pass
+
+    def clean(self):
+        cleaned = super().clean()
+        profesional, fecha, hora = cleaned.get("profesional"), cleaned.get("fecha"), cleaned.get("hora")
+        servicio = Servicio.objects.filter(slug=cleaned.get("servicio"), activo=True).first()
+        if profesional and fecha and hora and servicio and hora not in horarios_disponibles(profesional, fecha, servicio):
+            self.add_error("hora", "Ese horario ya no está disponible. Actualiza las opciones e inténtalo de nuevo.")
+        return cleaned
