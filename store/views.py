@@ -228,14 +228,14 @@ def agendamiento(request):
 
             subject = f"H-Escapa | Solicitud de cita - {datos['nombres']} {datos['apellidos']}"
             text_body = (
-                f"Nombres: {datos['nombres']}\\n"
-                f"Apellidos: {datos['apellidos']}\\n"
-                f"Correo: {datos['email']}\\n"
-                f"Teléfono: {datos['telefono']}\\n"
-                f"Servicio: {servicio_obj.nombre}\\n"
-                f"Profesional preferido: {datos['profesional']}\\n"
-                f"Fecha y hora preferidas: {datos['fecha'].strftime('%d/%m/%Y')} {datos['hora']}\\n"
-                "Solicitud pendiente de revisión; no reserva una cita.\\n"
+                f"Nombres: {datos['nombres']}\n"
+                f"Apellidos: {datos['apellidos']}\n"
+                f"Correo: {datos['email']}\n"
+                f"Teléfono: {datos['telefono']}\n"
+                f"Servicio: {servicio_obj.nombre}\n"
+                f"Profesional preferido: {datos['profesional']}\n"
+                f"Fecha y hora preferidas: {datos['fecha'].strftime('%d/%m/%Y')} {datos['hora']}\n"
+                "Solicitud pendiente de revisión; no reserva una cita.\n"
             )
             html_body = f"""
             <div style="margin:0;padding:0;background:#f3f7f6;font-family:Arial,Helvetica,sans-serif;color:#263b3a">
