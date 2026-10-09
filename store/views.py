@@ -187,7 +187,7 @@ def contactanos(request):
         email.content_subtype = "html"
         email.body = html_body
         email.send(fail_silently=False)
-        messages.success(request, "Tu mensaje fue enviado correctamente. Te responderemos lo antes posible.")
+        messages.success(request, "Tu mensaje fue enviado correctamente. Te responderemos lo antes posible.", extra_tags="contact-form")
         return redirect("contact")
 
     return render(request, "contact.html", {
@@ -255,9 +255,9 @@ def agendamiento(request):
             try:
                 email.send(fail_silently=False)
             except Exception:
-                messages.error(request, "No se pudo enviar la solicitud. Revisa la configuración del correo del servidor.")
+                messages.error(request, "No se pudo enviar la solicitud. Revisa la configuración del correo del servidor.", extra_tags="appointment-form")
             else:
-                messages.success(request, "Tu solicitud de cita fue enviada correctamente. Nos pondremos en contacto contigo para confirmar disponibilidad.")
+                messages.success(request, "Tu solicitud de cita fue enviada correctamente. Nos pondremos en contacto contigo para confirmar disponibilidad.", extra_tags="appointment-form")
                 return redirect("agendamiento")
 
     return render(request, "book-appointment.html", {
