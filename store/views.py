@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from functools import wraps
 from pathlib import Path
+import hashlib
 import os
 import mimetypes
 
@@ -13,6 +14,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.http import FileResponse, Http404
 from django.core.mail import EmailMessage
+from django.core.cache import cache
 from django.contrib import messages
 from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,6 +23,50 @@ from django.templatetags.static import static
 
 from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
+
+
+
+# Protección básica contra spam para los formularios públicos.
+# Límite por IP y formulario: 3 envíos cada 60 minutos.
+SPAM_MIN_SECONDS = 3
+SPAM_MAX_AGE_SECONDS = 24 * 60 * 60
+SPAM_MAX_SUBMISSIONS_PER_HOUR = 3
+
+
+def _es_envio_spam(request, formulario):
+    """Detecta honeypots, envíos demasiado rápidos y ráfagas por IP."""
+    if request.method != "POST":
+        return False
+
+    # Los bots suelen rellenar todos los campos; este campo está oculto a personas.
+    if request.POST.get("website", "").strip():
+        return True
+
+    try:
+        iniciado = float(request.POST.get("form_started_at", ""))
+    except (TypeError, ValueError):
+        return True
+
+    ahora = timezone.now().timestamp()
+    transcurrido = ahora - iniciado
+    if transcurrido < SPAM_MIN_SECONDS or transcurrido > SPAM_MAX_AGE_SECONDS:
+        return True
+
+    # No confiar en X-Forwarded-For recibido del cliente: puede falsificarse.
+    ip = request.META.get("REMOTE_ADDR", "unknown")
+    ip_hash = hashlib.sha256(ip.encode("utf-8")).hexdigest()[:32]
+    clave = f"public-form-rate:{formulario}:{ip_hash}:{int(ahora // 3600)}"
+
+    # cache.add crea el contador de forma atómica cuando todavía no existe.
+    cache.add(clave, 0, timeout=3600)
+    try:
+        cantidad = cache.incr(clave)
+    except ValueError:
+        # Algunos backends pueden expirar la clave entre add e incr.
+        cache.set(clave, 1, timeout=3600)
+        cantidad = 1
+
+    return cantidad > SPAM_MAX_SUBMISSIONS_PER_HOUR
 
 
 def home(request):
@@ -59,6 +105,10 @@ def signin(request):
 def about(request): return render(request, "about.html")
 def contactanos(request):
     form = ContactoForm(request.POST or None)
+
+    if request.method == "POST" and _es_envio_spam(request, "contacto"):
+        # Respuesta neutra para no indicar a los bots qué control los bloqueó.
+        return redirect("contact")
 
     if request.method == "POST" and form.is_valid():
         recipient = os.getenv("CONTACT_FORM_RECIPIENT", "palaciohester@hotmail.com")
@@ -140,10 +190,16 @@ def contactanos(request):
         messages.success(request, "Tu mensaje fue enviado correctamente. Te responderemos lo antes posible.")
         return redirect("contact")
 
-    return render(request, "contact.html", {"form": form})
+    return render(request, "contact.html", {
+        "form": form,
+        "form_started_at": timezone.now().timestamp(),
+    })
 
 def agendamiento(request):
     form = AgendamientoForm(request.POST or None)
+
+    if request.method == "POST" and _es_envio_spam(request, "agendamiento"):
+        return redirect("agendamiento")
 
     if request.method == "POST":
         if form.is_valid():
@@ -204,7 +260,10 @@ def agendamiento(request):
                 messages.success(request, "Tu solicitud de cita fue enviada correctamente. Nos pondremos en contacto contigo para confirmar disponibilidad.")
                 return redirect("agendamiento")
 
-    return render(request, "book-appointment.html", {"form": form})
+    return render(request, "book-appointment.html", {
+        "form": form,
+        "form_started_at": timezone.now().timestamp(),
+    })
 
 
 def ayudasos(request): return render(request, "ayuda-sos.html")
