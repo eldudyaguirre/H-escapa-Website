@@ -316,6 +316,10 @@ class ProfesionalForm(forms.Form):
     username = forms.CharField(label="Usuario de acceso", max_length=150, widget=forms.TextInput(attrs={"placeholder":"Ej.: jgarcia"}))
     password1 = forms.CharField(label="Contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Mínimo 8 caracteres"}))
     password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Repita la contraseña"}))
+    dias_atencion = forms.MultipleChoiceField(label="Días de atención", choices=[("0","Lunes"),("1","Martes"),("2","Miércoles"),("3","Jueves"),("4","Viernes"),("5","Sábado"),("6","Domingo")], required=False, initial=["0","1","2","3","4"], widget=forms.CheckboxSelectMultiple)
+    hora_inicio_atencion = forms.TimeField(label="Inicio de atención", initial="09:00", widget=forms.TimeInput(attrs={"type":"time","step":"300"}))
+    hora_fin_atencion = forms.TimeField(label="Fin de atención", initial="17:00", widget=forms.TimeInput(attrs={"type":"time","step":"300"}))
+    preparacion_minutos = forms.IntegerField(label="Preparación entre citas (minutos)", min_value=0, max_value=120, initial=5)
     activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
     forzar_cambio_clave = forms.BooleanField(label="Forzar cambio de contraseña", required=False, initial=True)
     dos_factores = forms.BooleanField(label="Autenticación de dos factores", required=False, initial=False)
@@ -372,6 +376,8 @@ class ProfesionalForm(forms.Form):
         cleaned_data = super().clean()
         if cleaned_data.get("password1") and cleaned_data.get("password2") and cleaned_data["password1"] != cleaned_data["password2"]:
             self.add_error("password2", "Las contraseñas no coinciden.")
+        if cleaned_data.get("hora_inicio_atencion") and cleaned_data.get("hora_fin_atencion") and cleaned_data["hora_inicio_atencion"] >= cleaned_data["hora_fin_atencion"]:
+            self.add_error("hora_fin_atencion", "La hora de cierre debe ser posterior a la hora de inicio.")
         return cleaned_data
 
 
