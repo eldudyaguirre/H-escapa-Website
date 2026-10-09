@@ -11,6 +11,7 @@ urlpatterns = [
     path("about/", views.about, name="about"),
     path("contact/", views.contactanos, name="contact"),
     path("agendamiento/", views.agendamiento, name="agendamiento"),
+    path("agendamiento/horarios-disponibles/", views.horarios_agendamiento, name="horarios_agendamiento"),
     path("services/", views.services, name="services"),
     path("individualtherapy/", views.individualtherapy, name="individualtherapy"),
     path("coupletherapy/", views.coupletherapy, name="coupletherapy"),
