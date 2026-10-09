@@ -514,6 +514,10 @@ def homeinnuevoprofesional(request):
                     tipo_contrato=form.cleaned_data.get("tipo_contrato", ""),
                     fecha_ingreso=form.cleaned_data.get("fecha_ingreso"),
                     activo=form.cleaned_data["activo"],
+                    dias_atencion=[int(d) for d in form.cleaned_data.get("dias_atencion", [])],
+                    hora_inicio_atencion=form.cleaned_data["hora_inicio_atencion"],
+                    hora_fin_atencion=form.cleaned_data["hora_fin_atencion"],
+                    preparacion_minutos=form.cleaned_data["preparacion_minutos"],
                     forzar_cambio_clave=form.cleaned_data["forzar_cambio_clave"],
                     dos_factores=form.cleaned_data["dos_factores"],
                 )
