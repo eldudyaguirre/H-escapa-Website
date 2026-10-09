@@ -69,6 +69,28 @@ def _es_envio_spam(request, formulario):
     return cantidad > SPAM_MAX_SUBMISSIONS_PER_HOUR
 
 
+def _mensaje_contacto_es_spam(mensaje):
+    """Detecta mensajes promocionales automatizados conocidos sin bloquear consultas normales."""
+    texto = (mensaje or "").casefold()
+    patrones_spam = (
+        "xevil",
+        "xrumersale",
+        "2captcha",
+        "anti-captcha",
+        "anticaptcha",
+        "bitcoinfaucet",
+        "solve media",
+        "captcha solving",
+        "seo/smm",
+        "recovery passwords",
+        "recaptcha enterprise",
+        "hcaptcha",
+        "geetest",
+        "openclaw ai bot",
+    )
+    return any(patron in texto for patron in patrones_spam)
+
+
 def home(request):
     posts = (
         Post.objects.filter(estado="PUBLICADO")
@@ -118,6 +140,11 @@ def contactanos(request):
         telefono = form.cleaned_data["telefono"]
         correo = form.cleaned_data["email"]
         mensaje = form.cleaned_data["mensaje"]
+
+        # No guardar ni enviar por correo mensajes con patrones claros de spam.
+        if _mensaje_contacto_es_spam(mensaje):
+            return redirect("contact")
+
         InteraccionWeb.objects.create(tipo="CONTACTO", nombres=nombres, apellidos=apellidos, email=correo, telefono=telefono, mensaje=mensaje)
 
         subject = f"H-Escapa | Nuevo mensaje de contacto de {nombres} {apellidos}"
