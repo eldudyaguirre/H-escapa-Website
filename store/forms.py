@@ -383,6 +383,31 @@ class ContactoForm(forms.Form):
     mensaje = forms.CharField(max_length=5000, required=True, widget=forms.Textarea)
 
 
+def horarios_disponibles(profesional, dia, servicio):
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+    if dia < timezone.localdate() or dia.weekday() not in profesional.dias_atencion:
+        return []
+    apertura = datetime.combine(dia, profesional.hora_inicio_atencion)
+    cierre = datetime.combine(dia, profesional.hora_fin_atencion)
+    duracion_bloque = timedelta(minutes=servicio.duracion_minutos + profesional.preparacion_minutos)
+    ocupadas = []
+    citas = Cita.objects.filter(profesional=profesional, fecha_hora__date=dia).exclude(estado="CANCELADA")
+    for cita in citas:
+        inicio_cita = timezone.localtime(cita.fecha_hora).replace(tzinfo=None)
+        ocupadas.append((inicio_cita, inicio_cita + timedelta(minutes=cita.duracion_minutos + profesional.preparacion_minutos)))
+    slots = []
+    candidato = apertura
+    ahora = timezone.localtime().replace(tzinfo=None)
+    while candidato + duracion_bloque <= cierre:
+        if dia != timezone.localdate() or candidato > ahora:
+            fin = candidato + duracion_bloque
+            if not any(candidato < fin_ocupado and fin > inicio_ocupado for inicio_ocupado, fin_ocupado in ocupadas):
+                slots.append(candidato.strftime("%H:%M"))
+        candidato += timedelta(minutes=5)
+    return slots
+
+
 class AgendamientoForm(forms.Form):
     nombres = forms.CharField(max_length=100, required=True)
     apellidos = forms.CharField(max_length=100, required=True)
