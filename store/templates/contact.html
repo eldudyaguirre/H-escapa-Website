@@ -133,7 +133,9 @@
                                 <input type="hidden" name="form_started_at" value="{{ form_started_at }}">
                                 {% if messages %}
                                     {% for message in messages %}
-                                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} mb-4">{{ message }}</div>
+                                        {% if "contact-form" in message.tags %}
+                                            <div class="alert {% if "error" in message.tags %}alert-danger{% else %}alert-success{% endif %} mb-4">{{ message }}</div>
+                                        {% endif %}
                                     {% endfor %}
                                 {% endif %}
                                 {% if form.errors %}
