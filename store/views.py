@@ -389,8 +389,29 @@ def homein(request):
 
 @staff_required
 def homeincalendario(request):
-    citas = Cita.objects.select_related("paciente", "profesional").order_by("fecha_hora")
-    return render(request, "frm-calendario.html", {"citas": citas})
+    citas = Cita.objects.select_related("paciente", "profesional", "servicio").order_by("fecha_hora")
+    profesionales = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
+    servicios = Servicio.objects.filter(activo=True).order_by("nombre")
+    profesional_id = request.GET.get("profesional", "")
+    servicio_slug = request.GET.get("servicio", "")
+    fecha_txt = request.GET.get("fecha", "")
+    horarios = []
+    profesional_sel = None
+    servicio_sel = None
+    try:
+        from datetime import date as date_type
+        if profesional_id and servicio_slug and fecha_txt:
+            profesional_sel = profesionales.get(pk=profesional_id)
+            servicio_sel = servicios.get(slug=servicio_slug)
+            horarios = horarios_disponibles(profesional_sel, date_type.fromisoformat(fecha_txt), servicio_sel)
+    except (ValueError, Profesional.DoesNotExist, Servicio.DoesNotExist):
+        horarios = []
+    return render(request, "frm-calendario.html", {
+        "citas": citas, "profesionales": profesionales, "servicios": servicios,
+        "profesional_sel": profesional_sel, "servicio_sel": servicio_sel,
+        "fecha_sel": fecha_txt, "horarios_disponibles": horarios,
+    })
+
 
 
 
