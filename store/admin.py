@@ -28,7 +28,6 @@ class ServicioAdmin(admin.ModelAdmin):
 class ProfesionalAdmin(admin.ModelAdmin):
     list_display = ("nombre", "apellido", "especialidad", "hora_inicio_atencion", "hora_fin_atencion", "preparacion_minutos", "activo")
     list_filter = ("especialidad", "activo")
-    fieldsets = ((None, {"fields": ("usuario", "nombre", "apellido", "especialidad", "activo")}), ("Agenda", {"fields": ("dias_atencion", "hora_inicio_atencion", "hora_fin_atencion", "preparacion_minutos")}))
     search_fields = ("nombre", "apellido", "usuario__username", "usuario__email")
 
 
