@@ -150,20 +150,33 @@
 
                                     <div class="form-group col-md-6 mb-4">
                                         <select name="servicio" class="form-control form-select" id="Servicio" required>
-                                            <option value="" disabled selected>Seleccionar Servicio</option>
-                                            <option value="manual_therapy">Terapia Individual</option>
-                                            <option value="chronic_pain">Terapia de Pareja</option>
-                                            <option value="hand_therapy">Terapia Infantil o Adolescente</option>
-                                            <option value="sports_therapy">Ansiedad, depresion, estres, ira</option>
-                                            <option value="cupping_therapy">Evaluaciones Periciales</option>
-                                            <option value="laser_therapy">mindfulness y meditación</option>
+                                            {% for value, label in form.servicio.field.choices %}
+                                            <option value="{{ value }}" {% if form.servicio.value == value %}selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
                                         </select>
-                                        <div class="help-block with-errors"></div>
+                                        {% if form.servicio.errors %}<small class="text-danger">{{ form.servicio.errors|striptags }}</small>{% endif %}
                                     </div>
-
+                                    <div class="form-group col-md-6 mb-4">
+                                        <select name="profesional" class="form-control form-select" id="profesional" required>
+                                            <option value="">Seleccionar profesional</option>
+                                            {% for profesional in form.fields.profesional.queryset %}
+                                            <option value="{{ profesional.pk }}" {% if form.profesional.value|stringformat:"s" == profesional.pk|stringformat:"s" %}selected{% endif %}>{{ profesional.nombre }} {{ profesional.apellido }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if form.profesional.errors %}<small class="text-danger">{{ form.profesional.errors|striptags }}</small>{% endif %}
+                                    </div>
+                                    <div class="form-group col-md-6 mb-4">
+                                        <input type="date" name="fecha" class="form-control" id="date" min="{% now 'Y-m-d' %}" value="{{ form.fecha.value|default:'' }}" required>
+                                        {% if form.fecha.errors %}<small class="text-danger">{{ form.fecha.errors|striptags }}</small>{% endif %}
+                                    </div>
                                     <div class="form-group col-md-6 mb-5">
-                                        <input type="date" name="fecha" class="form-control" id="date" required>
-                                        <div class="help-block with-errors"></div>
+                                        <select name="hora" class="form-control form-select" id="hora" required>
+                                            {% for value, label in form.fields.hora.choices %}
+                                            <option value="{{ value }}" {% if form.hora.value == value %}selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if form.hora.errors %}<small class="text-danger">{{ form.hora.errors|striptags }}</small>{% endif %}
+                                        <small class="text-muted">La hora elegida es una preferencia; el equipo confirmará la cita por contacto directo.</small>
                                     </div>
 
                                     <div class="col-lg-12">
@@ -351,6 +364,29 @@
     <!-- Footer End -->
 
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+ const service = document.getElementById("Servicio"), professional = document.getElementById("profesional");
+ const date = document.getElementById("date"), hour = document.getElementById("hora");
+ async function refreshSlots() {
+   if (!service.value || !professional.value || !date.value) {
+     hour.innerHTML = '<option value="">Selecciona servicio, profesional y fecha</option>'; return;
+   }
+   hour.innerHTML = '<option value="">Consultando horarios...</option>';
+   const query = new URLSearchParams({servicio:service.value, profesional:professional.value, fecha:date.value});
+   try {
+     const response = await fetch("{% url 'horarios_agendamiento' %}?" + query.toString());
+     const result = await response.json();
+     hour.innerHTML = '<option value="">' + (result.horarios.length ? 'Seleccionar hora' : 'No hay horarios disponibles') + '</option>';
+     result.horarios.forEach(function (slot) {
+       const option = document.createElement("option"); option.value = slot; option.textContent = slot; hour.appendChild(option);
+     });
+   } catch (error) { hour.innerHTML = '<option value="">No se pudieron consultar horarios</option>'; }
+ }
+ [service, professional, date].forEach(function (element) { element.addEventListener("change", refreshSlots); });
+ if (service.value && professional.value && date.value) refreshSlots();
+});
+</script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </body>
 </html>
