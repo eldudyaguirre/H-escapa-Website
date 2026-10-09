@@ -29,12 +29,11 @@ from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, Etique
 # Protección básica contra spam para los formularios públicos.
 # Límite por IP y formulario: 3 envíos cada 60 minutos.
 SPAM_MIN_SECONDS = 3
-SPAM_MAX_AGE_SECONDS = 24 * 60 * 60
-SPAM_MAX_SUBMISSIONS_PER_HOUR = 3
+SPAM_MAX_SUBMISSIONS_PER_HOUR = 8
 
 
 def _es_envio_spam(request, formulario):
-    """Detecta honeypots, envíos demasiado rápidos y ráfagas por IP."""
+    """Detecta el honeypot y limita ráfagas sin bloquear formularios sin timestamp."""
     if request.method != "POST":
         return False
 
@@ -42,27 +41,28 @@ def _es_envio_spam(request, formulario):
     if request.POST.get("website", "").strip():
         return True
 
+    # La comprobación temporal es secundaria: si el campo no llegó por un proxy,
+    # caché o versión antigua de la página, no debe impedir una solicitud legítima.
     try:
         iniciado = float(request.POST.get("form_started_at", ""))
     except (TypeError, ValueError):
-        return True
+        iniciado = None
 
     ahora = timezone.now().timestamp()
-    transcurrido = ahora - iniciado
-    if transcurrido < SPAM_MIN_SECONDS or transcurrido > SPAM_MAX_AGE_SECONDS:
-        return True
+    if iniciado is not None:
+        transcurrido = ahora - iniciado
+        if 0 <= transcurrido < SPAM_MIN_SECONDS:
+            return True
 
     # No confiar en X-Forwarded-For recibido del cliente: puede falsificarse.
     ip = request.META.get("REMOTE_ADDR", "unknown")
     ip_hash = hashlib.sha256(ip.encode("utf-8")).hexdigest()[:32]
     clave = f"public-form-rate:{formulario}:{ip_hash}:{int(ahora // 3600)}"
 
-    # cache.add crea el contador de forma atómica cuando todavía no existe.
     cache.add(clave, 0, timeout=3600)
     try:
         cantidad = cache.incr(clave)
     except ValueError:
-        # Algunos backends pueden expirar la clave entre add e incr.
         cache.set(clave, 1, timeout=3600)
         cantidad = 1
 
