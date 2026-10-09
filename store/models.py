@@ -7,6 +7,10 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 
 
+def dias_laborables_default():
+    return [0, 1, 2, 3, 4]
+
+
 class Especialidad(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     activa = models.BooleanField(default=True)
@@ -66,7 +70,7 @@ class Profesional(models.Model):
     fecha_ingreso = models.DateField(blank=True, null=True)
     activo = models.BooleanField(default=True)
     # Horario semanal configurable: lunes=0 ... domingo=6.
-    dias_atencion = models.JSONField(default=list, blank=True, help_text="Días de atención: 0 lunes ... 6 domingo")
+    dias_atencion = models.JSONField(default=dias_laborables_default, blank=True, help_text="Días de atención: 0 lunes ... 6 domingo")
     hora_inicio_atencion = models.TimeField(default="09:00")
     hora_fin_atencion = models.TimeField(default="17:00")
     preparacion_minutos = models.PositiveSmallIntegerField(default=5, help_text="Minutos de preparación después de cada cita")
