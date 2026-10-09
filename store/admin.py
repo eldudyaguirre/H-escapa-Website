@@ -8,6 +8,7 @@ from .models import (
     Paciente,
     Post,
     Profesional,
+    Servicio,
 )
 
 
@@ -16,10 +17,18 @@ admin.site.site_title = "H-Escapa"
 admin.site.index_title = "Administración"
 
 
+@admin.register(Servicio)
+class ServicioAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "duracion_minutos", "activo")
+    list_filter = ("activo",)
+    search_fields = ("nombre", "slug")
+
+
 @admin.register(Profesional)
 class ProfesionalAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "apellido", "especialidad", "activo")
+    list_display = ("nombre", "apellido", "especialidad", "hora_inicio_atencion", "hora_fin_atencion", "preparacion_minutos", "activo")
     list_filter = ("especialidad", "activo")
+    fieldsets = ((None, {"fields": ("usuario", "nombre", "apellido", "especialidad", "activo")}), ("Agenda", {"fields": ("dias_atencion", "hora_inicio_atencion", "hora_fin_atencion", "preparacion_minutos")}))
     search_fields = ("nombre", "apellido", "usuario__username", "usuario__email")
 
 
