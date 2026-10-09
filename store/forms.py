@@ -230,6 +230,7 @@ class CitaForm(forms.ModelForm):
         self.fields["paciente"].queryset = Paciente.objects.filter(estado="ACTIVO").order_by("apellidos", "nombres")
         self.fields["profesional"].queryset = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
         self.fields["servicio"].queryset = Servicio.objects.filter(activo=True).order_by("nombre")
+        self.fields["servicio"].required = True
         self.fields["fecha_hora"].input_formats = ["%Y-%m-%dT%H:%M"]
 
     def clean(self):
@@ -242,12 +243,14 @@ class CitaForm(forms.ModelForm):
         if inicio.minute % 5:
             self.add_error("fecha_hora", "La hora debe estar alineada a intervalos de 5 minutos.")
             return cleaned
-        if inicio.date() < timezone.localdate():
-            self.add_error("fecha_hora", "No se pueden agendar citas en fechas pasadas.")
-        if inicio.weekday() not in profesional.dias_atencion:
-            self.add_error("fecha_hora", "El profesional no atiende ese día.")
+        inicio_local = timezone.localtime(inicio) if timezone.is_aware(inicio) else inicio
         fin = inicio + timedelta(minutes=servicio.duracion_minutos + profesional.preparacion_minutos)
-        if inicio.time() < profesional.hora_inicio_atencion or fin.time() > profesional.hora_fin_atencion:
+        fin_local = timezone.localtime(fin) if timezone.is_aware(fin) else fin
+        if inicio_local.date() < timezone.localdate():
+            self.add_error("fecha_hora", "No se pueden agendar citas en fechas pasadas.")
+        if inicio_local.weekday() not in profesional.dias_atencion:
+            self.add_error("fecha_hora", "El profesional no atiende ese día.")
+        if inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion or fin_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion:
             self.add_error("fecha_hora", "La cita queda fuera del horario de atención.")
         citas = Cita.objects.filter(profesional=profesional).exclude(estado="CANCELADA")
         if self.instance.pk:
