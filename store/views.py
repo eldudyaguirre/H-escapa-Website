@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
 from django.utils import timezone
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.core.mail import EmailMessage
 from django.core.cache import cache
 from django.contrib import messages
@@ -21,8 +21,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
 
-from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional
+from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
 
 
 
@@ -195,6 +195,17 @@ def contactanos(request):
         "form_started_at": timezone.now().timestamp(),
     })
 
+def horarios_agendamiento(request):
+    try:
+        from datetime import date as date_type
+        profesional = Profesional.objects.get(pk=request.GET.get("profesional"), activo=True)
+        servicio = Servicio.objects.get(slug=request.GET.get("servicio"), activo=True)
+        dia = date_type.fromisoformat(request.GET.get("fecha", ""))
+    except (ValueError, TypeError, Profesional.DoesNotExist, Servicio.DoesNotExist):
+        return JsonResponse({"horarios": []})
+    return JsonResponse({"horarios": horarios_disponibles(profesional, dia, servicio)})
+
+
 def agendamiento(request):
     form = AgendamientoForm(request.POST or None)
 
@@ -212,7 +223,7 @@ def agendamiento(request):
             sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
             datos = form.cleaned_data
 
-            InteraccionWeb.objects.create(tipo="AGENDAMIENTO", nombres=datos["nombres"], apellidos=datos["apellidos"], email=datos["email"], telefono=datos["telefono"], servicio=datos["servicio"], fecha_solicitada=datos["fecha"])
+            InteraccionWeb.objects.create(tipo="AGENDAMIENTO", nombres=datos["nombres"], apellidos=datos["apellidos"], email=datos["email"], telefono=datos["telefono"], servicio=Servicio.objects.get(slug=datos["servicio"]).nombre, fecha_solicitada=datos["fecha"], hora_solicitada=datos["hora"], profesional_preferido=datos["profesional"])
 
             subject = f"H-Escapa | Solicitud de cita - {datos['nombres']} {datos['apellidos']}"
             text_body = (
