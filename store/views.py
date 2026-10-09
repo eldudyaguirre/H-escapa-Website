@@ -199,7 +199,12 @@ def agendamiento(request):
     form = AgendamientoForm(request.POST or None)
 
     if request.method == "POST" and _es_envio_spam(request, "agendamiento"):
-        return redirect("agendamiento")
+        messages.error(request, "No pudimos procesar la solicitud. Espera unos segundos, recarga la página e inténtalo nuevamente.", extra_tags="appointment-form")
+        return render(request, "book-appointment.html", {
+            "form": form,
+            "form_started_at": timezone.now().timestamp(),
+            "appointment_error": True,
+        })
 
     if request.method == "POST":
         if form.is_valid():
@@ -257,12 +262,13 @@ def agendamiento(request):
             except Exception:
                 messages.error(request, "No se pudo enviar la solicitud. Revisa la configuración del correo del servidor.", extra_tags="appointment-form")
             else:
-                messages.success(request, "Tu solicitud de cita fue enviada correctamente. Nos pondremos en contacto contigo para confirmar disponibilidad.", extra_tags="appointment-form")
+                request.session["appointment_sent_confirmation"] = True
                 return redirect("agendamiento")
 
     return render(request, "book-appointment.html", {
         "form": form,
         "form_started_at": timezone.now().timestamp(),
+        "appointment_sent": request.session.pop("appointment_sent_confirmation", False),
     })
 
 
