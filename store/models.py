@@ -65,6 +65,11 @@ class Profesional(models.Model):
     tipo_contrato = models.CharField(max_length=20, choices=TIPOS_CONTRATO, blank=True)
     fecha_ingreso = models.DateField(blank=True, null=True)
     activo = models.BooleanField(default=True)
+    # Horario semanal configurable: lunes=0 ... domingo=6.
+    dias_atencion = models.JSONField(default=list, blank=True, help_text="Días de atención: 0 lunes ... 6 domingo")
+    hora_inicio_atencion = models.TimeField(default="09:00")
+    hora_fin_atencion = models.TimeField(default="17:00")
+    preparacion_minutos = models.PositiveSmallIntegerField(default=5, help_text="Minutos de preparación después de cada cita")
     forzar_cambio_clave = models.BooleanField(default=True)
     dos_factores = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
@@ -204,6 +209,21 @@ class Paciente(models.Model):
         return f"{self.nombres} {self.apellidos}"
 
 
+class Servicio(models.Model):
+    slug = models.SlugField(max_length=100, unique=True)
+    nombre = models.CharField(max_length=150, unique=True)
+    duracion_minutos = models.PositiveIntegerField(default=60, help_text="Duración de la sesión, en minutos")
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["nombre"]
+        verbose_name = "Servicio"
+        verbose_name_plural = "Servicios"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.duracion_minutos} min)"
+
+
 class Cita(models.Model):
     ESTADOS = [
         ("PROGRAMADA", "Programada"),
@@ -220,6 +240,7 @@ class Cita(models.Model):
 
     paciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, related_name="citas")
     profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, related_name="citas")
+    servicio = models.ForeignKey(Servicio, on_delete=models.PROTECT, related_name="citas", null=True, blank=True)
     fecha_hora = models.DateTimeField()
     duracion_minutos = models.PositiveIntegerField(default=60)
     modalidad = models.CharField(max_length=12, choices=MODALIDADES, default="PRESENCIAL")
@@ -450,6 +471,8 @@ class InteraccionWeb(models.Model):
     telefono = models.CharField(max_length=30)
     servicio = models.CharField(max_length=150, blank=True)
     fecha_solicitada = models.DateField(null=True, blank=True)
+    hora_solicitada = models.TimeField(null=True, blank=True)
+    profesional_preferido = models.ForeignKey(Profesional, on_delete=models.SET_NULL, null=True, blank=True, related_name="solicitudes_web")
     mensaje = models.TextField(blank=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default="PENDIENTE")
     observaciones = models.TextField(blank=True)
