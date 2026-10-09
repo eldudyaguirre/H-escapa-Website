@@ -200,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="new-pro-field"><label>Institución</label>{{form.institucion_titulo}}</div><div class="new-pro-field"><label>Año de titulación</label>{{form.anio_titulo}}</div>
 <div class="new-pro-field"><label>Tipo de licencia</label>{{form.tipo_licencia}}</div><div class="new-pro-field"><label>Número de licencia</label>{{form.numero_licencia}}</div>
 <div class="new-pro-field"><label>Fecha de emisión</label>{{form.fecha_emision_licencia}}</div><div class="new-pro-field"><label>Fecha de vencimiento</label>{{form.fecha_vencimiento_licencia}}</div>
+<div class="new-pro-field"><label>Inicio de atención</label>{{form.hora_inicio_atencion}}</div><div class="new-pro-field"><label>Fin de atención</label>{{form.hora_fin_atencion}}</div><div class="new-pro-field"><label>Preparación entre citas (minutos)</label>{{form.preparacion_minutos}}</div><div class="new-pro-field full"><label>Días de atención</label>{{form.dias_atencion}}{% for error in form.dias_atencion.errors %}<small class="text-danger">{{error}}</small>{% endfor %}</div>
 <div class="new-pro-field full"><label>Biografía / descripción</label>{{form.biografia}}</div>
 </div></section>
 <section class="new-pro-section new-pro-tab-content" data-content="employment">
