@@ -222,6 +222,7 @@ def agendamiento(request):
             recipient = os.getenv("CONTACT_FORM_RECIPIENT", "palaciohester@hotmail.com")
             sender = os.getenv("DEFAULT_FROM_EMAIL", os.getenv("EMAIL_HOST_USER"))
             datos = form.cleaned_data
+            servicio_obj = Servicio.objects.get(slug=datos["servicio"])
 
             InteraccionWeb.objects.create(tipo="AGENDAMIENTO", nombres=datos["nombres"], apellidos=datos["apellidos"], email=datos["email"], telefono=datos["telefono"], servicio=Servicio.objects.get(slug=datos["servicio"]).nombre, fecha_solicitada=datos["fecha"], hora_solicitada=datos["hora"], profesional_preferido=datos["profesional"])
 
@@ -256,8 +257,10 @@ def agendamiento(request):
                     </tr>
                   </table>
                   <div style="margin-top:18px;padding:18px;background:#fafcfc;border-left:4px solid #439b95;border-radius:0 10px 10px 0">
-                    <div><strong>Servicio:</strong> {datos['servicio']}</div>
-                    <div style="margin-top:8px"><strong>Fecha solicitada:</strong> {datos['fecha'].strftime('%d/%m/%Y')}</div>
+                    <div><strong>Servicio:</strong> {servicio_obj.nombre}</div>
+                    <div style="margin-top:8px"><strong>Profesional preferido:</strong> {datos['profesional']}</div>
+                    <div style="margin-top:8px"><strong>Fecha y hora preferidas:</strong> {datos['fecha'].strftime('%d/%m/%Y')} {datos['hora']}</div>
+                    <div style="margin-top:12px;font-size:12px;color:#758481">Solicitud pendiente de revisión; no se ha reservado una cita.</div>
                   </div>
                   <div style="text-align:center;margin-top:25px"><a href="mailto:{datos['email']}" style="background:#00615c;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600">Contactar al paciente</a></div>
                 </div>
