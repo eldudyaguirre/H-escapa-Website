@@ -91,6 +91,38 @@ def _mensaje_contacto_es_spam(mensaje):
     return any(patron in texto for patron in patrones_spam)
 
 
+def _contacto_repetido_sospechoso(email, telefono):
+    """Evita campañas que repiten el mismo correo o teléfono en contactos recientes."""
+    desde = timezone.now() - timedelta(days=30)
+    correo = (email or "").strip().casefold()
+    numero = "".join(caracter for caracter in (telefono or "") if caracter.isdigit())
+
+    if correo and InteraccionWeb.objects.filter(
+        tipo="CONTACTO",
+        email__iexact=correo,
+        creado_en__gte=desde,
+    ).count() >= 2:
+        return True
+
+    if len(numero) >= 7:
+        # Comparación normalizada en Python para tolerar espacios y signos telefónicos.
+        recientes = InteraccionWeb.objects.filter(
+            tipo="CONTACTO",
+            creado_en__gte=desde,
+        ).only("telefono").iterator()
+        coincidencias = 0
+        for registro in recientes:
+            existente = "".join(
+                caracter for caracter in (registro.telefono or "")
+                if caracter.isdigit()
+            )
+            if existente == numero:
+                coincidencias += 1
+                if coincidencias >= 2:
+                    return True
+    return False
+
+
 def home(request):
     posts = (
         Post.objects.filter(estado="PUBLICADO")
@@ -142,7 +174,8 @@ def contactanos(request):
         mensaje = form.cleaned_data["mensaje"]
 
         # No guardar ni enviar por correo mensajes con patrones claros de spam.
-        if _mensaje_contacto_es_spam(mensaje):
+        if _mensaje_contacto_es_spam(mensaje) or _contacto_repetido_sospechoso(correo, telefono):
+            # Respuesta neutra: no revelar al bot qué regla activó el filtro.
             return redirect("contact")
 
         InteraccionWeb.objects.create(tipo="CONTACTO", nombres=nombres, apellidos=apellidos, email=correo, telefono=telefono, mensaje=mensaje)
