@@ -87,6 +87,12 @@ def _mensaje_contacto_es_spam(mensaje):
         "hcaptcha",
         "geetest",
         "openclaw ai bot",
+        "read the news and earn",
+        "earn $50,000,000 per month",
+        "message-id-225908-10-05",
+        "telegram.org",
+        "telegra.ph/",
+        "telegram bot",
     )
     return any(patron in texto for patron in patrones_spam)
 
