@@ -168,8 +168,18 @@ document.addEventListener('DOMContentLoaded', function(){
 
   <form method="post" enctype="multipart/form-data" autocomplete="off" novalidate>
     {% csrf_token %}
-    {% if form.non_field_errors %}
-      <div class="new-pro-error" style="margin:0 0 12px">{{ form.non_field_errors }}</div>
+    {% if form.errors %}
+      <div class="new-pro-error" role="alert" aria-live="assertive" style="margin:0 0 16px;padding:14px 18px;border:1px solid #e5a3a3;border-radius:9px;background:#fff5f5;color:#8b2424">
+        <strong style="display:block;margin-bottom:7px">No se pudo guardar el profesional. Revisa los siguientes campos:</strong>
+        {% if form.non_field_errors %}<div>{{ form.non_field_errors }}</div>{% endif %}
+        <ul style="margin:6px 0 0;padding-left:22px">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
 
     <div class="new-pro-card">
@@ -220,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <h3>Credenciales de acceso</h3><p>Datos que utilizará para ingresar al consultorio.</p>
     <div class="new-pro-grid">
       <div class="new-pro-field"><label>Usuario *</label>{{form.username}}</div>
-      <div class="new-pro-field"><label>Correo para acceso *</label>{{form.email}}</div>
+      <div class="new-pro-field"><label>Correo para acceso</label><div class="new-pro-access-box"><strong>Se utilizará el correo registrado en Información personal.</strong><span>{{ form.email.value|default:"Ingresa el correo en la pestaña Información personal." }}</span></div></div>
       <div class="new-pro-field"><label>Contraseña temporal *</label>{{form.password1}}</div>
       <div class="new-pro-field"><label>Confirmar contraseña *</label>{{form.password2}}</div>
     </div>
