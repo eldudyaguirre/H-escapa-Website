@@ -1,5 +1,5 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Agregar profesional{% endblock %}
+{% block title %}H-Escapa | {% if editar_profesional %}Editar profesional{% else %}Agregar profesional{% endif %}{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -152,8 +152,8 @@ document.addEventListener('DOMContentLoaded', function(){
 <section class="new-pro-page">
   <header class="new-pro-head">
     <div>
-      <h1>Agregar profesional</h1>
-      <p>Crea el perfil del profesional y configura su acceso al consultorio.</p>
+      <h1>{% if editar_profesional %}Editar profesional{% else %}Agregar profesional{% endif %}</h1>
+      <p>{% if editar_profesional %}Actualiza los datos del profesional y su acceso al consultorio. Deja la contraseña vacía si no deseas cambiarla.{% else %}Crea el perfil del profesional y configura su acceso al consultorio.{% endif %}</p>
     </div>
     <a class="new-pro-back" href="{% url 'homeinprofesionales' %}"><i class="bx bx-arrow-back"></i> Volver a profesionales</a>
   </header>
