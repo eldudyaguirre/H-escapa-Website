@@ -69,6 +69,13 @@ document.addEventListener("DOMContentLoaded",function(){
   .pro-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
   .pro-more{border:0;background:transparent;color:#63706e;font-size:1.1rem;padding:3px 5px}
   .pro-more:hover{color:#19181B}
+  .pro-row-actions{position:relative;display:inline-block}
+  .pro-row-menu{display:none;position:absolute;right:0;top:100%;min-width:155px;padding:5px;background:#fff;border:1px solid #e1e7e5;border-radius:9px;box-shadow:0 12px 28px rgba(30,55,53,.16);z-index:80}
+  .pro-row-menu.open{display:block}
+  .pro-row-menu a,.pro-row-menu form button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border:0;border-radius:6px;background:transparent;text-align:left;text-decoration:none;color:#3e4645;font:600 .75rem Sora,sans-serif;white-space:nowrap;cursor:pointer}
+  .pro-row-menu a:hover,.pro-row-menu form button:hover{background:#f1f7f6;color:#005855}
+  .pro-row-menu form button.danger{color:#b42318}
+  .pro-row-menu form button.danger:hover{background:#fff1f0;color:#b42318}
   .pro-empty{padding:45px 20px;text-align:center;color:#7c8583}
   .pro-empty i{display:block;font-size:2.7rem;margin-bottom:9px;color:#a5b5b2}
   .pro-side{display:flex;flex-direction:column;gap:18px}
@@ -159,7 +166,20 @@ document.addEventListener("DOMContentLoaded",function(){
               <td class="pro-contact">{% if profesional.usuario.email %}<small>{{ profesional.usuario.email }}</small>{% endif %}{{ profesional.telefono|default:"—" }}</td>
               <td>{{ profesional.creado_en|date:"d/m/Y" }}</td>
               <td>{% if profesional.activo %}<span class="pro-badge active"><span class="pro-dot"></span>Activo</span>{% else %}<span class="pro-badge inactive"><span class="pro-dot"></span>Inactivo</span>{% endif %}</td>
-              <td><button type="button" class="pro-more" title="Más acciones"><i class="bx bx-dots-vertical-rounded"></i></button></td>
+              <td>
+                <div class="pro-row-actions">
+                  <button type="button" class="pro-more" title="Más acciones" aria-label="Acciones para {{ profesional.nombre }} {{ profesional.apellido }}" aria-expanded="false" onclick="const menu=this.nextElementSibling;document.querySelectorAll('.pro-row-menu.open').forEach(m=>{if(m!==menu)m.classList.remove('open')});menu.classList.toggle('open');this.setAttribute('aria-expanded',menu.classList.contains('open'))"><i class="bx bx-dots-vertical-rounded"></i></button>
+                  <div class="pro-row-menu">
+                    <a href="{% url 'homeineditarprofesional' profesional.pk %}"><i class="bx bx-edit"></i> Editar</a>
+                    <form method="post" action="{% url 'cambiar_estado_profesional' profesional.pk %}">{% csrf_token %}
+                      <button type="submit"><i class="bx {% if profesional.activo %}bx-user-x{% else %}bx-user-check{% endif %}"></i> {% if profesional.activo %}Desactivar{% else %}Activar{% endif %}</button>
+                    </form>
+                    <form method="post" action="{% url 'eliminarprofesional' profesional.pk %}" onsubmit="return confirm('¿Eliminar definitivamente a {{ profesional.nombre|escapejs }} {{ profesional.apellido|escapejs }}? Esta acción no se puede deshacer.');">{% csrf_token %}
+                      <button type="submit" class="danger"><i class="bx bx-trash"></i> Eliminar</button>
+                    </form>
+                  </div>
+                </div>
+              </td>
             </tr>
             {% empty %}
             <tr><td colspan="6"><div class="pro-empty"><i class="bx bx-group"></i><strong>No hay profesionales registrados</strong><div>Cuando agregues profesionales aparecerán aquí.</div></div></td></tr>
