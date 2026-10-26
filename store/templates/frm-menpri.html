@@ -40,6 +40,27 @@
     .workspace-day{padding:12px 5px;text-align:center;border:1px solid rgba(120,120,120,.18);border-radius:9px;font-size:.85rem}
     .workspace-day strong{display:block;font-size:1.05rem;margin-top:5px}
     .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
+
+    /* Tarjetas KPI del panel: color por módulo, jerarquía visual y respuesta al cursor */
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin:22px 0 28px}
+    .kpi-grid .kpi-card{position:relative;isolation:isolate;display:flex;align-items:center;gap:15px;min-width:0;min-height:142px;padding:24px 20px;border:1px solid transparent;border-radius:16px;overflow:hidden;box-shadow:0 8px 22px rgba(24,55,53,.08);transition:transform .22s ease,box-shadow .22s ease;text-decoration:none!important}
+    .kpi-grid .kpi-card::before{content:"";position:absolute;inset:0;opacity:.12;z-index:-1;background:linear-gradient(135deg,var(--kpi-color),#fff 85%)}
+    .kpi-grid .kpi-card::after{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--kpi-color)}
+    .kpi-grid .kpi-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(24,55,53,.14)}
+    .kpi-grid .kpi-card:nth-child(1){--kpi-color:#0f766e;background:#f0fdfa;border-color:#c9eee8}
+    .kpi-grid .kpi-card:nth-child(2){--kpi-color:#2563eb;background:#eff6ff;border-color:#d5e5ff}
+    .kpi-grid .kpi-card:nth-child(3){--kpi-color:#7c3aed;background:#f5f3ff;border-color:#e5dcff}
+    .kpi-grid .kpi-card:nth-child(4){--kpi-color:#d97706;background:#fffbeb;border-color:#f8e7b4}
+    .kpi-grid .kpi-card:nth-child(5){--kpi-color:#db2777;background:#fdf2f8;border-color:#f8d8e9}
+    .kpi-grid .kpi-card>i{flex:0 0 52px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:var(--kpi-color);color:#fff!important;font-size:29px;box-shadow:0 6px 14px color-mix(in srgb,var(--kpi-color) 25%,transparent)}
+    .kpi-grid .kpi-card>div{min-width:0}
+    .kpi-grid .kpi-card h3{margin:0 0 5px;color:var(--kpi-color);font-size:2rem;font-weight:750;line-height:1.05}
+    .kpi-grid .kpi-card p{margin:0;color:#44515f;font-size:.92rem;line-height:1.35;font-weight:600}
+    .kpi-grid .kpi-card small{display:block;margin-top:8px;color:#586575;font-size:.75rem;line-height:1.45}
+    @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:767px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kpi-grid .kpi-card{min-height:120px;padding:18px 14px;gap:11px}.kpi-grid .kpi-card>i{flex-basis:42px;width:42px;height:42px;font-size:24px}.kpi-grid .kpi-card h3{font-size:1.65rem}.kpi-grid .kpi-card p{font-size:.82rem}}
+    @media(max-width:420px){.kpi-grid{grid-template-columns:1fr}.kpi-grid .kpi-card{min-height:96px}}
+
     /* Estado activo del módulo actual */
     .nav__link.nav-module-active .nav__name,
     .nav__link.nav-module-active .nav__icon,
