@@ -702,6 +702,106 @@ def homeinprofesionales(request):
         },
     )
 
+@staff_required
+def homeineditarprofesional(request, profesional_id):
+    profesional = get_object_or_404(Profesional.objects.select_related("usuario"), pk=profesional_id)
+    if request.method == "POST":
+        form = ProfesionalForm(request.POST, request.FILES)
+        form.fields["password1"].required = False
+        form.fields["password2"].required = False
+        if form.is_valid():
+            datos = form.cleaned_data
+            User = get_user_model()
+            username = datos["username"].strip()
+            if User.objects.filter(username__iexact=username).exclude(pk=profesional.usuario_id).exists():
+                form.add_error("username", "Ese usuario ya está siendo utilizado.")
+            else:
+                with transaction.atomic():
+                    usuario = profesional.usuario
+                    usuario.username = username
+                    usuario.email = datos["email"]
+                    usuario.is_active = datos["activo"]
+                    usuario.is_staff = True
+                    if datos.get("password1"):
+                        usuario.set_password(datos["password1"])
+                    usuario.save()
+                    campos = [
+                        "foto", "cedula", "nombre", "apellido", "fecha_nacimiento", "genero", "telefono",
+                        "direccion", "ciudad", "provincia", "codigo_postal", "pais",
+                        "contacto_emergencia_nombre", "contacto_emergencia_telefono", "contacto_emergencia_relacion",
+                        "profesion", "especialidad", "especializacion", "titulo", "institucion_titulo", "anio_titulo",
+                        "tipo_licencia", "numero_licencia", "fecha_emision_licencia", "fecha_vencimiento_licencia",
+                        "biografia", "codigo_empleado", "tipo_contrato", "fecha_ingreso", "activo",
+                        "hora_inicio_atencion", "hora_fin_atencion", "preparacion_minutos",
+                        "forzar_cambio_clave", "dos_factores",
+                    ]
+                    for campo in campos:
+                        valor = datos.get(campo)
+                        if campo in {"cedula", "nombre", "apellido", "telefono", "direccion", "ciudad", "provincia", "codigo_postal", "pais", "contacto_emergencia_nombre", "contacto_emergencia_telefono", "contacto_emergencia_relacion", "profesion", "especializacion", "titulo", "institucion_titulo", "tipo_licencia", "numero_licencia", "biografia", "codigo_empleado", "tipo_contrato"} and isinstance(valor, str):
+                            valor = valor.strip()
+                        if campo == "foto" and not valor:
+                            continue
+                        setattr(profesional, campo, valor)
+                    profesional.dias_atencion = [int(d) for d in datos.get("dias_atencion", [])]
+                    profesional.save()
+                    role = datos.get("rol_sistema", "PROFESIONAL")
+                    role_names = {"ADMINISTRADOR":"Administradores","GESTOR":"Gestores","PROFESIONAL":"Profesionales","RECEPCION":"Recepción","PERSONAL":"Personal"}
+                    grupo, _ = Group.objects.get_or_create(name=role_names[role])
+                    usuario.groups.clear()
+                    usuario.groups.add(grupo)
+                    permisos = datos.get("permisos", [])
+                    usuario.user_permissions.set(Permission.objects.filter(codename__in=permisos))
+                messages.success(request, "Profesional actualizado correctamente.")
+                return redirect("homeinprofesionales")
+    else:
+        p = profesional
+        u = p.usuario
+        initial = {campo: getattr(p, campo) for campo in [
+            "foto", "cedula", "nombre", "apellido", "fecha_nacimiento", "genero", "telefono", "direccion",
+            "ciudad", "provincia", "codigo_postal", "pais", "contacto_emergencia_nombre",
+            "contacto_emergencia_telefono", "contacto_emergencia_relacion", "profesion", "especialidad",
+            "especializacion", "titulo", "institucion_titulo", "anio_titulo", "tipo_licencia", "numero_licencia",
+            "fecha_emision_licencia", "fecha_vencimiento_licencia", "biografia", "codigo_empleado",
+            "tipo_contrato", "fecha_ingreso", "activo", "hora_inicio_atencion", "hora_fin_atencion",
+            "preparacion_minutos", "forzar_cambio_clave", "dos_factores"
+        ]}
+        initial.update({"email": u.email, "username": u.username, "dias_atencion": [str(d) for d in (p.dias_atencion or [])]})
+        grupos = list(u.groups.values_list("name", flat=True))
+        roles = {"Administradores":"ADMINISTRADOR","Gestores":"GESTOR","Profesionales":"PROFESIONAL","Recepción":"RECEPCION","Personal":"PERSONAL"}
+        initial["rol_sistema"] = next((key for name,key in roles.items() if name in grupos), "PROFESIONAL")
+        initial["permisos"] = list(u.user_permissions.values_list("codename", flat=True))
+        form = ProfesionalForm(initial=initial)
+        form.fields["password1"].required = False
+        form.fields["password2"].required = False
+    return render(request, "frm-nuevoprofesional.html", {"form": form, "editar_profesional": profesional})
+
+
+@staff_required
+def cambiar_estado_profesional(request, profesional_id):
+    profesional = get_object_or_404(Profesional.objects.select_related("usuario"), pk=profesional_id)
+    if request.method != "POST":
+        return redirect("homeinprofesionales")
+    profesional.activo = not profesional.activo
+    profesional.usuario.is_active = profesional.activo
+    profesional.usuario.save(update_fields=["is_active"])
+    profesional.save(update_fields=["activo", "actualizado_en"])
+    messages.success(request, f"El profesional {profesional.nombre} fue {'activado' if profesional.activo else 'desactivado'} correctamente.")
+    return redirect("homeinprofesionales")
+
+
+@staff_required
+def eliminarprofesional(request, profesional_id):
+    profesional = get_object_or_404(Profesional.objects.select_related("usuario"), pk=profesional_id)
+    if request.method != "POST":
+        return redirect("homeinprofesionales")
+    nombre = f"{profesional.nombre} {profesional.apellido}"
+    usuario = profesional.usuario
+    profesional.delete()
+    usuario.delete()
+    messages.success(request, f"El profesional {nombre} fue eliminado.")
+    return redirect("homeinprofesionales")
+
+
 
 @staff_required
 def homeinpacientes(request):
