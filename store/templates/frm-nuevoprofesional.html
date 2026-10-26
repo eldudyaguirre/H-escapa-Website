@@ -27,6 +27,13 @@
   .new-pro-field input:focus,.new-pro-field select:focus{border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.1)}
   .new-pro-help{font-size:.66rem;color:#8b9694}
   .new-pro-error{font-size:.68rem;color:#b42318}
+  /* Días de atención en una sola fila, al estilo de la tabla de permisos */
+  .days-field>div{width:100%}
+  .days-field ul{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:10px 22px;list-style:none;margin:0;padding:10px 12px;border:1px solid #e3ebe9;border-radius:9px;background:#fafcfc}
+  .days-field ul li{display:flex;align-items:center;gap:7px;margin:0;padding:5px 0;white-space:nowrap}
+  .days-field ul li label{display:inline-flex;align-items:center;gap:7px;margin:0;color:#42534f;font-size:.72rem;font-weight:600;cursor:pointer}
+  .days-field ul li input[type="checkbox"]{width:16px;height:16px;margin:0;accent-color:#005855;flex-shrink:0}
+  @media(max-width:700px){.days-field ul{gap:7px 14px;padding:9px}.days-field ul li{padding:3px 0}}
   /* Foto de perfil, igual al formulario de pacientes */
   .profile-upload{display:flex;align-items:center;gap:18px;padding:14px 16px;margin:0 0 20px;border:1px solid #e3e8e6;border-radius:10px;background:#fafcfc;width:100%;box-sizing:border-box}
   .profile-preview{width:76px;height:76px;min-width:76px;border-radius:50%;background:#eef3f2;display:grid;place-items:center;overflow:hidden;color:#439b95;font-size:30px}
@@ -210,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <div class="new-pro-field"><label>Institución</label>{{form.institucion_titulo}}</div><div class="new-pro-field"><label>Año de titulación</label>{{form.anio_titulo}}</div>
 <div class="new-pro-field"><label>Tipo de licencia</label>{{form.tipo_licencia}}</div><div class="new-pro-field"><label>Número de licencia</label>{{form.numero_licencia}}</div>
 <div class="new-pro-field"><label>Fecha de emisión</label>{{form.fecha_emision_licencia}}</div><div class="new-pro-field"><label>Fecha de vencimiento</label>{{form.fecha_vencimiento_licencia}}</div>
-<div class="new-pro-field"><label>Inicio de atención</label>{{form.hora_inicio_atencion}}</div><div class="new-pro-field"><label>Fin de atención</label>{{form.hora_fin_atencion}}</div><div class="new-pro-field"><label>Preparación entre citas (minutos)</label>{{form.preparacion_minutos}}</div><div class="new-pro-field full"><label>Días de atención</label>{{form.dias_atencion}}{% for error in form.dias_atencion.errors %}<small class="text-danger">{{error}}</small>{% endfor %}</div>
+<div class="new-pro-field"><label>Inicio de atención</label>{{form.hora_inicio_atencion}}</div><div class="new-pro-field"><label>Fin de atención</label>{{form.hora_fin_atencion}}</div><div class="new-pro-field"><label>Preparación entre citas (minutos)</label>{{form.preparacion_minutos}}</div><div class="new-pro-field full days-field"><label>Días de atención</label>{{form.dias_atencion}}{% for error in form.dias_atencion.errors %}<small class="text-danger">{{error}}</small>{% endfor %}</div>
 <div class="new-pro-field full"><label>Biografía / descripción</label>{{form.biografia}}</div>
 </div></section>
 <section class="new-pro-section new-pro-tab-content" data-content="employment">
