@@ -707,6 +707,7 @@ def homeineditarprofesional(request, profesional_id):
     profesional = get_object_or_404(Profesional.objects.select_related("usuario"), pk=profesional_id)
     if request.method == "POST":
         form = ProfesionalForm(request.POST, request.FILES)
+        form.clean_username = lambda: form.cleaned_data["username"].strip()
         form.fields["password1"].required = False
         form.fields["password2"].required = False
         if form.is_valid():
