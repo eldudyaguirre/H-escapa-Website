@@ -5,6 +5,7 @@ import hashlib
 import os
 import mimetypes
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -406,6 +407,62 @@ def staff_required(view_func):
 
 
 @staff_required
+@staff_required
+def homeinserviciotecnico(request):
+    """Recibe reportes del panel interno y los envía al correo de soporte configurado."""
+    asunto = ""
+    problema = ""
+
+    if request.method == "POST":
+        if _es_envio_spam(request, "servicio-tecnico"):
+            return redirect("homeinserviciotecnico")
+
+        asunto = request.POST.get("asunto", "").strip()
+        problema = request.POST.get("problema", "").strip()
+
+        if not asunto or not problema:
+            messages.error(request, "Completa el asunto y la descripción del problema.")
+        elif len(asunto) > 150:
+            messages.error(request, "El asunto no puede superar los 150 caracteres.")
+        elif len(problema) > 5000:
+            messages.error(request, "La descripción no puede superar los 5000 caracteres.")
+        else:
+            try:
+                remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+                correo = EmailMessage(
+                    subject=f"H-Escapa | Servicio técnico: {asunto.replace(chr(10), ' ').replace(chr(13), ' ')}",
+                    body=(
+                        "Se ha recibido una nueva solicitud de servicio técnico desde el panel de H-Escapa.\n\n"
+                        f"Asunto: {asunto}\n\n"
+                        f"Descripción del problema:\n{problema}\n\n"
+                        f"Reportado por: {request.user.get_full_name().strip() or request.user.get_username()}\n"
+                    ),
+                    from_email=remitente,
+                    to=["eldudyaguirre@gmail.com"],
+                )
+                correo.send(fail_silently=False)
+                messages.success(
+                    request,
+                    "Daio pronto dará respuesta, gracias por su paciencia.",
+                )
+                return redirect("homeinserviciotecnico")
+            except Exception:
+                messages.error(
+                    request,
+                    "No se pudo enviar el reporte. Revisa la configuración del correo e inténtalo nuevamente.",
+                )
+
+    return render(
+        request,
+        "frm-serviciotecnico.html",
+        {
+            "active_menu": "ayuda",
+            "asunto": asunto,
+            "problema": problema,
+        },
+    )
+
+
 @staff_required
 def homein(request):
     hoy = timezone.localdate()
