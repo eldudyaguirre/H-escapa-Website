@@ -34,10 +34,10 @@
     <p>Cuéntanos qué está ocurriendo con la página web o con el servicio de H-Escapa. Tu reporte será enviado directamente al equipo de soporte.</p>
   </div>
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="support-alert {% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% else %}info{% endif %}" role="status">{{ message }}</div>
-    {% endfor %}
+  {% if notificacion_servicio_tecnico %}
+    <div class="support-alert {{ notificacion_servicio_tecnico.tipo }}" role="status">{{ notificacion_servicio_tecnico.texto }}</div>
+  {% elif error_servicio_tecnico %}
+    <div class="support-alert error" role="alert">{{ error_servicio_tecnico }}</div>
   {% endif %}
 
   <div class="support-card">
