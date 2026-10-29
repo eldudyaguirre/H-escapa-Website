@@ -407,7 +407,6 @@ def staff_required(view_func):
 
 
 @staff_required
-@staff_required
 def homeinserviciotecnico(request):
     """Recibe reportes del panel interno y los envía al correo de soporte configurado."""
     asunto = ""
