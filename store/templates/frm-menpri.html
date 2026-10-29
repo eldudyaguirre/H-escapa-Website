@@ -146,6 +146,20 @@
         <a href="{% url 'homeinnuevopost' %}" class="nav__link{% if active_menu == 'blog' %} active{% endif %}"><i class="bx bx-edit-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Nuevo post</span></a>
         <a href="{% url 'homeinblog' %}" class="nav__link{% if active_menu == 'blog' %} active{% endif %}"><i class="bx bx-grid-alt nav__icon" aria-hidden="true"></i><span class="nav__name">Revisar posts</span></a>
       </div>
+      <div class="nav__items">
+        <div class="nav__dropdown{% if active_menu == 'ayuda' %} show-dropdown{% endif %}">
+          <button type="button" class="nav__link{% if active_menu == 'ayuda' %} active{% endif %}" aria-expanded="{% if active_menu == 'ayuda' %}true{% else %}false{% endif %}" aria-controls="submenu-ayuda" onclick="const dropdown=this.closest('.nav__dropdown');const opened=dropdown.classList.toggle('show-dropdown');this.setAttribute('aria-expanded',String(opened));">
+            <i class="bx bx-help-circle nav__icon" aria-hidden="true"></i>
+            <span class="nav__name">AYUDA</span>
+            <i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i>
+          </button>
+          <div class="nav__dropdown-collapse" id="submenu-ayuda">
+            <div class="nav__dropdown-content">
+              <a href="{% url 'homeinserviciotecnico' %}" class="nav__dropdown-item">Servicio técnico</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div><a href="{% url 'logout' %}" class="nav__link nav__logout" aria-label="Cerrar sesión"><i class="bx bx-log-out nav__icon" aria-hidden="true"></i><span class="nav__name">Cerrar sesión</span></a></nav></div>
   <main class="main-content"><div class="home">{% block content %}
