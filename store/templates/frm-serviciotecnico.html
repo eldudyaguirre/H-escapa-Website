@@ -1,0 +1,69 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Servicio técnico{% endblock %}
+
+{% block extra_head %}
+<style>
+  .support-page{max-width:980px;margin:0 auto;padding:32px 28px 44px}
+  .support-heading{margin-bottom:22px}
+  .support-heading h1{margin:0;color:#263b3a;font-family:Marcellus,serif;font-size:2rem}
+  .support-heading p{margin:8px 0 0;color:#71817e;line-height:1.6}
+  .support-card{background:#fff;border:1px solid #dfe9e7;border-radius:15px;padding:27px;box-shadow:0 7px 24px rgba(30,55,53,.06)}
+  .support-field{margin-bottom:20px}
+  .support-field label{display:block;color:#324541;font-weight:650;margin-bottom:8px}
+  .support-input,.support-textarea{display:block;width:100%;box-sizing:border-box;border:1px solid #d4e0dd;border-radius:9px;padding:12px 14px;color:#263b3a;background:#fff;font:inherit;transition:border-color .18s,box-shadow .18s}
+  .support-input:focus,.support-textarea:focus{outline:none;border-color:#439b95;box-shadow:0 0 0 3px rgba(67,155,149,.14)}
+  .support-textarea{min-height:190px;resize:vertical;line-height:1.55}
+  .support-help{display:block;margin-top:6px;color:#85918e;font-size:.8rem}
+  .support-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap}
+  .support-submit{border:0;border-radius:9px;padding:12px 23px;background:#00615c;color:#fff;font-weight:700;font:inherit;cursor:pointer}
+  .support-submit:hover{background:#094d49}
+  .support-alert{padding:13px 16px;border-radius:9px;margin:0 0 18px;line-height:1.5}
+  .support-alert.success{color:#22633d;background:#e8f6ed;border:1px solid #c8e8d2}
+  .support-alert.error{color:#944343;background:#fff0f0;border:1px solid #f1d0d0}
+  .support-alert.info{color:#365d91;background:#edf4ff;border:1px solid #d8e6fb}
+  .support-required{color:#b45309}
+  .support-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+  @media(max-width:650px){.support-page{padding:20px 12px 28px}.support-card{padding:19px}.support-heading h1{font-size:1.65rem}.support-textarea{min-height:160px}.support-actions{justify-content:stretch}.support-submit{width:100%}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="support-page">
+  <div class="support-heading">
+    <h1>Servicio técnico</h1>
+    <p>Cuéntanos qué está ocurriendo con la página web o con el servicio de H-Escapa. Tu reporte será enviado directamente al equipo de soporte.</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="support-alert {% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% else %}info{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="support-card">
+    <form method="post" action="{% url 'homeinserviciotecnico' %}">
+      {% csrf_token %}
+      <div class="support-honeypot" aria-hidden="true">
+        <label for="support-website">No completar este campo</label>
+        <input type="text" name="website" id="support-website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="support-field">
+        <label for="support-asunto">Asunto <span class="support-required">*</span></label>
+        <input class="support-input" type="text" id="support-asunto" name="asunto" value="{{ asunto }}" maxlength="150" placeholder="Ej.: No puedo guardar una cita" required>
+        <span class="support-help">Resume el problema en una frase breve.</span>
+      </div>
+
+      <div class="support-field">
+        <label for="support-problema">¿Cuál es el problema? <span class="support-required">*</span></label>
+        <textarea class="support-textarea" id="support-problema" name="problema" maxlength="5000" placeholder="Describe lo que sucede, qué estabas intentando hacer y cualquier mensaje de error que aparezca." required>{{ problema }}</textarea>
+        <span class="support-help">Puedes describir inconvenientes de la página web o del servicio. Máximo 5000 caracteres.</span>
+      </div>
+
+      <div class="support-actions">
+        <button class="support-submit" type="submit"><i class="bx bx-paper-plane" aria-hidden="true"></i> Enviar reporte</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
