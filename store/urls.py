@@ -31,6 +31,7 @@ urlpatterns = [
     path("homein/", views.homein, name="homein"),
     path("homein-calendario/", views.homeincalendario, name="homeincalendario"),
     path("homein-interacciones-web/", views.homeininteraccionesweb, name="homeininteraccionesweb"),
+    path("homein-servicio-tecnico/", views.homeinserviciotecnico, name="homeinserviciotecnico"),
     path("homein-blog/", views.homeinblog, name="homeinblog"),
     path("homein-blog/nuevo/", views.homeinnuevopost, name="homeinnuevopost"),
     path("homein-blog/editar/<int:post_id>/", views.homeineditarpost, name="homeineditarpost"),
