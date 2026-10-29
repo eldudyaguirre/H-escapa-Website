@@ -42,6 +42,7 @@
     .workspace-day.today{border-color:#6b8f83;background:#edf5f1}
 
     /* Tarjetas KPI del panel: color por módulo, jerarquía visual y respuesta al cursor */
+    .license-expiry{display:inline-block;margin:5px 0 0!important;padding:5px 10px;border-radius:6px;background:#fff4e5;color:#c26700!important;border:1px solid #f6d6a7;font-size:.82rem!important;font-weight:700;letter-spacing:.01em}
     .kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin:22px 0 28px}
     .kpi-grid .kpi-card{position:relative;isolation:isolate;display:flex;align-items:center;gap:15px;min-width:0;min-height:142px;padding:24px 20px;border:1px solid transparent;border-radius:16px;overflow:hidden;box-shadow:0 8px 22px rgba(24,55,53,.08);transition:transform .22s ease,box-shadow .22s ease;text-decoration:none!important}
     .kpi-grid .kpi-card::before{content:"";position:absolute;inset:0;opacity:.12;z-index:-1;background:linear-gradient(135deg,var(--kpi-color),#fff 85%)}
@@ -150,7 +151,7 @@
   <main class="main-content"><div class="home">{% block content %}
     <div class="dashboard-home" id="home">
       <div class="dashboard-heading">
-        <div><h1>Panel principal</h1><p>Resumen general del consultorio · {{ fecha_hoy|date:"d/m/Y" }}</p></div>
+        <div><h1>Panel principal</h1><p>Resumen general del consultorio · {{ fecha_hoy|date:"d/m/Y" }}</p><p class="license-expiry">Vencimiento licencia: 2027-05-09</p></div>
       </div>
 
       <div class="kpi-grid">
