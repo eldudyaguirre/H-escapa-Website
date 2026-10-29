@@ -7,6 +7,7 @@ import mimetypes
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
@@ -409,8 +410,13 @@ def staff_required(view_func):
 @staff_required
 def homeinserviciotecnico(request):
     """Recibe reportes del panel interno y los envía al correo de soporte configurado."""
+    # Consumir notificaciones pendientes de otras pantallas para que no aparezcan aquí.
+    list(get_messages(request))
+
     asunto = ""
     problema = ""
+    error = ""
+    notificacion = request.session.pop("servicio_tecnico_notificacion", None)
 
     if request.method == "POST":
         if _es_envio_spam(request, "servicio-tecnico"):
@@ -420,11 +426,11 @@ def homeinserviciotecnico(request):
         problema = request.POST.get("problema", "").strip()
 
         if not asunto or not problema:
-            messages.error(request, "Completa el asunto y la descripción del problema.")
+            error = "Completa el asunto y la descripción del problema."
         elif len(asunto) > 150:
-            messages.error(request, "El asunto no puede superar los 150 caracteres.")
+            error = "El asunto no puede superar los 150 caracteres."
         elif len(problema) > 5000:
-            messages.error(request, "La descripción no puede superar los 5000 caracteres.")
+            error = "La descripción no puede superar los 5000 caracteres."
         else:
             try:
                 remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
@@ -440,16 +446,13 @@ def homeinserviciotecnico(request):
                     to=["eldudyaguirre@gmail.com"],
                 )
                 correo.send(fail_silently=False)
-                messages.success(
-                    request,
-                    "Daio pronto dará respuesta, gracias por su paciencia.",
-                )
+                request.session["servicio_tecnico_notificacion"] = {
+                    "tipo": "success",
+                    "texto": "Daio pronto dará respuesta, gracias por su paciencia.",
+                }
                 return redirect("homeinserviciotecnico")
             except Exception:
-                messages.error(
-                    request,
-                    "No se pudo enviar el reporte. Revisa la configuración del correo e inténtalo nuevamente.",
-                )
+                error = "No se pudo enviar el reporte. Revisa la configuración del correo e inténtalo nuevamente."
 
     return render(
         request,
@@ -458,9 +461,10 @@ def homeinserviciotecnico(request):
             "active_menu": "ayuda",
             "asunto": asunto,
             "problema": problema,
+            "error_servicio_tecnico": error,
+            "notificacion_servicio_tecnico": notificacion,
         },
     )
-
 
 @staff_required
 def homein(request):
