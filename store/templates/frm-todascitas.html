@@ -1,0 +1,256 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Todas las citas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .appointments-page{width:100%;max-width:1500px;margin:0 auto;padding:30px 30px 42px;color:#263b3a}
+  .appointments-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+  .appointments-heading h1{margin:0 0 7px;font-family:Marcellus,serif;font-size:2.05rem;font-weight:500;color:#203b39}
+  .appointments-heading p{margin:0;color:#778582;line-height:1.55}
+  .appointments-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .aa-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:9px 15px;border:1px solid #d9e3e1;border-radius:9px;background:#fff;color:#3f5551;text-decoration:none;font-size:.88rem;font-weight:600;transition:background .18s,border-color .18s,transform .18s}
+  .aa-btn:hover{background:#f3f8f7;border-color:#b8d2cd;color:#005855}
+  .aa-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  .aa-btn.primary:hover{background:#064a47;border-color:#064a47;color:#fff}
+  .aa-panel{background:#fff;border:1px solid #e2e9e7;border-radius:15px;box-shadow:0 7px 22px rgba(26,53,50,.055);overflow:visible}
+  .aa-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px 24px 18px;flex-wrap:wrap}
+  .aa-panel-title h2{margin:0 0 5px;font-size:1.25rem;font-weight:700;color:#2b3d3a}
+  .aa-panel-title p{margin:0;color:#87928f;font-size:.86rem}
+  .aa-panel-title .aa-results{display:inline-block;margin-top:9px;color:#6e817c;font-size:.78rem}
+  .aa-toolbar{display:flex;gap:9px;align-items:flex-start;flex-wrap:wrap}
+  .aa-search{position:relative;min-width:230px}
+  .aa-search i{position:absolute;left:12px;top:12px;color:#8a9995;font-size:18px}
+  .aa-search input{width:260px;max-width:100%;height:41px;padding:9px 12px 9px 37px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#334743;font:inherit;font-size:.86rem;outline:none}
+  .aa-search input:focus,.aa-filter-panel select:focus,.aa-filter-panel input:focus{border-color:#65aaa2;box-shadow:0 0 0 3px rgba(67,155,149,.12)}
+  .aa-search input::placeholder{color:#9aa5a2}
+  .aa-filter{position:relative}
+  .aa-filter>summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:7px;height:41px;padding:0 13px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#536762;font-size:.86rem;font-weight:600;cursor:pointer;white-space:nowrap}
+  .aa-filter>summary::-webkit-details-marker{display:none}
+  .aa-filter>summary:hover{background:#f6faf9}
+  .aa-filter[open]>summary{border-color:#85bdb6;color:#005855;background:#f1f8f7}
+  .aa-filter-panel{position:absolute;right:0;top:48px;z-index:30;width:min(520px,calc(100vw - 42px));padding:17px;background:#fff;border:1px solid #dfe8e6;border-radius:12px;box-shadow:0 15px 35px rgba(23,48,45,.16)}
+  .aa-filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+  .aa-filter-field label{display:block;margin-bottom:6px;color:#61716d;font-size:.78rem;font-weight:600}
+  .aa-filter-field select,.aa-filter-field input{width:100%;height:39px;padding:8px 10px;border:1px solid #dce5e3;border-radius:8px;background:#fff;color:#334743;font:inherit;font-size:.84rem;outline:none}
+  .aa-filter-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+  .aa-filter-actions .aa-btn{min-height:36px;padding:7px 12px;font-size:.82rem}
+  .aa-icon-btn{width:41px;height:41px;padding:0}
+  .aa-tabs{display:flex;gap:5px;align-items:center;padding:0 24px;border-bottom:1px solid #edf1f0;overflow-x:auto}
+  .aa-tab{display:inline-flex;align-items:center;gap:8px;position:relative;min-height:48px;padding:0 13px;color:#75827f;text-decoration:none;font-size:.84rem;font-weight:600;white-space:nowrap}
+  .aa-tab:hover{color:#005855}
+  .aa-tab.active{color:#005855}
+  .aa-tab.active:after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:#439b95}
+  .aa-tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:20px;padding:0 6px;border-radius:20px;background:#f0f4f3;color:#788783;font-size:.72rem;font-weight:700}
+  .aa-tab.active .aa-tab-count{background:#e5f3f1;color:#00615c}
+  .aa-table-wrap{width:100%;overflow-x:auto}
+  .aa-table{width:100%;min-width:850px;border-collapse:separate;border-spacing:0;text-align:left}
+  .aa-table th{height:48px;padding:0 17px;border-bottom:1px solid #edf1f0;color:#899491;font-size:.73rem;font-weight:700;letter-spacing:.045em;text-transform:uppercase;white-space:nowrap;background:#fbfcfc}
+  .aa-table td{padding:14px 17px;border-bottom:1px solid #edf1f0;vertical-align:middle;color:#475955;font-size:.84rem}
+  .aa-table tbody tr:last-child td{border-bottom:0}
+  .aa-table tbody tr:hover{background:#fbfdfd}
+  .aa-patient{display:flex;align-items:center;gap:10px;min-width:170px}
+  .aa-avatar{display:flex;align-items:center;justify-content:center;flex:0 0 38px;width:38px;height:38px;border-radius:50%;background:#e5f2f0;color:#176c65;font-size:.78rem;font-weight:700}
+  .aa-patient-name{display:block;color:#30443f;font-weight:650;text-decoration:none}
+  .aa-patient-name:hover{color:#00736b}
+  .aa-secondary{display:block;margin-top:3px;color:#97a29f;font-size:.75rem}
+  .aa-doctor{font-weight:600;color:#435651;white-space:nowrap}
+  .aa-date{color:#3b504b;font-weight:600;white-space:nowrap}
+  .aa-time{display:block;margin-top:3px;color:#899692;font-size:.76rem;font-weight:400}
+  .aa-status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:30px;font-size:.73rem;font-weight:700;white-space:nowrap}
+  .aa-status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .aa-status.programada{background:#fff4df;color:#a66a10}
+  .aa-status.confirmada{background:#e8f1ff;color:#3568aa}
+  .aa-status.atendida{background:#e7f5ed;color:#2d8050}
+  .aa-status.cancelada{background:#fff0f0;color:#b64d4d}
+  .aa-status.no-asistio{background:#f1edf8;color:#7656a2}
+  .aa-specialty{max-width:210px;color:#435651;font-weight:600;white-space:normal}
+  .aa-duration{white-space:nowrap;color:#62736e}
+  .aa-actions{position:relative;text-align:right}
+  .aa-actions>summary{display:inline-flex;align-items:center;justify-content:center;width:35px;height:35px;list-style:none;border-radius:8px;color:#778782;cursor:pointer}
+  .aa-actions>summary::-webkit-details-marker{display:none}
+  .aa-actions>summary:hover,.aa-actions[open]>summary{background:#edf5f3;color:#005855}
+  .aa-actions-menu{position:absolute;right:0;top:38px;z-index:20;min-width:180px;padding:6px;background:#fff;border:1px solid #e1e9e7;border-radius:10px;box-shadow:0 12px 28px rgba(23,48,45,.14);text-align:left}
+  .aa-actions-menu a{display:block;padding:9px 10px;border-radius:7px;color:#52645f;text-decoration:none;font-size:.82rem}
+  .aa-actions-menu a:hover{background:#f0f7f6;color:#005855}
+  .aa-empty{padding:54px 20px;text-align:center;color:#86938f}
+  .aa-empty i{display:block;margin:0 auto 10px;font-size:34px;color:#a8bbb6}
+  .aa-empty strong{display:block;margin-bottom:5px;color:#52645f;font-size:.98rem}
+  .aa-pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-top:1px solid #edf1f0;flex-wrap:wrap}
+  .aa-pagination p{margin:0;color:#87938f;font-size:.78rem}
+  .aa-page-links{display:flex;align-items:center;gap:6px}
+  .aa-page-links a,.aa-page-links span{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 9px;border:1px solid #e0e8e6;border-radius:8px;color:#60716c;text-decoration:none;font-size:.8rem}
+  .aa-page-links a:hover{background:#eff7f5;color:#005855;border-color:#c8dfda}
+  .aa-page-links .current{background:#005855;border-color:#005855;color:#fff}
+  @media(max-width:900px){.appointments-page{padding:22px 18px 32px}.aa-panel-head{padding:19px 18px 15px}.aa-tabs{padding:0 12px}.aa-tab{padding:0 10px}}
+  @media(max-width:620px){.appointments-page{padding:18px 11px 28px}.appointments-heading h1{font-size:1.7rem}.appointments-head-actions{width:100%}.appointments-head-actions .aa-btn{flex:1}.aa-panel-head{padding:17px 13px 14px}.aa-toolbar{width:100%}.aa-search{flex:1;min-width:0}.aa-search input{width:100%}.aa-filter-panel{right:-48px}.aa-tabs{padding:0 7px}.aa-tab{font-size:.78rem;padding:0 8px}.aa-filter-grid{grid-template-columns:1fr}.aa-pagination{padding:13px}.aa-pagination p{width:100%}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="appointments-page">
+  <header class="appointments-head">
+    <div class="appointments-heading">
+      <h1>Citas</h1>
+      <p>Administra las citas y la agenda del consultorio.</p>
+    </div>
+    <div class="appointments-head-actions">
+      <a class="aa-btn" href="{% url 'homeincalendario' %}"><i class="bx bx-calendar"></i> Calendario</a>
+      <a class="aa-btn primary" href="{% url 'homeinnuevacita' %}"><i class="bx bx-plus"></i> Nueva cita</a>
+    </div>
+  </header>
+
+  <section class="aa-panel">
+    <div class="aa-panel-head">
+      <div class="aa-panel-title">
+        <h2>Todas las citas</h2>
+        <p>Consulta y revisa las citas registradas en la base de datos.</p>
+        <span class="aa-results">{{ citas_count }} resultado{{ citas_count|pluralize:"s" }}</span>
+      </div>
+
+      <form class="aa-toolbar" method="get" action="{% url 'homeintodascitas' %}">
+        <input type="hidden" name="vista" value="{{ vista }}">
+        <div class="aa-search">
+          <i class="bx bx-search" aria-hidden="true"></i>
+          <input type="search" name="q" value="{{ q }}" placeholder="Buscar paciente, profesional..." aria-label="Buscar citas">
+        </div>
+        <details class="aa-filter" {% if filtros_activos %}open{% endif %}>
+          <summary><i class="bx bx-filter-alt"></i> Filtros</summary>
+          <div class="aa-filter-panel">
+            <div class="aa-filter-grid">
+              <div class="aa-filter-field">
+                <label for="aa-profesional">Profesional</label>
+                <select id="aa-profesional" name="profesional">
+                  <option value="">Todos los profesionales</option>
+                  {% for profesional in profesionales %}
+                    <option value="{{ profesional.pk }}" {% if profesional_id == profesional.pk|stringformat:"s" %}selected{% endif %}>{{ profesional }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="aa-filter-field">
+                <label for="aa-modalidad">Modalidad</label>
+                <select id="aa-modalidad" name="modalidad">
+                  <option value="">Todas</option>
+                  <option value="PRESENCIAL" {% if modalidad == "PRESENCIAL" %}selected{% endif %}>Presencial</option>
+                  <option value="VIRTUAL" {% if modalidad == "VIRTUAL" %}selected{% endif %}>Virtual</option>
+                </select>
+              </div>
+              <div class="aa-filter-field">
+                <label for="aa-desde">Desde</label>
+                <input type="date" id="aa-desde" name="desde" value="{{ fecha_desde }}">
+              </div>
+              <div class="aa-filter-field">
+                <label for="aa-hasta">Hasta</label>
+                <input type="date" id="aa-hasta" name="hasta" value="{{ fecha_hasta }}">
+              </div>
+            </div>
+            <div class="aa-filter-actions">
+              <a class="aa-btn" href="{% url 'homeintodascitas' %}?vista={{ vista }}">Limpiar</a>
+              <button class="aa-btn primary" type="submit">Aplicar filtros</button>
+            </div>
+          </div>
+        </details>
+        <button class="aa-btn aa-icon-btn" type="submit" aria-label="Buscar"><i class="bx bx-search-alt-2"></i></button>
+        <a class="aa-btn aa-icon-btn" href="{{ csv_url }}" aria-label="Descargar citas" title="Descargar CSV"><i class="bx bx-download"></i></a>
+      </form>
+    </div>
+
+    <nav class="aa-tabs" aria-label="Filtros de citas">
+      <a class="aa-tab {% if vista == 'all' %}active{% endif %}" href="{{ tab_urls.all }}">Todas <span class="aa-tab-count">{{ total_citas }}</span></a>
+      <a class="aa-tab {% if vista == 'upcoming' %}active{% endif %}" href="{{ tab_urls.upcoming }}">Próximas <span class="aa-tab-count">{{ total_proximas }}</span></a>
+      <a class="aa-tab {% if vista == 'today' %}active{% endif %}" href="{{ tab_urls.today }}">Hoy <span class="aa-tab-count">{{ total_hoy }}</span></a>
+      <a class="aa-tab {% if vista == 'completed' %}active{% endif %}" href="{{ tab_urls.completed }}">Atendidas <span class="aa-tab-count">{{ total_completadas }}</span></a>
+      <a class="aa-tab {% if vista == 'cancelled' %}active{% endif %}" href="{{ tab_urls.cancelled }}">Canceladas <span class="aa-tab-count">{{ total_canceladas }}</span></a>
+    </nav>
+
+    <div class="aa-table-wrap">
+      <table class="aa-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Profesional</th>
+            <th>Fecha y hora</th>
+            <th>Estado</th>
+            <th>Servicio / especialidad</th>
+            <th>Duración</th>
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cita in page_obj %}
+          <tr>
+            <td>
+              <div class="aa-patient">
+                <span class="aa-avatar">{{ cita.paciente.nombres|slice:":1"|upper }}{{ cita.paciente.apellidos|slice:":1"|upper }}</span>
+                <div>
+                  <a class="aa-patient-name" href="{% url 'homeinperfilpaciente' cita.paciente.pk %}">{{ cita.paciente.nombre }}</a>
+                  <span class="aa-secondary">{{ cita.paciente.cedula }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="aa-doctor">{{ cita.profesional }}</span></td>
+            <td>
+              <span class="aa-date">{{ cita.fecha_hora|date:"d/m/Y" }}</span>
+              <span class="aa-time">{{ cita.fecha_hora|date:"H:i" }}</span>
+            </td>
+            <td>
+              {% if cita.estado == "PROGRAMADA" %}
+                <span class="aa-status programada">Programada</span>
+              {% elif cita.estado == "CONFIRMADA" %}
+                <span class="aa-status confirmada">Confirmada</span>
+              {% elif cita.estado == "ATENDIDA" %}
+                <span class="aa-status atendida">Atendida</span>
+              {% elif cita.estado == "CANCELADA" %}
+                <span class="aa-status cancelada">Cancelada</span>
+              {% elif cita.estado == "NO_ASISTIO" %}
+                <span class="aa-status no-asistio">No asistió</span>
+              {% else %}
+                <span class="aa-status">{{ cita.get_estado_display }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="aa-specialty">{% if cita.especialidad %}{{ cita.especialidad.nombre }}{% elif cita.servicio %}{{ cita.servicio.nombre }}{% else %}Sin especificar{% endif %}</span>
+              <span class="aa-secondary">{{ cita.get_modalidad_display }}</span>
+            </td>
+            <td><span class="aa-duration">{{ cita.duracion_minutos }} min</span></td>
+            <td class="aa-actions">
+              <details class="aa-actions">
+                <summary aria-label="Acciones de {{ cita.paciente.nombre }}"><i class="bx bx-dots-horizontal-rounded"></i></summary>
+                <div class="aa-actions-menu">
+                  <a href="{% url 'homeinperfilpaciente' cita.paciente.pk %}">Ver paciente</a>
+                  <a href="{% url 'homeinnuevacita' %}?paciente={{ cita.paciente.pk|urlencode }}">Agendar otra cita</a>
+                </div>
+              </details>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7">
+              <div class="aa-empty">
+                <i class="bx bx-calendar-x"></i>
+                <strong>No se encontraron citas</strong>
+                <span>{% if q or filtros_activos %}Prueba modificando los filtros de búsqueda.{% else %}Cuando registres una cita, aparecerá en esta lista.{% endif %}</span>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <footer class="aa-pagination">
+      <p>Mostrando {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ page_obj.paginator.count }} citas</p>
+      <div class="aa-page-links">
+        {% if page_obj.has_previous %}
+          <a href="?{{ pagination_query }}{% if pagination_query %}&amp;{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Página anterior"><i class="bx bx-chevron-left"></i></a>
+        {% endif %}
+        <span class="current">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}
+          <a href="?{{ pagination_query }}{% if pagination_query %}&amp;{% endif %}page={{ page_obj.next_page_number }}" aria-label="Página siguiente"><i class="bx bx-chevron-right"></i></a>
+        {% endif %}
+      </div>
+    </footer>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}
