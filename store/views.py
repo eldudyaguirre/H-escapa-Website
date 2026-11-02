@@ -495,8 +495,10 @@ def homein(request):
     citas_proximas = (
         Cita.objects
         .select_related("paciente", "profesional")
-        .filter(fecha_hora__gte=timezone.now())
-        .exclude(estado__in=["CANCELADA", "NO_ASISTIO"])
+        .filter(
+            fecha_hora__gte=timezone.now(),
+            estado__in=["PROGRAMADA", "CONFIRMADA"],
+        )
         .order_by("fecha_hora")[:5]
     )
 
