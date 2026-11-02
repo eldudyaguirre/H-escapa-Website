@@ -27,10 +27,20 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
 from django.views.decorators.cache import never_cache
+from urllib.parse import urlencode
+import secrets
+import requests
+from dotenv import set_key
 
 from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles, horarios_disponibles_duracion
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
-from .videollamadas import crear_token_jitsi, hash_token_paciente, obtener_configuracion_jitsi
+from .google_calendar import (
+    GoogleCalendarError,
+    crear_o_actualizar_evento_meet,
+    google_calendar_configurado,
+    google_calendar_oauth_configurado,
+    obtener_configuracion_oauth,
+)
 
 
 
@@ -521,42 +531,188 @@ def homein(request):
     })
 
 
+def _google_calendar_redirect_uri(request):
+    """Devuelve la URL exacta configurada en Google Cloud para el callback OAuth."""
+    return (
+        os.getenv("GOOGLE_CALENDAR_REDIRECT_URI", "").strip()
+        or request.build_absolute_uri(reverse("google_calendar_oauth_callback"))
+    )
+
+
+@staff_required
+@never_cache
+def google_calendar_autorizar(request):
+    """Inicia OAuth de Google Calendar. Solo el superusuario puede conectar la cuenta."""
+    if not request.user.is_superuser:
+        raise Http404("Solo el administrador puede conectar Google Calendar.")
+
+    try:
+        config = obtener_configuracion_oauth()
+    except GoogleCalendarError as exc:
+        messages.error(request, str(exc))
+        return redirect("homeinvideollamadas")
+
+    state = secrets.token_urlsafe(32)
+    request.session["google_calendar_oauth_state"] = state
+    params = {
+        "client_id": config["client_id"],
+        "redirect_uri": _google_calendar_redirect_uri(request),
+        "response_type": "code",
+        "scope": "https://www.googleapis.com/auth/calendar.events",
+        "access_type": "offline",
+        "include_granted_scopes": "true",
+        "prompt": "consent select_account",
+        "state": state,
+    }
+    return redirect(
+        "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
+    )
+
+
+@staff_required
+@never_cache
+def google_calendar_oauth_callback(request):
+    """Recibe el consentimiento y guarda el refresh token únicamente en el .env local."""
+    if not request.user.is_superuser:
+        raise Http404("Solo el administrador puede conectar Google Calendar.")
+
+    error_google = request.GET.get("error")
+    if error_google:
+        request.session.pop("google_calendar_oauth_state", None)
+        messages.error(
+            request,
+            "No se completó la autorización de Google Calendar. "
+            "Puedes volver a intentarlo desde Consultas virtuales.",
+        )
+        return redirect("homeinvideollamadas")
+
+    estado_esperado = request.session.pop("google_calendar_oauth_state", "")
+    estado_recibido = request.GET.get("state", "")
+    if (
+        not estado_esperado
+        or not estado_recibido
+        or not hmac.compare_digest(estado_esperado, estado_recibido)
+    ):
+        messages.error(
+            request,
+            "La respuesta de autorización no es válida o ha caducado. "
+            "Vuelve a conectar Google Calendar.",
+        )
+        return redirect("homeinvideollamadas")
+
+    codigo = request.GET.get("code", "").strip()
+    if not codigo:
+        messages.error(request, "Google no devolvió el código de autorización.")
+        return redirect("homeinvideollamadas")
+
+    try:
+        config = obtener_configuracion_oauth()
+        respuesta = requests.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "code": codigo,
+                "client_id": config["client_id"],
+                "client_secret": config["client_secret"],
+                "redirect_uri": _google_calendar_redirect_uri(request),
+                "grant_type": "authorization_code",
+            },
+            timeout=(8, 30),
+        )
+        if not respuesta.ok:
+            raise GoogleCalendarError(
+                "Google no pudo completar la autorización. Revisa las credenciales "
+                "OAuth y que la URL de retorno coincida exactamente con Google Cloud."
+            )
+        datos_token = respuesta.json()
+    except (GoogleCalendarError, requests.RequestException, ValueError) as exc:
+        messages.error(request, str(exc) or "No se pudo completar la autorización.")
+        return redirect("homeinvideollamadas")
+
+    refresh_token = (datos_token.get("refresh_token") or "").strip()
+    if refresh_token:
+        archivo_env = settings.BASE_DIR / ".env"
+        try:
+            set_key(
+                str(archivo_env),
+                "GOOGLE_CALENDAR_REFRESH_TOKEN",
+                refresh_token,
+                quote_mode="always",
+            )
+        except OSError:
+            messages.error(
+                request,
+                "Google autorizó la cuenta, pero no se pudo guardar el token en el "
+                "archivo .env. Verifica los permisos de escritura del servidor.",
+            )
+            return redirect("homeinvideollamadas")
+        os.environ["GOOGLE_CALENDAR_REFRESH_TOKEN"] = refresh_token
+    elif not os.getenv("GOOGLE_CALENDAR_REFRESH_TOKEN", "").strip():
+        messages.error(
+            request,
+            "Google no entregó un token de renovación. Vuelve a autorizar la cuenta "
+            "y acepta todos los permisos solicitados.",
+        )
+        return redirect("homeinvideollamadas")
+
+    messages.success(
+        request,
+        "Google Calendar quedó conectado correctamente. Ya puedes crear reuniones Meet.",
+    )
+    return redirect("homeinvideollamadas")
+
+
 def _render_sala_videollamada(request, cita, es_paciente=False):
-    """Renderiza la sala sin entregar credenciales JWT fuera de la ventana de la cita."""
+    """Muestra una pantalla de acceso a Meet dentro de la ventana autorizada."""
     ahora = timezone.now()
     inicio_disponible = cita.fecha_hora - timedelta(minutes=30)
-    fin_disponible = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
+    fin_disponible = cita.fecha_hora + timedelta(
+        minutes=(cita.duracion_minutos or 60) + 30
+    )
     contexto = {
-        "cita": cita, "meeting_data": None, "external_api_url": "",
-        "mensaje_estado": "", "titulo_estado": "",
+        "cita": cita,
+        "meet_url": "",
+        "mensaje_estado": "",
+        "titulo_estado": "",
+        "es_paciente": es_paciente,
     }
+
     if cita.modalidad != "VIRTUAL":
-        contexto.update(titulo_estado="Esta cita no es virtual", mensaje_estado="La videollamada solo está disponible para citas con modalidad virtual.")
+        contexto.update(
+            titulo_estado="Esta cita no es virtual",
+            mensaje_estado="Google Meet solo está disponible para citas con modalidad virtual.",
+        )
     elif cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}:
-        contexto.update(titulo_estado="Consulta no disponible", mensaje_estado="La cita está cerrada o cancelada. Comunícate con H-Escapa para recibir ayuda.")
+        contexto.update(
+            titulo_estado="Consulta no disponible",
+            mensaje_estado="La cita está cerrada o cancelada. Comunícate con H-Escapa para recibir ayuda.",
+        )
     elif ahora < inicio_disponible:
         apertura = timezone.localtime(inicio_disponible).strftime("%d/%m/%Y a las %H:%M")
-        contexto.update(titulo_estado="La sala todavía no está abierta", mensaje_estado=f"Podrás ingresar 30 minutos antes de tu cita. La sala estará disponible desde el {apertura}.")
+        contexto.update(
+            titulo_estado="La consulta todavía no está abierta",
+            mensaje_estado=(
+                "Podrás ingresar 30 minutos antes de tu cita. "
+                f"El acceso estará disponible desde el {apertura}."
+            ),
+        )
     elif ahora > fin_disponible:
-        contexto.update(titulo_estado="El periodo de acceso ha finalizado", mensaje_estado="La ventana de acceso a esta consulta virtual ya terminó.")
-    elif not cita.videollamada_sala:
-        contexto.update(titulo_estado="Sala pendiente de habilitación", mensaje_estado="El consultorio todavía no ha generado el enlace de esta consulta. Contacta a H-Escapa.")
+        contexto.update(
+            titulo_estado="El periodo de acceso ha finalizado",
+            mensaje_estado="La ventana de acceso a esta consulta virtual ya terminó.",
+        )
+    elif not cita.google_meet_url:
+        contexto.update(
+            titulo_estado="Google Meet todavía no está habilitado",
+            mensaje_estado="El consultorio aún no ha generado el enlace de esta consulta. Contacta a H-Escapa.",
+        )
     else:
-        try:
-            config = obtener_configuracion_jitsi()
-            if es_paciente:
-                # El proveedor de video solo recibe un identificador genérico del paciente.
-                nombre, correo, moderator = "Paciente", "", False
-            else:
-                nombre, correo, moderator = str(cita.profesional), "", True
-            jwt = crear_token_jitsi(cita, nombre=nombre, correo=correo, moderator=moderator)
-        except ValueError:
-            contexto.update(titulo_estado="Videollamadas no configuradas", mensaje_estado="El servicio de videollamadas no está configurado correctamente. Contacta al administrador de H-Escapa.")
-        else:
-            contexto["meeting_data"] = {"domain": config["domain"], "roomName": cita.videollamada_sala, "jwt": jwt, "displayName": nombre}
-            contexto["external_api_url"] = f"https://{config['domain']}/external_api.js"
+        contexto["meet_url"] = cita.google_meet_url
 
-    plantilla = "videollamada-paciente.html" if es_paciente else "frm-videollamada.html"
+    plantilla = (
+        "videollamada-paciente.html"
+        if es_paciente
+        else "frm-videollamada.html"
+    )
     respuesta = render(request, plantilla, contexto)
     respuesta["Referrer-Policy"] = "no-referrer"
     respuesta["X-Robots-Tag"] = "noindex, nofollow"
@@ -567,7 +723,9 @@ def _render_sala_videollamada(request, cita, es_paciente=False):
 @never_cache
 def videollamada_profesional(request, cita_id):
     cita = get_object_or_404(
-        Cita.objects.select_related("paciente", "profesional", "profesional__usuario"),
+        Cita.objects.select_related(
+            "paciente", "profesional", "profesional__usuario"
+        ),
         pk=cita_id,
     )
     if not request.user.is_superuser and cita.profesional.usuario_id != request.user.pk:
@@ -580,25 +738,40 @@ def videollamada_profesional(request, cita_id):
 def videollamada_enviar_invitacion(request, cita_id):
     if request.method != "POST":
         return redirect("homeinvercita", cita_id=cita_id)
-    cita = get_object_or_404(Cita.objects.select_related("paciente", "profesional"), pk=cita_id)
+
+    cita = get_object_or_404(
+        Cita.objects.select_related(
+            "paciente", "profesional", "profesional__usuario"
+        ),
+        pk=cita_id,
+    )
     destino = (cita.paciente.correo or "").strip()
+
     if cita.modalidad != "VIRTUAL":
-        messages.error(request, "Solo puedes enviar enlaces para citas virtuales.")
+        messages.error(request, "Solo puedes generar invitaciones para citas virtuales.")
         return redirect("homeinvercita", cita_id=cita.pk)
     if cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}:
         messages.error(request, "La cita está cerrada o cancelada y no admite videollamada.")
         return redirect("homeinvercita", cita_id=cita.pk)
-    fin_acceso = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
+
+    fin_acceso = cita.fecha_hora + timedelta(
+        minutes=(cita.duracion_minutos or 60) + 30
+    )
     if timezone.now() > fin_acceso:
-        messages.error(request, "El horario de esta cita ya finalizó. No se puede enviar una nueva invitación.")
+        messages.error(
+            request,
+            "El horario de esta cita ya finalizó. No se puede enviar una nueva invitación.",
+        )
         return redirect("homeinvercita", cita_id=cita.pk)
+
     if not destino:
         messages.error(request, "El paciente no tiene un correo electrónico registrado.")
         return redirect("homeinvercita", cita_id=cita.pk)
-    try:
-        obtener_configuracion_jitsi()
-    except ValueError:
-        messages.error(request, "Configura el servidor Jitsi y sus credenciales JWT antes de enviar invitaciones.")
+    if not (cita.profesional.usuario.email or "").strip():
+        messages.error(
+            request,
+            "El profesional asignado no tiene un correo electrónico registrado.",
+        )
         return redirect("homeinvercita", cita_id=cita.pk)
 
     remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
@@ -606,18 +779,49 @@ def videollamada_enviar_invitacion(request, cita_id):
         messages.error(request, "No está configurado el correo remitente del sistema.")
         return redirect("homeinvercita", cita_id=cita.pk)
 
-    import secrets
-    token = secrets.token_urlsafe(32)
-    cita.videollamada_sala = cita.videollamada_sala or f"hescapa-{secrets.token_hex(24)}"
-    cita.videollamada_token_paciente_hash = hash_token_paciente(token)
-    cita.save(update_fields=["videollamada_sala", "videollamada_token_paciente_hash", "actualizado_en"])
+    try:
+        resultado_meet = crear_o_actualizar_evento_meet(cita)
+        cita.google_calendar_event_id = resultado_meet["event_id"]
+        cita.google_meet_url = resultado_meet["meet_url"]
+        cita.save(
+            update_fields=[
+                "google_calendar_event_id",
+                "google_meet_url",
+                "actualizado_en",
+            ]
+        )
+    except GoogleCalendarError as exc:
+        messages.error(request, f"No se pudo preparar Google Meet: {exc}")
+        return redirect("homeinvercita", cita_id=cita.pk)
 
-    enlace = request.build_absolute_uri(reverse(
-        "videollamada_paciente_enlace",
-        kwargs={"cita_id": cita.pk, "token": token},
-    ))
+    if not cita.google_meet_url:
+        messages.warning(
+            request,
+            "Google Calendar creó o actualizó el evento y envió la invitación, "
+            "pero Google todavía está generando el enlace Meet. Espera un momento "
+            "y vuelve a pulsar el botón para completar el envío al paciente.",
+        )
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    token = secrets.token_urlsafe(32)
+    cita.videollamada_token_paciente_hash = hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+    cita.save(
+        update_fields=[
+            "videollamada_token_paciente_hash",
+            "actualizado_en",
+        ]
+    )
+
+    enlace_acceso = request.build_absolute_uri(
+        reverse(
+            "videollamada_paciente_enlace",
+            kwargs={"cita_id": cita.pk, "token": token},
+        )
+    )
     fecha_local = timezone.localtime(cita.fecha_hora)
-    asunto = "H-Escapa | Enlace para tu consulta virtual"
+    asunto = "H-Escapa | Invitación para tu consulta virtual"
     mensaje = (
         f"Hola {cita.paciente.nombres},\n\n"
         "Tu consulta virtual en H-Escapa está programada con los siguientes datos:\n\n"
@@ -625,12 +829,15 @@ def videollamada_enviar_invitacion(request, cita_id):
         f"Fecha: {fecha_local:%d/%m/%Y}\n"
         f"Hora: {fecha_local:%H:%M}\n"
         f"Duración: {cita.duracion_minutos} minutos\n\n"
-        "Para ingresar a la videollamada, abre este enlace:\n"
-        f"{enlace}\n\n"
-        "La sala estará disponible desde 30 minutos antes de la cita y hasta 30 minutos después de su hora de finalización.\n\n"
-        "No compartas este enlace con otras personas. Te recomendamos conectarte desde un lugar privado y utilizar audífonos.\n\n"
+        "Para ingresar a tu consulta, abre este enlace privado:\n"
+        f"{enlace_acceso}\n\n"
+        "El acceso estará disponible desde 30 minutos antes de la cita y hasta "
+        "30 minutos después de su hora de finalización.\n\n"
+        "Te recomendamos conectarte desde un lugar privado y utilizar audífonos. "
+        "No compartas tu enlace de acceso.\n\n"
         "H-Escapa · Psicología y Salud Mental"
     )
+
     try:
         enviados = EmailMessage(
             subject=asunto,
@@ -641,24 +848,48 @@ def videollamada_enviar_invitacion(request, cita_id):
         if enviados != 1:
             raise RuntimeError("El servidor de correo no confirmó el envío.")
     except Exception:
-        messages.error(request, "No se pudo enviar la invitación. Revisa la configuración del correo del servidor.")
+        messages.warning(
+            request,
+            "La invitación de Google Calendar fue creada, pero no se pudo enviar "
+            "el correo de acceso de H-Escapa. Puedes volver a enviar la invitación.",
+        )
     else:
-        messages.success(request, f"El enlace de la consulta virtual fue enviado a {destino}.")
+        messages.success(
+            request,
+            f"Google Meet quedó listo. Se invitó al paciente y al profesional "
+            f"desde Google Calendar y se envió el acceso privado a {destino}.",
+        )
+
     return redirect("homeinvercita", cita_id=cita.pk)
 
 
 @never_cache
 def videollamada_paciente_enlace(request, cita_id, token):
     cita = get_object_or_404(Cita, pk=cita_id)
-    if cita.modalidad != "VIRTUAL" or cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"} or not cita.videollamada_token_paciente_hash:
+    if (
+        cita.modalidad != "VIRTUAL"
+        or cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}
+        or not cita.videollamada_token_paciente_hash
+    ):
         raise Http404("Enlace de videollamada no válido.")
-    digest = hash_token_paciente(token)
-    if not hmac.compare_digest(digest, cita.videollamada_token_paciente_hash):
+
+    digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    if not hmac.compare_digest(
+        digest, cita.videollamada_token_paciente_hash
+    ):
         raise Http404("Enlace de videollamada no válido.")
+
     request.session[f"videollamada_paciente_{cita.pk}"] = digest
-    fin_acceso = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
-    request.session.set_expiry(max(60, int((fin_acceso - timezone.now()).total_seconds())))
-    respuesta = redirect("videollamada_paciente_sala", cita_id=cita.pk)
+    fin_acceso = cita.fecha_hora + timedelta(
+        minutes=(cita.duracion_minutos or 60) + 30
+    )
+    request.session.set_expiry(
+        max(60, int((fin_acceso - timezone.now()).total_seconds()))
+    )
+    respuesta = redirect(
+        "videollamada_paciente_sala",
+        cita_id=cita.pk,
+    )
     respuesta["Referrer-Policy"] = "no-referrer"
     respuesta["X-Robots-Tag"] = "noindex, nofollow"
     return respuesta
@@ -666,10 +897,23 @@ def videollamada_paciente_enlace(request, cita_id, token):
 
 @never_cache
 def videollamada_paciente_sala(request, cita_id):
-    cita = get_object_or_404(Cita.objects.select_related("paciente", "profesional"), pk=cita_id)
-    digest_sesion = request.session.get(f"videollamada_paciente_{cita.pk}", "")
-    if not digest_sesion or not cita.videollamada_token_paciente_hash or not hmac.compare_digest(digest_sesion, cita.videollamada_token_paciente_hash):
-        raise Http404("No tienes autorización para ingresar a esta sala.")
+    cita = get_object_or_404(
+        Cita.objects.select_related("paciente", "profesional"),
+        pk=cita_id,
+    )
+    digest_sesion = request.session.get(
+        f"videollamada_paciente_{cita.pk}", ""
+    )
+    if (
+        not digest_sesion
+        or not cita.videollamada_token_paciente_hash
+        or not hmac.compare_digest(
+            digest_sesion,
+            cita.videollamada_token_paciente_hash,
+        )
+    ):
+        raise Http404("No tienes autorización para ingresar a esta consulta.")
+
     return _render_sala_videollamada(request, cita, es_paciente=True)
 
 
@@ -704,6 +948,9 @@ def homeinvideollamadas(request):
         "total_en_progreso": en_progreso,
         "total_finalizadas": finalizadas,
         "active_menu": "citas",
+        "google_calendar_conectado": google_calendar_configurado(),
+        "google_calendar_oauth_configurado": google_calendar_oauth_configurado(),
+        "google_calendar_es_superusuario": request.user.is_superuser,
     })
 
 
