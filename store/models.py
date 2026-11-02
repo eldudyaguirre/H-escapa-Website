@@ -232,6 +232,7 @@ class Cita(models.Model):
     ESTADOS = [
         ("PROGRAMADA", "Programada"),
         ("CONFIRMADA", "Confirmada"),
+        ("EN_PROGRESO", "En progreso"),
         ("ATENDIDA", "Atendida"),
         ("CANCELADA", "Cancelada"),
         ("NO_ASISTIO", "No asistió"),
