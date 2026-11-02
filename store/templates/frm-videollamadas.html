@@ -1,0 +1,70 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Consultas virtuales{% endblock %}
+{% block extra_head %}
+<style>
+  .vv-page{max-width:1240px;margin:0 auto;padding:28px;color:#2d403c}
+  .vv-head{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .vv-head h1{margin:0 0 6px;font:500 2rem Marcellus,serif;color:#203b39}
+  .vv-head p{margin:0;color:#7b8985}
+  .vv-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+  .vv-stat{background:#fff;border:1px solid #e0e9e6;border-radius:12px;padding:16px 18px}
+  .vv-stat span{display:block;color:#7b8985;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .vv-stat strong{display:block;color:#24514c;font-size:1.55rem;margin-top:4px}
+  .vv-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .vv-filters{display:flex;gap:8px;flex-wrap:wrap}
+  .vv-filters a,.vv-action{display:inline-flex;align-items:center;gap:7px;border:1px solid #dce6e3;border-radius:9px;padding:9px 13px;background:#fff;color:#53645f;text-decoration:none;font-size:.85rem;font-weight:600}
+  .vv-filters a.active,.vv-action.primary{background:#005855;color:#fff;border-color:#005855}
+  .vv-table-wrap{overflow-x:auto;background:#fff;border:1px solid #e0e9e6;border-radius:14px;box-shadow:0 7px 22px rgba(26,53,50,.04)}
+  .vv-table{width:100%;border-collapse:collapse;min-width:780px}
+  .vv-table th,.vv-table td{padding:14px 16px;text-align:left;border-bottom:1px solid #edf1f0;font-size:.88rem}
+  .vv-table th{font-size:.73rem;color:#899490;text-transform:uppercase;letter-spacing:.04em;background:#fbfcfc}
+  .vv-table tr:last-child td{border-bottom:0}
+  .vv-date{font-weight:700;color:#344944}.vv-secondary{display:block;color:#899490;font-size:.78rem;margin-top:3px}
+  .vv-status{display:inline-flex;padding:5px 9px;border-radius:20px;background:#fff4df;color:#a66a10;font-size:.74rem;font-weight:700}
+  .vv-status.CONFIRMADA{background:#e8f1ff;color:#3568aa}.vv-status.EN_PROGRESO{background:#e6f4f2;color:#26716a}
+  .vv-status.ATENDIDA{background:#e7f5ed;color:#2d8050}.vv-status.CANCELADA,.vv-status.NO_ASISTIO{background:#fff0f0;color:#b64d4d}
+  .vv-empty{text-align:center;padding:40px 20px;color:#7b8985}
+  @media(max-width:800px){.vv-page{padding:20px 12px}.vv-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.vv-head h1{font-size:1.7rem}}
+</style>
+{% endblock %}
+{% block content %}
+<main class="vv-page">
+  <header class="vv-head">
+    <div><h1>Consultas virtuales</h1><p>Administra las citas virtuales, envía invitaciones y accede a las salas.</p></div>
+    <a class="vv-action primary" href="{% url 'homeinnuevacita' %}"><i class="bx bx-plus"></i> Nueva cita</a>
+  </header>
+  <section class="vv-stats">
+    <div class="vv-stat"><span>Total virtuales</span><strong>{{ total_virtuales }}</strong></div>
+    <div class="vv-stat"><span>Programadas / confirmadas</span><strong>{{ total_activas }}</strong></div>
+    <div class="vv-stat"><span>En progreso</span><strong>{{ total_en_progreso }}</strong></div>
+    <div class="vv-stat"><span>Finalizadas</span><strong>{{ total_finalizadas }}</strong></div>
+  </section>
+  <div class="vv-toolbar">
+    <nav class="vv-filters" aria-label="Filtrar consultas virtuales">
+      <a href="?vista=activas" class="{% if vista == 'activas' %}active{% endif %}">Próximas</a>
+      <a href="?vista=en_progreso" class="{% if vista == 'en_progreso' %}active{% endif %}">En progreso</a>
+      <a href="?vista=finalizadas" class="{% if vista == 'finalizadas' %}active{% endif %}">Finalizadas</a>
+      <a href="?vista=todas" class="{% if vista == 'todas' %}active{% endif %}">Todas</a>
+    </nav>
+  </div>
+  <div class="vv-table-wrap">
+    <table class="vv-table">
+      <thead><tr><th>Fecha y hora</th><th>Paciente</th><th>Profesional</th><th>Duración</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody>
+        {% for cita in citas %}
+          <tr>
+            <td><span class="vv-date">{{ cita.fecha_hora|date:"d/m/Y" }}</span><span class="vv-secondary">{{ cita.fecha_hora|date:"H:i" }}</span></td>
+            <td>{{ cita.paciente.nombre }}<span class="vv-secondary">{{ cita.paciente.correo|default:"Sin correo registrado" }}</span></td>
+            <td>{{ cita.profesional }}</td>
+            <td>{{ cita.duracion_minutos }} min</td>
+            <td><span class="vv-status {{ cita.estado }}">{{ cita.get_estado_display }}</span></td>
+            <td><a class="vv-action" href="{% url 'homeinvercita' cita.pk %}"><i class="bx bx-show"></i> Ver cita</a></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="vv-empty">No hay citas virtuales en esta vista.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+{% endblock %}
