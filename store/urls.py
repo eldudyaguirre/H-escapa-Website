@@ -29,6 +29,7 @@ urlpatterns = [
     path("signin/", views.signin, name="signin"),
     path("logout/", views.do_logout, name="logout"),
     path("homein/", views.homein, name="homein"),
+    path("homein-todas-las-citas/", views.homeintodascitas, name="homeintodascitas"),
     path("homein-calendario/", views.homeincalendario, name="homeincalendario"),
     path("homein-interacciones-web/", views.homeininteraccionesweb, name="homeininteraccionesweb"),
     path("homein-servicio-tecnico/", views.homeinserviciotecnico, name="homeinserviciotecnico"),
