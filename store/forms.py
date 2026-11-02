@@ -218,7 +218,11 @@ class PacienteForm(forms.ModelForm):
 class CitaForm(forms.ModelForm):
     class Meta:
         model = Cita
-        fields = ["paciente", "profesional", "servicio", "fecha_hora", "duracion_minutos", "modalidad", "motivo", "notas"]
+        fields = ["paciente", "profesional", "especialidad", "fecha_hora", "duracion_minutos", "modalidad", "motivo", "notas"]
+        labels = {
+            "especialidad": "Servicio",
+            "duracion_minutos": "Duración (minutos)",
+        }
         widgets = {
             "fecha_hora": forms.DateTimeInput(attrs={"type": "datetime-local", "step": "300"}, format="%Y-%m-%dT%H:%M"),
             "duracion_minutos": forms.NumberInput(attrs={"min": 5, "step": 5}),
@@ -228,30 +232,46 @@ class CitaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["paciente"].queryset = Paciente.objects.filter(estado="ACTIVO").order_by("apellidos", "nombres")
+        # La especialidad elegida describe el motivo/área de atención de esta cita.
+        # No se filtra por la especialidad principal del profesional: puede atender
+        # distintas áreas y el personal selecciona libremente quién lo atenderá.
+        self.fields["especialidad"].queryset = Especialidad.objects.filter(activa=True).order_by("nombre")
+        self.fields["especialidad"].required = True
+        self.fields["especialidad"].label = "Servicio"
         self.fields["profesional"].queryset = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
-        self.fields["servicio"].queryset = Servicio.objects.filter(activo=True).order_by("nombre")
-        self.fields["servicio"].required = True
         self.fields["fecha_hora"].input_formats = ["%Y-%m-%dT%H:%M"]
 
     def clean(self):
         from datetime import timedelta
         from django.utils import timezone
+
         cleaned = super().clean()
-        profesional, servicio, inicio = cleaned.get("profesional"), cleaned.get("servicio"), cleaned.get("fecha_hora")
-        if not (profesional and servicio and inicio):
+        profesional = cleaned.get("profesional")
+        inicio = cleaned.get("fecha_hora")
+        duracion = cleaned.get("duracion_minutos")
+
+        if not (profesional and inicio and duracion):
             return cleaned
+
+        if duracion < 5 or duracion % 5:
+            self.add_error("duracion_minutos", "La duración debe ser de al menos 5 minutos y usar intervalos de 5 minutos.")
+            return cleaned
+
         if inicio.minute % 5:
             self.add_error("fecha_hora", "La hora debe estar alineada a intervalos de 5 minutos.")
             return cleaned
+
         inicio_local = timezone.localtime(inicio) if timezone.is_aware(inicio) else inicio
-        fin = inicio + timedelta(minutes=servicio.duracion_minutos + profesional.preparacion_minutos)
+        fin = inicio + timedelta(minutes=duracion + profesional.preparacion_minutos)
         fin_local = timezone.localtime(fin) if timezone.is_aware(fin) else fin
+
         if inicio_local.date() < timezone.localdate():
             self.add_error("fecha_hora", "No se pueden agendar citas en fechas pasadas.")
         if inicio_local.weekday() not in profesional.dias_atencion:
             self.add_error("fecha_hora", "El profesional no atiende ese día.")
         if inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion or fin_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion:
             self.add_error("fecha_hora", "La cita queda fuera del horario de atención.")
+
         citas = Cita.objects.filter(profesional=profesional).exclude(estado="CANCELADA")
         if self.instance.pk:
             citas = citas.exclude(pk=self.instance.pk)
@@ -260,17 +280,8 @@ class CitaForm(forms.ModelForm):
             if inicio < otro_fin and fin > cita.fecha_hora:
                 self.add_error("fecha_hora", "Ese horario se cruza con otra cita o con su tiempo de preparación.")
                 break
-        cleaned["duracion_minutos"] = servicio.duracion_minutos
-        return cleaned
 
-    def save(self, commit=True):
-        cita = super().save(commit=False)
-        if self.cleaned_data.get("servicio"):
-            cita.duracion_minutos = self.cleaned_data["servicio"].duracion_minutos
-        if commit:
-            cita.save()
-            self.save_m2m()
-        return cita
+        return cleaned
 
 
 class EspecialidadForm(forms.ModelForm):
