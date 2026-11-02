@@ -1,0 +1,123 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Recordatorio de cita | H-Escapa</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2f6f5;font-family:Arial,Helvetica,sans-serif;color:#344745;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+    {{ cuerpo_inicial }}
+  </div>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f2f6f5;border-collapse:collapse;">
+    <tr>
+      <td align="center" style="padding:32px 14px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:100%;max-width:600px;border-collapse:separate;border-spacing:0;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(0,53,50,.09);">
+
+          <tr>
+            <td align="center" style="padding:26px 24px 23px;background-color:#005855;border-bottom:4px solid #b8c46c;">
+              <img src="{{ logo_url }}" width="150" alt="H-Escapa" style="display:block;width:150px;max-width:70%;height:auto;border:0;outline:none;text-decoration:none;">
+              <div style="padding-top:10px;color:#e5f1ef;font-size:10px;line-height:1.4;letter-spacing:2px;text-transform:uppercase;">
+                Psicología y Salud Mental
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:34px 38px 12px;">
+              <div style="font-size:11px;font-weight:bold;letter-spacing:1.7px;text-transform:uppercase;color:#8a9b96;">
+                Recordatorio de cita
+              </div>
+              <h1 style="margin:10px 0 18px;color:#005855;font-size:25px;line-height:1.25;font-weight:700;">
+                Tu cita está por comenzar
+              </h1>
+              <p style="margin:0 0 10px;color:#344745;font-size:15px;line-height:1.7;">
+                {{ saludo }}
+              </p>
+              <p style="margin:0;color:#52645f;font-size:15px;line-height:1.7;">
+                {{ cuerpo_inicial }}
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:22px 38px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:separate;border-spacing:0;background-color:#f3f8f7;border:1px solid #e1ece9;border-radius:14px;">
+                <tr>
+                  <td align="center" style="padding:22px 16px 20px;">
+                    <div style="font-size:34px;line-height:1.1;font-weight:700;color:#005855;">
+                      {{ minutos }}
+                    </div>
+                    <div style="padding-top:6px;font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#748883;">
+                      Minutos
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 22px;">
+                    <div style="height:1px;background-color:#dce9e6;font-size:1px;line-height:1px;">&nbsp;</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:18px 22px 20px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                      <tr>
+                        <td width="50%" valign="top" style="padding:0 8px 0 0;">
+                          <div style="font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#84948f;">Fecha</div>
+                          <div style="padding-top:6px;font-size:16px;font-weight:bold;color:#254542;">{{ fecha }}</div>
+                        </td>
+                        <td width="50%" valign="top" style="padding:0 0 0 8px;">
+                          <div style="font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#84948f;">Hora</div>
+                          <div style="padding-top:6px;font-size:16px;font-weight:bold;color:#254542;">{{ hora }}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:18px 38px 30px;">
+              <div style="padding-bottom:10px;font-size:11px;font-weight:bold;letter-spacing:1.4px;text-transform:uppercase;color:#84948f;">
+                Detalles de la cita
+              </div>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                {% for fila in filas_detalle %}
+                <tr>
+                  <td valign="top" style="padding:10px 0;border-bottom:1px solid #edf2f1;font-size:13px;color:#71827d;width:44%;">
+                    {{ fila.etiqueta }}
+                  </td>
+                  <td valign="top" style="padding:10px 0;border-bottom:1px solid #edf2f1;font-size:13px;font-weight:bold;color:#344745;">
+                    {{ fila.valor }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+              <p style="margin:20px 0 0;color:#005855;font-size:14px;font-weight:bold;">
+                H-Escapa
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:19px 24px;background-color:#f8faf9;border-top:1px solid #e8efed;">
+              <div style="font-size:11px;line-height:1.6;color:#879691;">
+                H-Escapa · Psicología y Salud Mental
+              </div>
+              <div style="padding-top:4px;font-size:10px;line-height:1.5;color:#a0aca8;">
+                Este es un mensaje automático de recordatorio de cita.
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
