@@ -30,6 +30,7 @@ urlpatterns = [
     path("logout/", views.do_logout, name="logout"),
     path("homein/", views.homein, name="homein"),
     path("homein-todas-las-citas/", views.homeintodascitas, name="homeintodascitas"),
+    path("homein-videollamadas/", views.homeinvideollamadas, name="homeinvideollamadas"),
     path("homein-citas/<int:cita_id>/", views.homeinvercita, name="homeinvercita"),
     path("homein-citas/<int:cita_id>/videollamada/", views.videollamada_profesional, name="videollamada_profesional"),
     path("homein-citas/<int:cita_id>/videollamada/enviar-enlace/", views.videollamada_enviar_invitacion, name="videollamada_enviar_invitacion"),
