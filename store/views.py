@@ -25,7 +25,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
 
-from .forms import CitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
+from .forms import CitaForm, ReprogramarCitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
 
 
@@ -513,6 +513,92 @@ def homein(request):
         "citas_proximas": citas_proximas,
         "fecha_hoy": hoy,
     })
+
+
+@staff_required
+def homeinvercita(request, cita_id):
+    cita = get_object_or_404(
+        Cita.objects.select_related("paciente", "profesional", "especialidad", "servicio"),
+        pk=cita_id,
+    )
+    return render(request, "frm-detallecita.html", {"cita": cita, "active_menu": "citas"})
+
+
+@staff_required
+def homeineditarcita(request, cita_id):
+    cita = get_object_or_404(Cita, pk=cita_id)
+    if cita.estado in {"ATENDIDA", "CANCELADA", "NO_ASISTIO"}:
+        messages.error(request, "Esta cita ya está cerrada y no se puede editar.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    if request.method == "POST":
+        form = CitaForm(request.POST, instance=cita)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "La cita se actualizó correctamente.")
+            return redirect("homeinvercita", cita_id=cita.pk)
+    else:
+        form = CitaForm(instance=cita)
+
+    return render(request, "frm-editarcita.html", {
+        "form": form,
+        "cita": cita,
+        "titulo": "Editar cita",
+        "texto_boton": "Guardar cambios",
+        "active_menu": "citas",
+    })
+
+
+@staff_required
+def homeinreprogramarcita(request, cita_id):
+    cita = get_object_or_404(
+        Cita.objects.select_related("profesional", "paciente"),
+        pk=cita_id,
+    )
+    if cita.estado in {"ATENDIDA", "CANCELADA", "NO_ASISTIO"}:
+        messages.error(request, "Esta cita ya está cerrada y no se puede reprogramar.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    if request.method == "POST":
+        form = ReprogramarCitaForm(request.POST, instance=cita)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "La cita se reprogramó correctamente.")
+            return redirect("homeinvercita", cita_id=cita.pk)
+    else:
+        form = ReprogramarCitaForm(instance=cita)
+
+    return render(request, "frm-reprogramarcita.html", {
+        "form": form,
+        "cita": cita,
+        "active_menu": "citas",
+    })
+
+
+@staff_required
+def homeinaccioncita(request, cita_id, accion):
+    cita = get_object_or_404(Cita, pk=cita_id)
+    if request.method != "POST":
+        return redirect("homeintodascitas")
+
+    if accion == "iniciar":
+        if cita.estado not in {"PROGRAMADA", "CONFIRMADA"}:
+            messages.error(request, "Solo se puede iniciar una cita programada o confirmada.")
+        else:
+            cita.estado = "EN_PROGRESO"
+            cita.save(update_fields=["estado", "actualizado_en"])
+            messages.success(request, "La cita quedó marcada En progreso.")
+    elif accion == "cancelar":
+        if cita.estado in {"ATENDIDA", "CANCELADA", "NO_ASISTIO"}:
+            messages.error(request, "Esta cita ya está cerrada y no se puede cancelar.")
+        else:
+            cita.estado = "CANCELADA"
+            cita.save(update_fields=["estado", "actualizado_en"])
+            messages.success(request, "La cita fue cancelada correctamente.")
+    else:
+        raise Http404("Acción de cita no válida.")
+
+    return redirect("homeintodascitas")
 
 
 @staff_required
