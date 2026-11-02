@@ -36,9 +36,15 @@
     </div>
     <div class="detail-actions">
       <a class="detail-btn" href="{% url 'homeintodascitas' %}"><i class="bx bx-arrow-back"></i> Volver</a>
-      {% if cita.estado != "ATENDIDA" and cita.estado != "CANCELADA" and cita.estado != "NO_ASISTIO" %}
+      {% if cita.estado == "PROGRAMADA" or cita.estado == "CONFIRMADA" %}
         <a class="detail-btn" href="{% url 'homeineditarcita' cita.pk %}"><i class="bx bx-edit"></i> Editar</a>
-        <a class="detail-btn primary" href="{% url 'homeinreprogramarcita' cita.pk %}"><i class="bx bx-calendar-edit"></i> Reprogramar</a>
+        <a class="detail-btn" href="{% url 'homeinreprogramarcita' cita.pk %}"><i class="bx bx-calendar-edit"></i> Reprogramar</a>
+        <form method="post" action="{% url 'homeinaccioncita' cita.pk 'iniciar' %}">
+          {% csrf_token %}
+          <button class="detail-btn primary" type="submit"><i class="bx bx-play-circle"></i> Iniciar atención</button>
+        </form>
+      {% elif cita.estado == "EN_PROGRESO" %}
+        <a class="detail-btn primary" href="{% url 'homeinatencioncita' cita.pk %}"><i class="bx bx-stethoscope"></i> Continuar atención</a>
       {% endif %}
     </div>
   </header>
