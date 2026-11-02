@@ -61,7 +61,7 @@
       <div class="detail-video-actions">
         {% if cita.paciente.correo and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
           <form method="post" action="{% url 'videollamada_enviar_invitacion' cita.pk %}">
-            {% csrf_token %}<button type="submit"><i class="bx bx-envelope"></i> Enviar enlace al paciente</button>
+            {% csrf_token %}<button type="submit"><i class="bx bx-envelope"></i> {% if cita.videollamada_token_paciente_hash %}Reenviar invitación{% else %}Enviar enlace al paciente{% endif %}</button>
           </form>
         {% elif not cita.paciente.correo %}
           <span style="color:#8a5b1d;font-size:.84rem">Registra el correo del paciente para enviar la invitación.</span>
