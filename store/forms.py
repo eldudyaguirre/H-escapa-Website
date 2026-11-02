@@ -407,16 +407,24 @@ class ContactoForm(forms.Form):
     mensaje = forms.CharField(max_length=5000, required=True, widget=forms.Textarea)
 
 
-def horarios_disponibles(profesional, dia, servicio):
+def horarios_disponibles_duracion(profesional, dia, duracion_minutos):
+    """Devuelve los inicios libres para una duración concreta, respetando preparación y cruces."""
     from datetime import datetime, timedelta
     from django.utils import timezone
 
+    try:
+        duracion_minutos = int(duracion_minutos)
+    except (TypeError, ValueError):
+        return []
+
+    if duracion_minutos <= 0:
+        return []
     if dia < timezone.localdate() or dia.weekday() not in profesional.dias_atencion:
         return []
 
     apertura = datetime.combine(dia, profesional.hora_inicio_atencion)
     cierre = datetime.combine(dia, profesional.hora_fin_atencion)
-    duracion_atencion = timedelta(minutes=servicio.duracion_minutos)
+    duracion_atencion = timedelta(minutes=duracion_minutos)
     duracion_reserva = duracion_atencion + timedelta(minutes=profesional.preparacion_minutos)
 
     ocupadas = []
@@ -449,6 +457,11 @@ def horarios_disponibles(profesional, dia, servicio):
         candidato += timedelta(minutes=5)
 
     return slots
+
+
+def horarios_disponibles(profesional, dia, servicio):
+    """Mantiene la interfaz usada por el agendamiento público basado en servicios."""
+    return horarios_disponibles_duracion(profesional, dia, servicio.duracion_minutos)
 
 
 class AgendamientoForm(forms.Form):
