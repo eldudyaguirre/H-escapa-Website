@@ -1456,6 +1456,12 @@ def homeinperfilpaciente(request, paciente_id):
         .order_by("-fecha", "-id")
     )
     documentos = paciente.documentos.all()
+    proxima_cita = (
+        citas.filter(fecha_hora__gte=timezone.now())
+        .exclude(estado__in=["ATENDIDA", "CANCELADA", "NO_ASISTIO"])
+        .order_by("fecha_hora")
+        .first()
+    )
     return render(
         request,
         "frm-perfilpaciente.html",
@@ -1464,6 +1470,14 @@ def homeinperfilpaciente(request, paciente_id):
             "citas": citas,
             "historias": historias,
             "documentos": documentos,
+            "proxima_cita": proxima_cita,
+            "total_sesiones": historias.count(),
+            "total_documentos": documentos.count(),
+            "total_citas": citas.count(),
+            "tareas_pendientes": TareaClinica.objects.filter(
+                historia__paciente=paciente,
+                estado="PENDIENTE",
+            ).count(),
         },
     )
 
