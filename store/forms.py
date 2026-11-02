@@ -635,7 +635,7 @@ class RegistroConsultaForm(forms.ModelForm):
             "observaciones": "Observaciones",
             "anotaciones": "Anotaciones de la sesión",
             "sugerencias_proxima_cita": "Sugerencias para la próxima cita",
-            "fecha_proxima_cita": "Fecha sugerida para próxima cita",
+            "fecha_proxima_cita": "Fecha de próxima cita",
             "plan_seguimiento": "Plan de seguimiento",
         }
         widgets = {
