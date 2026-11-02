@@ -250,7 +250,7 @@ class CitaForm(forms.ModelForm):
         inicio = cleaned.get("fecha_hora")
         duracion = cleaned.get("duracion_minutos")
 
-        if not (profesional and inicio and duracion):
+        if not (profesional and inicio) or duracion is None:
             return cleaned
 
         if duracion < 5 or duracion % 5:
