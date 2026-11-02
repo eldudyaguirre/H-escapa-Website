@@ -256,6 +256,8 @@ class Cita(models.Model):
     recordatorio_30_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_10_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_5_enviado = models.BooleanField(default=False, editable=False)
+    recordatorio_profesional_10_enviado = models.BooleanField(default=False, editable=False)
+    recordatorio_profesional_5_enviado = models.BooleanField(default=False, editable=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -272,12 +274,16 @@ class Cita(models.Model):
                 self.recordatorio_30_enviado = False
                 self.recordatorio_10_enviado = False
                 self.recordatorio_5_enviado = False
+                self.recordatorio_profesional_10_enviado = False
+                self.recordatorio_profesional_5_enviado = False
                 update_fields = kwargs.get("update_fields")
                 if update_fields is not None:
                     kwargs["update_fields"] = set(update_fields) | {
                         "recordatorio_30_enviado",
                         "recordatorio_10_enviado",
                         "recordatorio_5_enviado",
+                        "recordatorio_profesional_10_enviado",
+                        "recordatorio_profesional_5_enviado",
                     }
         super().save(*args, **kwargs)
 
