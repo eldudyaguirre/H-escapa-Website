@@ -6,7 +6,7 @@ adicionales de cliente de Google.
 import os
 import time
 from datetime import timedelta
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 from uuid import uuid4
 
 import requests
@@ -221,6 +221,116 @@ def _datos_evento(cita):
     }
 
 
+def _meet_request(method, endpoint, access_token, params=None, payload=None):
+    url = f"https://meet.googleapis.com/v2/{endpoint.lstrip('/')}"
+    try:
+        response = requests.request(
+            method,
+            url,
+            headers={"Authorization": f"Bearer {access_token}"},
+            params=params or {},
+            json=payload,
+            timeout=GOOGLE_TIMEOUT,
+        )
+    except requests.RequestException as exc:
+        raise GoogleCalendarError(
+            "No fue posible comunicarse con Google Meet."
+        ) from exc
+
+    if not response.ok:
+        try:
+            data = response.json()
+            detail = data.get("error", {}).get("message", "")
+        except (ValueError, AttributeError):
+            detail = ""
+        message = "Google Meet rechazó la configuración del coanfitrión."
+        if response.status_code == 403:
+            message = (
+                "Google Meet no autorizó la asignación del coanfitrión. "
+                "Verifica que Meet REST API esté habilitada y que la cuenta "
+                "haya concedido el permiso meetings.space.created."
+            )
+        elif response.status_code == 404:
+            message = "Google Meet no encontró el espacio de la reunión."
+        elif detail:
+            message = f"{message} Detalle: {detail[:220]}"
+        raise GoogleCalendarError(message, response.status_code)
+
+    if response.status_code == 204 or not response.content:
+        return {}
+    try:
+        return response.json()
+    except ValueError as exc:
+        raise GoogleCalendarError(
+            "Google Meet devolvió una respuesta que no se pudo interpretar."
+        ) from exc
+
+
+def agregar_profesional_como_coanfitrion(meet_url, correo_profesional, access_token):
+    """Asigna al profesional como coanfitrión para que pueda admitir al paciente."""
+    parsed = urlparse(meet_url or "")
+    if parsed.scheme != "https" or parsed.netloc.lower() != "meet.google.com":
+        raise GoogleCalendarError("El enlace de Google Meet no tiene un formato válido.")
+
+    meeting_code = parsed.path.strip("/").split("/")[-1]
+    if not meeting_code:
+        raise GoogleCalendarError("No se pudo obtener el código de la reunión Meet.")
+
+    espacio = _meet_request(
+        "GET",
+        f"spaces/{quote(meeting_code, safe='')}",
+        access_token,
+    )
+    nombre_espacio = (espacio.get("name") or "").strip()
+    if not nombre_espacio:
+        raise GoogleCalendarError(
+            "Google Meet no devolvió el identificador del espacio de reunión."
+        )
+
+    nombre_espacio_url = quote(nombre_espacio, safe="/")
+    miembros = _meet_request(
+        "GET",
+        f"{nombre_espacio_url}/members",
+        access_token,
+        params={"pageSize": 100},
+    ).get("members", [])
+
+    correo_normalizado = (correo_profesional or "").strip().casefold()
+    miembro = next(
+        (
+            item for item in miembros
+            if (item.get("email") or "").strip().casefold() == correo_normalizado
+        ),
+        None,
+    )
+
+    if miembro and miembro.get("role") == "COHOST":
+        return True
+
+    if miembro:
+        nombre_miembro = quote(miembro.get("name", ""), safe="/")
+        if not nombre_miembro:
+            raise GoogleCalendarError(
+                "Google Meet encontró al profesional, pero no devolvió su identificador."
+            )
+        _meet_request(
+            "PATCH",
+            nombre_miembro,
+            access_token,
+            params={"updateMask": "role"},
+            payload={"name": miembro["name"], "role": "COHOST"},
+        )
+    else:
+        _meet_request(
+            "POST",
+            f"{nombre_espacio_url}/members",
+            access_token,
+            payload={"email": correo_profesional, "role": "COHOST"},
+        )
+
+    return True
+
+
 def crear_o_actualizar_evento_meet(cita):
     """
     Crea un evento privado con una conferencia Meet única o actualiza el evento
@@ -335,10 +445,24 @@ def crear_o_actualizar_evento_meet(cita):
             meet_url = _obtener_enlace_meet(evento) or meet_url
             estado = _obtener_estado_conferencia(evento) or "success"
 
+    cohost_error = ""
+    if meet_url:
+        try:
+            agregar_profesional_como_coanfitrion(
+                meet_url,
+                (cita.profesional.usuario.email or "").strip(),
+                access_token,
+            )
+        except GoogleCalendarError as exc:
+            # La cita y las invitaciones siguen siendo válidas; se informa al
+            # administrador para revisar la configuración de Meet/coanfitriones.
+            cohost_error = str(exc)
+
     return {
         "event_id": event_id,
         "meet_url": meet_url,
         "conference_status": estado or ("success" if meet_url else "pending"),
+        "cohost_error": cohost_error,
     }
 
 def cancelar_evento_google_calendar(event_id):
