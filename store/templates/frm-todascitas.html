@@ -230,15 +230,20 @@
                 <div class="aa-actions-menu">
                   <strong class="aa-actions-label">Acciones</strong>
                   <a href="{% url 'homeinvercita' cita.pk %}"><i class="bx bx-file"></i> Ver detalles</a>
-                  {% if cita.estado != "ATENDIDA" and cita.estado != "CANCELADA" and cita.estado != "NO_ASISTIO" %}
+                  {% if cita.estado == "PROGRAMADA" or cita.estado == "CONFIRMADA" %}
                     <a href="{% url 'homeineditarcita' cita.pk %}"><i class="bx bx-edit"></i> Editar cita</a>
                     <a href="{% url 'homeinreprogramarcita' cita.pk %}"><i class="bx bx-calendar-edit"></i> Reprogramar</a>
-                    {% if cita.estado == "PROGRAMADA" or cita.estado == "CONFIRMADA" %}
-                      <form method="post" action="{% url 'homeinaccioncita' cita.pk 'iniciar' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="aa-action-item"><i class="bx bx-check"></i> Marcar en progreso</button>
-                      </form>
-                    {% endif %}
+                    <form method="post" action="{% url 'homeinaccioncita' cita.pk 'iniciar' %}">
+                      {% csrf_token %}
+                      <button type="submit" class="aa-action-item"><i class="bx bx-play-circle"></i> Iniciar atención</button>
+                    </form>
+                    <div class="aa-action-separator"></div>
+                    <form method="post" action="{% url 'homeinaccioncita' cita.pk 'cancelar' %}" onsubmit="return confirm('¿Seguro que deseas cancelar esta cita?');">
+                      {% csrf_token %}
+                      <button type="submit" class="aa-action-item danger"><i class="bx bx-x-circle"></i> Cancelar cita</button>
+                    </form>
+                  {% elif cita.estado == "EN_PROGRESO" %}
+                    <a href="{% url 'homeinatencioncita' cita.pk %}"><i class="bx bx-stethoscope"></i> Continuar atención</a>
                     <div class="aa-action-separator"></div>
                     <form method="post" action="{% url 'homeinaccioncita' cita.pk 'cancelar' %}" onsubmit="return confirm('¿Seguro que deseas cancelar esta cita?');">
                       {% csrf_token %}
