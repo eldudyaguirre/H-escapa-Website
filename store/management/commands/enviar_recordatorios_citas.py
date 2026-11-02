@@ -9,29 +9,128 @@ from django.utils import timezone
 from store.models import Cita
 
 
-RECORDATORIOS = (
+RECORDATORIOS_PACIENTE = (
     (30, "recordatorio_30_enviado"),
     (10, "recordatorio_10_enviado"),
     (5, "recordatorio_5_enviado"),
 )
+RECORDATORIOS_PROFESIONAL = (
+    (10, "recordatorio_profesional_10_enviado"),
+    (5, "recordatorio_profesional_5_enviado"),
+)
 
-# La tarea del Programador de Windows se ejecutará cada minuto.
-# Se conserva una ventana de dos minutos para tolerar pequeños retrasos del scheduler.
+# El Programador de Windows ejecuta el comando cada minuto.
+# La ventana absorbe pequeños retrasos del Programador de tareas.
 VENTANA_ENVIO = timedelta(minutes=2)
 ESTADOS_VALIDOS = ("PROGRAMADA", "CONFIRMADA")
 
 
+def _enviar_recordatorio(cita_id, minutos, campo, destinatario_tipo):
+    """Envía un aviso independiente y marca su entrega bajo bloqueo de la cita."""
+    with transaction.atomic():
+        cita = (
+            Cita.objects
+            .select_for_update()
+            .select_related("paciente", "profesional", "profesional__usuario")
+            .get(pk=cita_id)
+        )
+        ahora = timezone.now()
+
+        if cita.estado not in ESTADOS_VALIDOS or getattr(cita, campo):
+            return False
+
+        momento_programado = cita.fecha_hora - timedelta(minutes=minutos)
+        if not (momento_programado <= ahora < momento_programado + VENTANA_ENVIO):
+            return False
+
+        if destinatario_tipo == "paciente":
+            if not cita.paciente.recibir_recordatorios_citas:
+                return False
+            correo = (cita.paciente.correo or "").strip()
+            nombre_destinatario = cita.paciente.nombre
+            saludo = f"Hola {nombre_destinatario},"
+            asunto = f"H-Escapa | Recordatorio de tu cita en {minutos} minutos"
+            cuerpo_inicial = (
+                f"Te recordamos que tienes una cita en H-Escapa dentro de "
+                f"{minutos} minutos."
+            )
+        else:
+            correo = (cita.profesional.usuario.email or "").strip()
+            nombre_destinatario = str(cita.profesional)
+            saludo = f"Hola {nombre_destinatario},"
+            asunto = f"H-Escapa | Cita en {minutos} minutos"
+            cuerpo_inicial = (
+                f"Te recordamos que tienes una cita asignada dentro de "
+                f"{minutos} minutos."
+            )
+
+        if not correo:
+            return False
+
+        remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+        if not remitente:
+            raise CommandError(
+                "Falta configurar DEFAULT_FROM_EMAIL o EMAIL_HOST_USER."
+            )
+        if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+            raise CommandError(
+                "Faltan EMAIL_HOST_USER o EMAIL_HOST_PASSWORD en el archivo .env."
+            )
+
+        fecha_local = timezone.localtime(cita.fecha_hora)
+        modalidad = cita.get_modalidad_display()
+        profesional = str(cita.profesional)
+        paciente = cita.paciente.nombre
+
+        if destinatario_tipo == "paciente":
+            detalles = (
+                f"Profesional: {profesional}\n"
+                f"Modalidad: {modalidad}\n"
+            )
+        else:
+            detalles = (
+                f"Paciente: {paciente}\n"
+                f"Teléfono del paciente: {cita.paciente.telefono or 'No registrado'}\n"
+                f"Modalidad: {modalidad}\n"
+            )
+
+        mensaje = (
+            f"{saludo}\n\n"
+            f"{cuerpo_inicial}\n\n"
+            f"Fecha: {fecha_local:%d/%m/%Y}\n"
+            f"Hora: {fecha_local:%H:%M}\n"
+            f"{detalles}\n"
+            "H-Escapa"
+        )
+
+        resultado = send_mail(
+            subject=asunto,
+            message=mensaje,
+            from_email=remitente,
+            recipient_list=[correo],
+            fail_silently=False,
+        )
+        if resultado != 1:
+            raise RuntimeError(
+                f"El servidor de correo no confirmó el envío a {correo}."
+            )
+
+        setattr(cita, campo, True)
+        cita.save(update_fields={campo, "actualizado_en"})
+        return correo
+
+
 class Command(BaseCommand):
     help = (
-        "Envía recordatorios por correo 30, 10 y 5 minutos antes de las citas "
-        "programadas o confirmadas."
+        "Envía recordatorios al paciente (30, 10 y 5 minutos antes) y al "
+        "profesional (10 y 5 minutos antes) de las citas programadas o confirmadas."
     )
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--dry-run",
             action="store_true",
-            help="Muestra los correos que se enviarían, sin enviar ni marcar recordatorios.",
+            help="Muestra los correos que se enviarían, sin enviarlos ni marcar avisos.",
         )
 
     def handle(self, *args, **options):
@@ -41,14 +140,12 @@ class Command(BaseCommand):
 
         citas = (
             Cita.objects
-            .select_related("paciente", "profesional")
+            .select_related("paciente", "profesional", "profesional__usuario")
             .filter(
                 estado__in=ESTADOS_VALIDOS,
                 fecha_hora__gt=ahora,
                 fecha_hora__lte=limite,
-                paciente__recibir_recordatorios_citas=True,
             )
-            .exclude(paciente__correo="")
             .order_by("fecha_hora")
         )
 
@@ -57,120 +154,74 @@ class Command(BaseCommand):
         errores = 0
 
         for candidata in citas.iterator():
-            for minutos, campo in RECORDATORIOS:
-                momento_programado = candidata.fecha_hora - timedelta(minutes=minutos)
-                if not (momento_programado <= ahora < momento_programado + VENTANA_ENVIO):
-                    continue
-                if getattr(candidata, campo):
+            for minutos, campo_paciente in RECORDATORIOS_PACIENTE:
+                momento = candidata.fecha_hora - timedelta(minutes=minutos)
+                if not (momento <= ahora < momento + VENTANA_ENVIO):
                     continue
 
-                if simulacion:
-                    self.stdout.write(
-                        f"[SIMULACIÓN] Cita #{candidata.pk}: "
-                        f"correo a {candidata.paciente.correo} "
-                        f"({minutos} minutos antes)."
-                    )
-                    simuladas += 1
-                    continue
+                destinos = [
+                    ("paciente", campo_paciente),
+                ]
+                campo_profesional = dict(RECORDATORIOS_PROFESIONAL).get(minutos)
+                if campo_profesional:
+                    destinos.append(("profesional", campo_profesional))
 
-                try:
-                    with transaction.atomic():
-                        # El bloqueo evita que dos ejecuciones simultáneas envíen
-                        # el mismo recordatorio.
-                        cita = (
-                            Cita.objects
-                            .select_for_update()
-                            .select_related("paciente", "profesional")
-                            .get(pk=candidata.pk)
-                        )
-                        ahora_bloqueo = timezone.now()
+                for tipo, campo in destinos:
+                    if getattr(candidata, campo):
+                        continue
 
-                        if cita.estado not in ESTADOS_VALIDOS:
-                            continue
-                        if getattr(cita, campo):
-                            continue
-                        if not cita.paciente.recibir_recordatorios_citas:
-                            continue
+                    if tipo == "paciente":
+                        habilitado = candidata.paciente.recibir_recordatorios_citas
+                        correo = (candidata.paciente.correo or "").strip()
+                    else:
+                        habilitado = True
+                        correo = (
+                            candidata.profesional.usuario.email or ""
+                        ).strip()
 
-                        correo = (cita.paciente.correo or "").strip()
-                        if not correo:
-                            continue
+                    if not habilitado or not correo:
+                        continue
 
-                        momento_programado = cita.fecha_hora - timedelta(minutes=minutos)
-                        if not (
-                            momento_programado
-                            <= ahora_bloqueo
-                            < momento_programado + VENTANA_ENVIO
-                        ):
-                            continue
-
-                        remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
-                        if not remitente:
-                            raise CommandError(
-                                "Falta configurar DEFAULT_FROM_EMAIL o EMAIL_HOST_USER."
-                            )
-                        if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-                            raise CommandError(
-                                "Faltan EMAIL_HOST_USER o EMAIL_HOST_PASSWORD en el archivo .env."
-                            )
-
-                        fecha_local = timezone.localtime(cita.fecha_hora)
-                        nombre = cita.paciente.nombre
-                        profesional = str(cita.profesional)
-                        modalidad = cita.get_modalidad_display()
-
-                        asunto = (
-                            f"H-Escapa | Recordatorio de tu cita en {minutos} minutos"
-                        )
-                        mensaje = (
-                            f"Hola {nombre},\n\n"
-                            f"Te recordamos que tienes una cita en H-Escapa dentro de "
-                            f"{minutos} minutos.\n\n"
-                            f"Fecha: {fecha_local:%d/%m/%Y}\n"
-                            f"Hora: {fecha_local:%H:%M}\n"
-                            f"Profesional: {profesional}\n"
-                            f"Modalidad: {modalidad}\n\n"
-                            "Te esperamos. Si necesitas cambiar tu cita, comunícate "
-                            "directamente con el consultorio.\n\n"
-                            "H-Escapa"
-                        )
-
-                        resultado = send_mail(
-                            subject=asunto,
-                            message=mensaje,
-                            from_email=remitente,
-                            recipient_list=[correo],
-                            fail_silently=False,
-                        )
-                        if resultado != 1:
-                            raise RuntimeError(
-                                f"El servidor de correo no confirmó el envío a {correo}."
-                            )
-
-                        setattr(cita, campo, True)
-                        cita.save(update_fields={campo, "actualizado_en"})
-                        enviadas += 1
+                    if simulacion:
                         self.stdout.write(
-                            self.style.SUCCESS(
-                                f"Enviado recordatorio de {minutos} min "
-                                f"para cita #{cita.pk} a {correo}."
+                            f"[SIMULACIÓN] Cita #{candidata.pk}: "
+                            f"{tipo} {correo}, {minutos} minutos antes."
+                        )
+                        simuladas += 1
+                        continue
+
+                    try:
+                        correo_enviado = _enviar_recordatorio(
+                            candidata.pk,
+                            minutos,
+                            campo,
+                            tipo,
+                        )
+                        if correo_enviado:
+                            enviadas += 1
+                            self.stdout.write(
+                                self.style.SUCCESS(
+                                    f"Enviado recordatorio de {minutos} min "
+                                    f"para cita #{candidata.pk} al {tipo}: "
+                                    f"{correo_enviado}."
+                                )
+                            )
+                    except CommandError:
+                        raise
+                    except Exception as exc:
+                        errores += 1
+                        self.stderr.write(
+                            self.style.ERROR(
+                                f"Error en recordatorio de {minutos} min "
+                                f"para cita #{candidata.pk}, destinatario "
+                                f"{tipo}: {exc}"
                             )
                         )
-                except CommandError:
-                    raise
-                except Exception as exc:
-                    errores += 1
-                    self.stderr.write(
-                        self.style.ERROR(
-                            f"Error al enviar recordatorio de {minutos} min "
-                            f"para cita #{candidata.pk}: {exc}"
-                        )
-                    )
 
         if simulacion:
             self.stdout.write(
                 self.style.WARNING(
-                    f"Simulación terminada. Recordatorios que se enviarían: {simuladas}."
+                    f"Simulación terminada. Correos que se enviarían: {simuladas}."
                 )
             )
         elif enviadas or errores:
