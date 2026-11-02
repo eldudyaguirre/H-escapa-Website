@@ -72,7 +72,7 @@ class Profesional(models.Model):
     # Horario semanal configurable: lunes=0 ... domingo=6.
     dias_atencion = models.JSONField(default=dias_laborables_default, blank=True, help_text="Días de atención: 0 lunes ... 6 domingo")
     hora_inicio_atencion = models.TimeField(default="09:00")
-    hora_fin_atencion = models.TimeField(default="17:00")
+    hora_fin_atencion = models.TimeField(default="22:00")
     preparacion_minutos = models.PositiveSmallIntegerField(default=5, help_text="Minutos de preparación después de cada cita")
     forzar_cambio_clave = models.BooleanField(default=True)
     dos_factores = models.BooleanField(default=False)
