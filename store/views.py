@@ -1448,7 +1448,7 @@ def homeinperfilpaciente(request, paciente_id):
         Paciente.objects.select_related("profesional"),
         pk=paciente_id,
     )
-    citas = paciente.citas.select_related("profesional").order_by("-fecha_hora")
+    citas = paciente.citas.select_related("profesional", "especialidad", "servicio").order_by("-fecha_hora")
     historias = (
         paciente.historias_clinicas
         .select_related("profesional", "cita", "registrado_por")
