@@ -332,7 +332,7 @@ class ProfesionalForm(forms.Form):
     password2 = forms.CharField(label="Confirmar contraseña", min_length=8, widget=forms.PasswordInput(attrs={"placeholder":"Repita la contraseña"}))
     dias_atencion = forms.MultipleChoiceField(label="Días de atención", choices=[("0","Lunes"),("1","Martes"),("2","Miércoles"),("3","Jueves"),("4","Viernes"),("5","Sábado"),("6","Domingo")], required=False, initial=["0","1","2","3","4"], widget=forms.CheckboxSelectMultiple)
     hora_inicio_atencion = forms.TimeField(label="Inicio de atención", initial="09:00", widget=forms.TimeInput(attrs={"type":"time","step":"300"}))
-    hora_fin_atencion = forms.TimeField(label="Fin de atención", initial="22:00", widget=forms.TimeInput(attrs={"type":"time","step":"300"}))
+    hora_fin_atencion = forms.TimeField(label="Fin de atención", initial="23:00", widget=forms.TimeInput(attrs={"type":"time","step":"300"}))
     preparacion_minutos = forms.IntegerField(label="Preparación entre citas (minutos)", min_value=0, max_value=120, initial=5)
     activo = forms.BooleanField(label="Profesional activo", required=False, initial=True)
     forzar_cambio_clave = forms.BooleanField(label="Forzar cambio de contraseña", required=False, initial=True)
