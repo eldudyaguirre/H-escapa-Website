@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from functools import wraps
 from pathlib import Path
 import csv
@@ -26,7 +26,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
 
-from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
+from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles, horarios_disponibles_duracion
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
 
 
@@ -624,6 +624,7 @@ def homeinaccioncita(request, cita_id, accion):
 
 
 @staff_required
+@staff_required
 def homeinatencioncita(request, cita_id):
     """Espacio de trabajo de la consulta y seguimiento posterior."""
     cita = get_object_or_404(
@@ -683,6 +684,76 @@ def homeinatencioncita(request, cita_id):
                 messages.success(request, "Registro de consulta guardado correctamente.")
                 return redirect("homeinatencioncita", cita_id=cita.pk)
 
+        elif accion == "agendar_proxima":
+            if atencion_finalizada:
+                messages.error(request, "La consulta ya fue finalizada. No se puede modificar su registro clínico.")
+                return redirect("homeinatencioncita", cita_id=cita.pk)
+
+            consulta_form = RegistroConsultaForm(request.POST, instance=historia)
+            if consulta_form.is_valid():
+                fecha_nueva = consulta_form.cleaned_data.get("fecha_proxima_cita")
+                hora_texto = (request.POST.get("hora_proxima_cita") or "").strip()
+
+                if not fecha_nueva:
+                    consulta_form.add_error("fecha_proxima_cita", "Selecciona la fecha de la próxima cita.")
+                elif not hora_texto:
+                    consulta_form.add_error(None, "Consulta la disponibilidad y selecciona una hora.")
+                else:
+                    try:
+                        hora_nueva = time.fromisoformat(hora_texto)
+                    except ValueError:
+                        hora_nueva = None
+                        consulta_form.add_error(None, "La hora seleccionada no es válida.")
+
+                    if hora_nueva:
+                        # Bloquea al profesional y vuelve a calcular antes de insertar,
+                        # para rechazar horarios que otra persona haya ocupado entretanto.
+                        with transaction.atomic():
+                            profesional = Profesional.objects.select_for_update().get(
+                                pk=cita.profesional_id
+                            )
+                            disponibles = horarios_disponibles_duracion(
+                                profesional, fecha_nueva, cita.duracion_minutos
+                            )
+                            if hora_nueva.strftime("%H:%M") not in disponibles:
+                                consulta_form.add_error(
+                                    None,
+                                    "Ese horario ya no está disponible o se cruza con otra cita. Actualiza la disponibilidad y selecciona otro.",
+                                )
+                            else:
+                                registro = consulta_form.save(commit=False)
+                                registro.paciente = cita.paciente
+                                registro.profesional = profesional
+                                registro.cita = cita
+                                registro.registrado_por = request.user
+                                registro.save()
+
+                                fecha_hora_nueva = timezone.make_aware(
+                                    datetime.combine(fecha_nueva, hora_nueva),
+                                    timezone.get_current_timezone(),
+                                )
+                                Cita.objects.create(
+                                    paciente=cita.paciente,
+                                    profesional=profesional,
+                                    especialidad=cita.especialidad,
+                                    servicio=cita.servicio,
+                                    fecha_hora=fecha_hora_nueva,
+                                    duracion_minutos=cita.duracion_minutos,
+                                    modalidad=cita.modalidad,
+                                    estado="PROGRAMADA",
+                                    motivo="Seguimiento",
+                                    notas=(
+                                        historia.sugerencias_proxima_cita
+                                        or historia.plan_seguimiento
+                                        or ""
+                                    ),
+                                )
+                                messages.success(
+                                    request,
+                                    "La próxima cita fue agendada correctamente y ya consta en el calendario.",
+                                )
+                                return redirect("homeinatencioncita", cita_id=cita.pk)
+
         elif accion == "agregar_tarea":
             tarea_form = TareaClinicaForm(request.POST)
             if tarea_form.is_valid():
@@ -729,6 +800,33 @@ def homeinatencioncita(request, cita_id):
         "bitacora": bitacora,
         "atencion_finalizada": atencion_finalizada,
         "active_menu": "citas",
+    })
+
+
+@staff_required
+def horarios_proxima_cita(request, cita_id):
+    """Consulta los horarios libres del profesional para la próxima cita clínica."""
+    if request.method != "GET":
+        return JsonResponse({"error": "Método no permitido."}, status=405)
+
+    cita = get_object_or_404(
+        Cita.objects.select_related("profesional"),
+        pk=cita_id,
+    )
+    valor_fecha = (request.GET.get("fecha") or "").strip()
+    try:
+        fecha_consulta = date.fromisoformat(valor_fecha)
+    except ValueError:
+        return JsonResponse({"error": "Selecciona una fecha válida.", "horarios": []}, status=400)
+
+    horarios = horarios_disponibles_duracion(
+        cita.profesional,
+        fecha_consulta,
+        cita.duracion_minutos,
+    )
+    return JsonResponse({
+        "horarios": horarios,
+        "duracion_minutos": cita.duracion_minutos,
     })
 
 @staff_required
