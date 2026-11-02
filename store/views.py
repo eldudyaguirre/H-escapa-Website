@@ -834,9 +834,9 @@ def videollamada_enviar_invitacion(request, cita_id):
     if not cita.google_meet_url:
         messages.warning(
             request,
-            "Google Calendar creó o actualizó el evento y envió la invitación, "
-            "pero Google todavía está generando el enlace Meet. Espera un momento "
-            "y vuelve a pulsar el botón para completar el envío al paciente.",
+            "Google Calendar creó o actualizó el evento, pero Google todavía está "
+            "generando el enlace Meet. Aún no se han enviado las invitaciones. "
+            "Espera un momento y vuelve a pulsar el botón para completar el proceso.",
         )
         return redirect("homeinvercita", cita_id=cita.pk)
 
