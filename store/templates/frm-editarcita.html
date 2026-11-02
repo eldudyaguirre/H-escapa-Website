@@ -1,0 +1,46 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Editar cita{% endblock %}
+{% block extra_head %}
+<style>
+  .edit-page{max-width:1100px;margin:0 auto;padding:28px 28px 40px;color:#263b3a}
+  .edit-page h1{margin:8px 0 6px;font:500 2rem Marcellus,serif;color:#203b39}
+  .edit-page>p{margin:0 0 20px;color:#7a8985}
+  .edit-card{background:#fff;border:1px solid #e1e8e6;border-radius:14px;padding:25px;box-shadow:0 7px 22px rgba(26,53,50,.05)}
+  .edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+  .edit-field.full{grid-column:1/-1}
+  .edit-field label{display:block;margin:0 0 7px;color:#586a65;font-size:.84rem;font-weight:600}
+  .edit-field input,.edit-field select,.edit-field textarea{width:100%;box-sizing:border-box;border:1px solid #dce5e3;border-radius:9px;padding:11px 12px;background:#fff;color:#344944;font:inherit;font-size:.9rem}
+  .edit-field textarea{min-height:100px;resize:vertical}
+  .edit-errors{margin-top:5px;color:#b42318;font-size:.78rem}
+  .edit-error-summary{margin-bottom:16px;padding:12px 14px;border:1px solid #f1d1ce;border-radius:9px;background:#fff3f2;color:#a52c24}
+  .edit-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:23px;flex-wrap:wrap}
+  .edit-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 17px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#53645f;text-decoration:none;font:inherit;font-size:.88rem;font-weight:600}
+  .edit-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  @media(max-width:700px){.edit-page{padding:18px 12px 28px}.edit-card{padding:17px}.edit-grid{grid-template-columns:1fr}.edit-field.full{grid-column:auto}.edit-page h1{font-size:1.7rem}.edit-actions>*{flex:1}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="edit-page">
+  <a href="{% url 'homeinvercita' cita.pk %}" style="color:#438f89;text-decoration:none"><i class="bx bx-arrow-back"></i> Volver al detalle</a>
+  <h1>Editar cita</h1>
+  <p>Actualiza los datos de la cita #{{ cita.pk }}.</p>
+
+  <form method="post" class="edit-card">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="edit-error-summary">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="edit-grid">
+      {% for field in form %}
+        <div class="edit-field{% if field.name == 'notas' or field.name == 'motivo' %} full{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}<div class="edit-errors">{{ error }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="edit-actions">
+      <a class="edit-btn" href="{% url 'homeinvercita' cita.pk %}">Cancelar</a>
+      <button class="edit-btn primary" type="submit"><i class="bx bx-save"></i> Guardar cambios</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
