@@ -45,6 +45,8 @@
         </form>
       {% elif cita.estado == "EN_PROGRESO" %}
         <a class="detail-btn primary" href="{% url 'homeinatencioncita' cita.pk %}"><i class="bx bx-stethoscope"></i> Continuar atención</a>
+      {% elif cita.estado == "ATENDIDA" %}
+        <a class="detail-btn primary" href="{% url 'homeinatencioncita' cita.pk %}"><i class="bx bx-clipboard"></i> Ver consulta y tareas</a>
       {% endif %}
     </div>
   </header>
