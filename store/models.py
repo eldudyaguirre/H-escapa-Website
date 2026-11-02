@@ -280,7 +280,17 @@ class HistoriaClinica(models.Model):
     diagnostico = models.TextField(blank=True)
     intervencion = models.TextField(blank=True)
     observaciones = models.TextField(blank=True)
+    anotaciones = models.TextField(blank=True)
+    sugerencias_proxima_cita = models.TextField(blank=True)
+    fecha_proxima_cita = models.DateField(blank=True, null=True)
     plan_seguimiento = models.TextField(blank=True)
+    registrado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="registros_clinicos_realizados",
+    )
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -294,6 +304,51 @@ class HistoriaClinica(models.Model):
 
     def __str__(self):
         return f"{self.paciente} - {self.fecha:%d/%m/%Y}"
+
+
+class TareaClinica(models.Model):
+    ESTADOS = [
+        ("PENDIENTE", "Pendiente"),
+        ("COMPLETADA", "Completada"),
+    ]
+    PRIORIDADES = [
+        ("BAJA", "Baja"),
+        ("NORMAL", "Normal"),
+        ("ALTA", "Alta"),
+    ]
+
+    historia = models.ForeignKey(
+        HistoriaClinica,
+        on_delete=models.CASCADE,
+        related_name="tareas",
+    )
+    descripcion = models.CharField(max_length=220)
+    detalle = models.TextField(blank=True)
+    fecha_limite = models.DateField(blank=True, null=True)
+    prioridad = models.CharField(max_length=10, choices=PRIORIDADES, default="NORMAL")
+    estado = models.CharField(max_length=12, choices=ESTADOS, default="PENDIENTE")
+    creada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tareas_clinicas_creadas",
+    )
+    completada_en = models.DateTimeField(blank=True, null=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["estado", "fecha_limite", "-creado_en"]
+        verbose_name = "Tarea clínica"
+        verbose_name_plural = "Tareas clínicas"
+        indexes = [
+            models.Index(fields=["historia", "estado"]),
+            models.Index(fields=["fecha_limite", "estado"]),
+        ]
+
+    def __str__(self):
+        return self.descripcion
 
 
 class DocumentoPaciente(models.Model):
