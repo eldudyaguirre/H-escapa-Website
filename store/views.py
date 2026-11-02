@@ -625,7 +625,7 @@ def homeinaccioncita(request, cita_id, accion):
 
 @staff_required
 def homeinatencioncita(request, cita_id):
-    """Espacio de trabajo de la consulta, enlazado a la bitácora del paciente."""
+    """Espacio de trabajo de la consulta y seguimiento posterior."""
     cita = get_object_or_404(
         Cita.objects.select_related(
             "paciente", "profesional", "especialidad", "servicio"
@@ -633,7 +633,7 @@ def homeinatencioncita(request, cita_id):
         pk=cita_id,
     )
 
-    if cita.estado != "EN_PROGRESO":
+    if cita.estado not in {"EN_PROGRESO", "ATENDIDA"}:
         messages.info(request, "Inicia la cita para abrir el espacio de atención.")
         return redirect("homeinvercita", cita_id=cita.pk)
 
@@ -650,12 +650,21 @@ def homeinatencioncita(request, cita_id):
         )
 
     consulta_form = RegistroConsultaForm(instance=historia)
+    atencion_finalizada = cita.estado == "ATENDIDA"
+    if atencion_finalizada:
+        for field in consulta_form.fields.values():
+            field.disabled = True
+
     tarea_form = TareaClinicaForm()
 
     if request.method == "POST":
         accion = request.POST.get("action", "")
 
         if accion in {"guardar_consulta", "finalizar"}:
+            if atencion_finalizada:
+                messages.error(request, "La consulta ya fue finalizada. El registro clínico queda en modo de consulta.")
+                return redirect("homeinatencioncita", cita_id=cita.pk)
+
             consulta_form = RegistroConsultaForm(request.POST, instance=historia)
             if consulta_form.is_valid():
                 registro = consulta_form.save(commit=False)
@@ -681,7 +690,7 @@ def homeinatencioncita(request, cita_id):
                 tarea.historia = historia
                 tarea.creada_por = request.user
                 tarea.save()
-                messages.success(request, "Tarea agregada a la consulta.")
+                messages.success(request, "Tarea agregada al seguimiento de la consulta.")
                 return redirect("homeinatencioncita", cita_id=cita.pk)
 
         elif accion == "alternar_tarea":
@@ -718,9 +727,9 @@ def homeinatencioncita(request, cita_id):
         "tarea_form": tarea_form,
         "tareas": tareas,
         "bitacora": bitacora,
+        "atencion_finalizada": atencion_finalizada,
         "active_menu": "citas",
     })
-
 
 @staff_required
 def homeintodascitas(request):
