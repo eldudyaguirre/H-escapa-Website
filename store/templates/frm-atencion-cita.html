@@ -88,7 +88,7 @@
       <a class="consultation-back" href="{% url 'homeintodascitas' %}"><i class="bx bx-arrow-back"></i> Volver a todas las citas</a>
       <h1>Atención de consulta</h1>
       <p>Cita #{{ cita.pk }} · {{ cita.fecha_hora|date:"d/m/Y H:i" }} · {{ cita.profesional }}</p>
-      <span class="consultation-status">En progreso</span>
+      {% if atencion_finalizada %}<span class="consultation-status" style="background:#e7f5ed;color:#2d8050">Consulta finalizada · Atendida</span>{% else %}<span class="consultation-status">En progreso</span>{% endif %}
     </div>
     <div class="consultation-head-actions">
       <a class="consultation-btn" href="{% url 'homeinvercita' cita.pk %}"><i class="bx bx-file"></i> Detalles de la cita</a>
@@ -158,13 +158,17 @@
               {% endfor %}
             </div>
             {% if consulta_form.non_field_errors %}<div class="clinical-error">{{ consulta_form.non_field_errors }}</div>{% endif %}
-            <div class="consultation-form-actions">
-              <span class="consultation-form-note">Los cambios no se guardan hasta pulsar uno de los botones.</span>
-              <div class="right">
-                <button class="consultation-btn primary" type="submit" name="action" value="guardar_consulta"><i class="bx bx-save"></i> Guardar registro</button>
-                <button class="consultation-btn finish" type="submit" name="action" value="finalizar" onclick="return confirm('¿Guardar el registro y finalizar esta atención? La cita pasará a estado Atendida.');"><i class="bx bx-check-circle"></i> Finalizar atención</button>
+            {% if not atencion_finalizada %}
+              <div class="consultation-form-actions">
+                <span class="consultation-form-note">Los cambios no se guardan hasta pulsar uno de los botones.</span>
+                <div class="right">
+                  <button class="consultation-btn primary" type="submit" name="action" value="guardar_consulta"><i class="bx bx-save"></i> Guardar registro</button>
+                  <button class="consultation-btn finish" type="submit" name="action" value="finalizar" onclick="return confirm('¿Guardar el registro y finalizar esta atención? La cita pasará a estado Atendida.');"><i class="bx bx-check-circle"></i> Finalizar atención</button>
+                </div>
               </div>
-            </div>
+            {% else %}
+              <div class="clinical-disclaimer">La consulta está finalizada y su registro permanece en modo de solo lectura. Puedes continuar gestionando las tareas de seguimiento.</div>
+            {% endif %}
           </form>
         </div>
       </section>
@@ -172,7 +176,7 @@
       <section class="consultation-panel">
         <div class="consultation-panel-head">
           <div>
-            <h2><i class="bx bx-list-check"></i> Tareas de esta consulta</h2>
+            <h2><i class="bx bx-list-check"></i> Tareas y seguimiento</h2>
             <p>Registra compromisos y actividades para dar seguimiento.</p>
           </div>
         </div>
