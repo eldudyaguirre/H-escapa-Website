@@ -520,3 +520,58 @@ class PostForm(forms.ModelForm):
         self.fields["categoria"].required = False
         self.fields["etiquetas"].queryset = EtiquetaBlog.objects.all().order_by("nombre")
         self.fields["etiquetas"].required = False
+
+class ReprogramarCitaForm(forms.ModelForm):
+    class Meta:
+        model = Cita
+        fields = ["fecha_hora"]
+        labels = {"fecha_hora": "Nueva fecha y hora"}
+        widgets = {
+            "fecha_hora": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "step": "300"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["fecha_hora"].input_formats = ["%Y-%m-%dT%H:%M"]
+
+    def clean_fecha_hora(self):
+        from datetime import timedelta
+        from django.utils import timezone
+
+        inicio = self.cleaned_data["fecha_hora"]
+        profesional = self.instance.profesional
+        duracion = self.instance.duracion_minutos or 60
+
+        if inicio.minute % 5:
+            raise forms.ValidationError("La hora debe estar alineada a intervalos de 5 minutos.")
+
+        inicio_local = timezone.localtime(inicio) if timezone.is_aware(inicio) else inicio
+        fin = inicio + timedelta(minutes=duracion + profesional.preparacion_minutos)
+        fin_local = timezone.localtime(fin) if timezone.is_aware(fin) else fin
+
+        if inicio_local.date() < timezone.localdate():
+            raise forms.ValidationError("No se pueden reprogramar citas a fechas pasadas.")
+        if inicio_local.weekday() not in (profesional.dias_atencion or []):
+            raise forms.ValidationError("El profesional no atiende ese día.")
+        if (
+            inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion
+            or fin_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion
+        ):
+            raise forms.ValidationError("La cita queda fuera del horario de atención.")
+
+        citas = Cita.objects.filter(profesional=profesional).exclude(pk=self.instance.pk).exclude(
+            estado="CANCELADA"
+        )
+        for cita in citas:
+            otro_fin = cita.fecha_hora + timedelta(
+                minutes=cita.duracion_minutos + profesional.preparacion_minutos
+            )
+            if inicio < otro_fin and fin > cita.fecha_hora:
+                raise forms.ValidationError(
+                    "Ese horario se cruza con otra cita o con su tiempo de preparación."
+                )
+
+        return inicio
