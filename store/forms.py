@@ -262,22 +262,26 @@ class CitaForm(forms.ModelForm):
             return cleaned
 
         inicio_local = timezone.localtime(inicio) if timezone.is_aware(inicio) else inicio
-        fin = inicio + timedelta(minutes=duracion + profesional.preparacion_minutos)
-        fin_local = timezone.localtime(fin) if timezone.is_aware(fin) else fin
+        fin_atencion = inicio + timedelta(minutes=duracion)
+        fin_reserva = fin_atencion + timedelta(minutes=profesional.preparacion_minutos)
+        fin_atencion_local = timezone.localtime(fin_atencion) if timezone.is_aware(fin_atencion) else fin_atencion
 
         if inicio_local.date() < timezone.localdate():
             self.add_error("fecha_hora", "No se pueden agendar citas en fechas pasadas.")
         if inicio_local.weekday() not in profesional.dias_atencion:
             self.add_error("fecha_hora", "El profesional no atiende ese día.")
-        if inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion or fin_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion:
-            self.add_error("fecha_hora", "La cita queda fuera del horario de atención.")
+        if (
+            inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion
+            or fin_atencion_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion
+        ):
+            self.add_error("fecha_hora", "La atención debe finalizar dentro del horario del profesional.")
 
         citas = Cita.objects.filter(profesional=profesional).exclude(estado="CANCELADA")
         if self.instance.pk:
             citas = citas.exclude(pk=self.instance.pk)
         for cita in citas:
             otro_fin = cita.fecha_hora + timedelta(minutes=cita.duracion_minutos + profesional.preparacion_minutos)
-            if inicio < otro_fin and fin > cita.fecha_hora:
+            if inicio < otro_fin and fin_reserva > cita.fecha_hora:
                 self.add_error("fecha_hora", "Ese horario se cruza con otra cita o con su tiempo de preparación.")
                 break
 
@@ -406,25 +410,44 @@ class ContactoForm(forms.Form):
 def horarios_disponibles(profesional, dia, servicio):
     from datetime import datetime, timedelta
     from django.utils import timezone
+
     if dia < timezone.localdate() or dia.weekday() not in profesional.dias_atencion:
         return []
+
     apertura = datetime.combine(dia, profesional.hora_inicio_atencion)
     cierre = datetime.combine(dia, profesional.hora_fin_atencion)
-    duracion_bloque = timedelta(minutes=servicio.duracion_minutos + profesional.preparacion_minutos)
+    duracion_atencion = timedelta(minutes=servicio.duracion_minutos)
+    duracion_reserva = duracion_atencion + timedelta(minutes=profesional.preparacion_minutos)
+
     ocupadas = []
-    citas = Cita.objects.filter(profesional=profesional, fecha_hora__date=dia).exclude(estado="CANCELADA")
+    citas = Cita.objects.filter(
+        profesional=profesional,
+        fecha_hora__date=dia,
+    ).exclude(estado="CANCELADA")
+
     for cita in citas:
         inicio_cita = timezone.localtime(cita.fecha_hora).replace(tzinfo=None)
-        ocupadas.append((inicio_cita, inicio_cita + timedelta(minutes=cita.duracion_minutos + profesional.preparacion_minutos)))
+        fin_reserva = inicio_cita + timedelta(
+            minutes=cita.duracion_minutos + profesional.preparacion_minutos
+        )
+        ocupadas.append((inicio_cita, fin_reserva))
+
     slots = []
     candidato = apertura
     ahora = timezone.localtime().replace(tzinfo=None)
-    while candidato + duracion_bloque <= cierre:
+
+    # La atención debe terminar antes del cierre; el tiempo de preparación
+    # sigue bloqueando el siguiente turno, aunque se extienda unos minutos.
+    while candidato + duracion_atencion <= cierre:
         if dia != timezone.localdate() or candidato > ahora:
-            fin = candidato + duracion_bloque
-            if not any(candidato < fin_ocupado and fin > inicio_ocupado for inicio_ocupado, fin_ocupado in ocupadas):
+            fin_reserva = candidato + duracion_reserva
+            if not any(
+                candidato < fin_ocupado and fin_reserva > inicio_ocupado
+                for inicio_ocupado, fin_ocupado in ocupadas
+            ):
                 slots.append(candidato.strftime("%H:%M"))
         candidato += timedelta(minutes=5)
+
     return slots
 
 
@@ -549,8 +572,9 @@ class ReprogramarCitaForm(forms.ModelForm):
             raise forms.ValidationError("La hora debe estar alineada a intervalos de 5 minutos.")
 
         inicio_local = timezone.localtime(inicio) if timezone.is_aware(inicio) else inicio
-        fin = inicio + timedelta(minutes=duracion + profesional.preparacion_minutos)
-        fin_local = timezone.localtime(fin) if timezone.is_aware(fin) else fin
+        fin_atencion = inicio + timedelta(minutes=duracion)
+        fin_reserva = fin_atencion + timedelta(minutes=profesional.preparacion_minutos)
+        fin_atencion_local = timezone.localtime(fin_atencion) if timezone.is_aware(fin_atencion) else fin_atencion
 
         if inicio_local.date() < timezone.localdate():
             raise forms.ValidationError("No se pueden reprogramar citas a fechas pasadas.")
@@ -558,9 +582,9 @@ class ReprogramarCitaForm(forms.ModelForm):
             raise forms.ValidationError("El profesional no atiende ese día.")
         if (
             inicio_local.time().replace(tzinfo=None) < profesional.hora_inicio_atencion
-            or fin_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion
+            or fin_atencion_local.time().replace(tzinfo=None) > profesional.hora_fin_atencion
         ):
-            raise forms.ValidationError("La cita queda fuera del horario de atención.")
+            raise forms.ValidationError("La atención debe finalizar dentro del horario del profesional.")
 
         citas = Cita.objects.filter(profesional=profesional).exclude(pk=self.instance.pk).exclude(
             estado="CANCELADA"
@@ -569,7 +593,7 @@ class ReprogramarCitaForm(forms.ModelForm):
             otro_fin = cita.fecha_hora + timedelta(
                 minutes=cita.duracion_minutos + profesional.preparacion_minutos
             )
-            if inicio < otro_fin and fin > cita.fecha_hora:
+            if inicio < otro_fin and fin_reserva > cita.fecha_hora:
                 raise forms.ValidationError(
                     "Ese horario se cruza con otra cita o con su tiempo de preparación."
                 )
