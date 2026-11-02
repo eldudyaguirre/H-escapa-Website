@@ -36,6 +36,7 @@ from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaCli
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
 from .google_calendar import (
     GoogleCalendarError,
+    cancelar_evento_google_calendar,
     crear_o_actualizar_evento_meet,
     google_calendar_configurado,
     google_calendar_oauth_configurado,
@@ -661,6 +662,42 @@ def google_calendar_oauth_callback(request):
     return redirect("homeinvideollamadas")
 
 
+def _cancelar_meet_asociado(cita):
+    """Cancela en Google Calendar el evento asociado y limpia sus referencias locales."""
+    if not cita.google_calendar_event_id:
+        return
+
+    cancelar_evento_google_calendar(cita.google_calendar_event_id)
+    cita.google_calendar_event_id = ""
+    cita.google_meet_url = ""
+    cita.videollamada_token_paciente_hash = ""
+    cita.save(
+        update_fields=[
+            "google_calendar_event_id",
+            "google_meet_url",
+            "videollamada_token_paciente_hash",
+            "actualizado_en",
+        ]
+    )
+
+
+def _sincronizar_meet_asociado(cita):
+    """Actualiza en Calendar fecha, hora e invitados de una reunión existente."""
+    if not cita.google_calendar_event_id or cita.modalidad != "VIRTUAL":
+        return
+
+    resultado = crear_o_actualizar_evento_meet(cita)
+    cita.google_calendar_event_id = resultado["event_id"]
+    cita.google_meet_url = resultado["meet_url"]
+    cita.save(
+        update_fields=[
+            "google_calendar_event_id",
+            "google_meet_url",
+            "actualizado_en",
+        ]
+    )
+
+
 def _render_sala_videollamada(request, cita, es_paciente=False):
     """Muestra una pantalla de acceso a Meet dentro de la ventana autorizada."""
     ahora = timezone.now()
@@ -973,7 +1010,29 @@ def homeineditarcita(request, cita_id):
     if request.method == "POST":
         form = CitaForm(request.POST, instance=cita)
         if form.is_valid():
+            modalidad_anterior = cita.modalidad
             form.save()
+
+            if modalidad_anterior == "VIRTUAL" and cita.modalidad != "VIRTUAL":
+                try:
+                    _cancelar_meet_asociado(cita)
+                except GoogleCalendarError as exc:
+                    messages.warning(
+                        request,
+                        "La cita se guardó, pero no se pudo cancelar el evento de Google Calendar: "
+                        f"{exc}",
+                    )
+            elif cita.modalidad == "VIRTUAL" and cita.google_calendar_event_id:
+                try:
+                    _sincronizar_meet_asociado(cita)
+                except GoogleCalendarError as exc:
+                    messages.warning(
+                        request,
+                        "La cita se guardó, pero no se pudo actualizar Google Calendar. "
+                        "Vuelve a generar la invitación desde el detalle de la cita. "
+                        f"Detalle: {exc}",
+                    )
+
             messages.success(request, "La cita se actualizó correctamente.")
             return redirect("homeinvercita", cita_id=cita.pk)
     else:
@@ -1002,6 +1061,16 @@ def homeinreprogramarcita(request, cita_id):
         form = ReprogramarCitaForm(request.POST, instance=cita)
         if form.is_valid():
             form.save()
+            if cita.modalidad == "VIRTUAL" and cita.google_calendar_event_id:
+                try:
+                    _sincronizar_meet_asociado(cita)
+                except GoogleCalendarError as exc:
+                    messages.warning(
+                        request,
+                        "La cita se reprogramó, pero no se pudo actualizar Google Calendar. "
+                        "Revisa la invitación Meet desde el detalle de la cita. "
+                        f"Detalle: {exc}",
+                    )
             messages.success(request, "La cita se reprogramó correctamente.")
             return redirect("homeinvercita", cita_id=cita.pk)
     else:
@@ -1053,7 +1122,24 @@ def homeinaccioncita(request, cita_id, accion):
             messages.error(request, "Esta cita ya está cerrada y no se puede cancelar.")
         else:
             cita.estado = "CANCELADA"
-            cita.save(update_fields=["estado", "actualizado_en"])
+            cita.videollamada_token_paciente_hash = ""
+            cita.save(
+                update_fields=[
+                    "estado",
+                    "videollamada_token_paciente_hash",
+                    "actualizado_en",
+                ]
+            )
+            if cita.google_calendar_event_id:
+                try:
+                    _cancelar_meet_asociado(cita)
+                except GoogleCalendarError as exc:
+                    messages.warning(
+                        request,
+                        "La cita quedó cancelada en H-Escapa, pero Google Calendar no pudo "
+                        "retirar la invitación. Revisa la conexión de Google. "
+                        f"Detalle: {exc}",
+                    )
             messages.success(request, "La cita fue cancelada correctamente.")
     else:
         raise Http404("Acción de cita no válida.")
