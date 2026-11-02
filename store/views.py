@@ -515,7 +515,7 @@ def homein(request):
 
 @staff_required
 def homeincalendario(request):
-    citas = Cita.objects.select_related("paciente", "profesional", "servicio").order_by("fecha_hora")
+    citas = Cita.objects.select_related("paciente", "profesional", "especialidad", "servicio").order_by("fecha_hora")
     profesionales = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
     servicios = Servicio.objects.filter(activo=True).order_by("nombre")
     profesional_id = request.GET.get("profesional", "")
