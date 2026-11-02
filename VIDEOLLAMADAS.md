@@ -6,12 +6,12 @@ H-Escapa crea una reunión única de Google Meet por cada cita virtual mediante 
 
 El enlace de Meet se guarda en la cita junto con el identificador del evento de Google Calendar. Si se vuelve a enviar la invitación, H-Escapa actualiza el evento existente y conserva la misma reunión. Si se reprograma la cita, también se actualiza el evento. Si se cancela la cita o se cambia de virtual a presencial, H-Escapa intenta cancelar el evento de Google Calendar y notifica a los invitados.
 
-El enlace privado del paciente contiene un token aleatorio; en la base de datos se guarda únicamente su hash. Al reenviar la invitación se invalida el enlace privado anterior. El paciente puede acceder sin tener una cuenta de usuario en H-Escapa. Google Meet puede solicitar que el organizador admita a invitados externos según la configuración de la cuenta.
+El profesional asignado se registra como coanfitrión de la sala Meet mediante Google Meet REST API. Esto le permite gestionar la reunión y ayudar a admitir al paciente. El enlace privado del paciente contiene un token aleatorio; en la base de datos se guarda únicamente su hash. Al reenviar la invitación se invalida el enlace privado anterior. El paciente puede acceder sin tener una cuenta de usuario en H-Escapa. Google Meet puede solicitar que el organizador admita a invitados externos según la configuración de la cuenta.
 
 ## Requisitos en Google Cloud
 
 1. Utiliza un proyecto de Google Cloud para H-Escapa.
-2. En **APIs y servicios → Biblioteca**, habilita **Google Calendar API**.
+2. En **APIs y servicios → Biblioteca**, habilita **Google Calendar API** y **Google Meet REST API**.
 3. Configura la pantalla de consentimiento OAuth. Agrega como usuario de prueba la cuenta de Google que organizará las reuniones si la aplicación permanece en modo de pruebas.
 4. En **Credenciales**, crea un **ID de cliente OAuth 2.0** de tipo **Aplicación web**.
 5. Agrega esta URI autorizada de redireccionamiento, exactamente como está escrita:
@@ -45,7 +45,7 @@ El usuario de Windows que ejecuta el servicio Django debe tener permiso de escri
 5. Selecciona la cuenta institucional de Google y acepta el permiso para administrar eventos del calendario.
 6. Al regresar a H-Escapa, el módulo mostrará **Google Calendar conectado**.
 
-La autorización solicita el alcance `https://www.googleapis.com/auth/calendar.events`, utilizado para crear, actualizar y cancelar los eventos de las consultas.
+La autorización solicita estos permisos:\n\n- `https://www.googleapis.com/auth/calendar.events`: crear, actualizar y cancelar los eventos de las consultas.\n- `https://www.googleapis.com/auth/meetings.space.created`: consultar el espacio Meet y asignar al profesional como coanfitrión.
 
 ## Flujo de uso
 
@@ -64,7 +64,7 @@ La generación de la conferencia puede tardar unos segundos. Mientras Google la 
 - El evento se crea con visibilidad privada y sin permitir que los invitados modifiquen o reenvíen la invitación a otras personas.
 - Cada cita tiene un identificador y una conferencia Meet propios. No se reutiliza el enlace de otra cita.
 - El profesional solo puede abrir la consulta si es el profesional asignado o un superusuario.
-- El paciente solo puede abrir la página de acceso con el token privado que recibió por correo.
+- El paciente solo puede abrir la página de acceso con el token privado que recibió por correo.\n- El profesional asignado se intenta registrar como coanfitrión de la sala. Si Google rechaza el permiso, H-Escapa avisa al administrador; el paciente podría requerir que el organizador admita su ingreso.
 - El token no se guarda en texto claro en la base de datos.
 - H-Escapa no graba ni almacena audio o video. La llamada ocurre en Google Meet.
 - Los enlaces se abren en una pestaña nueva de Google Meet; no se incrustan dentro de H-Escapa.
