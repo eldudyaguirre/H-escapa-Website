@@ -2,7 +2,7 @@ from django import forms
 
 from .blog_utils import sanitize_blog_html
 
-from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -599,3 +599,57 @@ class ReprogramarCitaForm(forms.ModelForm):
                 )
 
         return inicio
+
+class RegistroConsultaForm(forms.ModelForm):
+    class Meta:
+        model = HistoriaClinica
+        fields = [
+            "motivo_consulta",
+            "evaluacion",
+            "diagnostico",
+            "intervencion",
+            "observaciones",
+            "anotaciones",
+            "sugerencias_proxima_cita",
+            "fecha_proxima_cita",
+            "plan_seguimiento",
+        ]
+        labels = {
+            "motivo_consulta": "Motivo de consulta",
+            "evaluacion": "Evaluación",
+            "diagnostico": "Diagnóstico / impresión clínica",
+            "intervencion": "Intervención realizada",
+            "observaciones": "Observaciones",
+            "anotaciones": "Anotaciones de la sesión",
+            "sugerencias_proxima_cita": "Sugerencias para la próxima cita",
+            "fecha_proxima_cita": "Fecha sugerida para próxima cita",
+            "plan_seguimiento": "Plan de seguimiento",
+        }
+        widgets = {
+            "motivo_consulta": forms.Textarea(attrs={"rows": 2, "placeholder": "Motivo principal de esta consulta"}),
+            "evaluacion": forms.Textarea(attrs={"rows": 4, "placeholder": "Evaluación y aspectos revisados durante la sesión"}),
+            "diagnostico": forms.Textarea(attrs={"rows": 3, "placeholder": "Impresión o diagnóstico, cuando corresponda"}),
+            "intervencion": forms.Textarea(attrs={"rows": 4, "placeholder": "Intervención, técnicas o acciones realizadas"}),
+            "observaciones": forms.Textarea(attrs={"rows": 3, "placeholder": "Observaciones relevantes de la consulta"}),
+            "anotaciones": forms.Textarea(attrs={"rows": 4, "placeholder": "Notas y anotaciones para dejar constancia de la sesión"}),
+            "sugerencias_proxima_cita": forms.Textarea(attrs={"rows": 3, "placeholder": "Temas, recomendaciones o puntos a revisar en la próxima cita"}),
+            "fecha_proxima_cita": forms.DateInput(attrs={"type": "date"}),
+            "plan_seguimiento": forms.Textarea(attrs={"rows": 3, "placeholder": "Plan de seguimiento acordado"}),
+        }
+
+
+class TareaClinicaForm(forms.ModelForm):
+    class Meta:
+        model = TareaClinica
+        fields = ["descripcion", "detalle", "fecha_limite", "prioridad"]
+        labels = {
+            "descripcion": "Tarea por realizar",
+            "detalle": "Detalle / instrucciones",
+            "fecha_limite": "Fecha límite",
+            "prioridad": "Prioridad",
+        }
+        widgets = {
+            "descripcion": forms.TextInput(attrs={"placeholder": "Ej.: Preparar material para próxima sesión"}),
+            "detalle": forms.Textarea(attrs={"rows": 2, "placeholder": "Descripción opcional de la tarea"}),
+            "fecha_limite": forms.DateInput(attrs={"type": "date"}),
+        }
