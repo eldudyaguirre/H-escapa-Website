@@ -43,6 +43,13 @@ def crear_token_jitsi(cita, nombre, correo="", moderator=False):
     if expira <= ahora:
         raise ValueError("El periodo de acceso a esta videollamada ha finalizado.")
     header = {"alg": "HS256", "typ": "JWT"}
+    usuario = {
+        "name": (nombre or "Participante")[:120],
+        "moderator": bool(moderator),
+    }
+    if correo:
+        usuario["email"] = correo[:254]
+
     payload = {
         "aud": config["app_id"],
         "iss": config["app_id"],
@@ -51,11 +58,7 @@ def crear_token_jitsi(cita, nombre, correo="", moderator=False):
         "iat": ahora,
         "nbf": ahora - 10,
         "exp": expira,
-        "context": {"user": {
-            "name": (nombre or "Participante")[:120],
-            "email": (correo or "")[:254],
-            "moderator": bool(moderator),
-        }},
+        "context": {"user": usuario},
     }
     contenido = (
         _base64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
