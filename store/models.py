@@ -343,8 +343,8 @@ class TareaClinica(models.Model):
         verbose_name = "Tarea clínica"
         verbose_name_plural = "Tareas clínicas"
         indexes = [
-            models.Index(fields=["historia", "estado"]),
-            models.Index(fields=["fecha_limite", "estado"]),
+            models.Index(fields=["historia", "estado"], name="clin_tarea_hist_est_idx"),
+            models.Index(fields=["fecha_limite", "estado"], name="clin_tarea_fecha_est_idx"),
         ]
 
     def __str__(self):
