@@ -4,6 +4,7 @@ from pathlib import Path
 import csv
 import calendar as month_calendar
 import hashlib
+import hmac
 import os
 import mimetypes
 
@@ -25,9 +26,11 @@ from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
+from django.views.decorators.cache import never_cache
 
 from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles, horarios_disponibles_duracion
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
+from .videollamadas import crear_token_jitsi, hash_token_paciente, obtener_configuracion_jitsi
 
 
 
@@ -516,6 +519,146 @@ def homein(request):
         "citas_proximas": citas_proximas,
         "fecha_hoy": hoy,
     })
+
+
+def _render_sala_videollamada(request, cita, es_paciente=False):
+    """Renderiza la sala sin entregar credenciales JWT fuera de la ventana de la cita."""
+    ahora = timezone.now()
+    inicio_disponible = cita.fecha_hora - timedelta(minutes=30)
+    fin_disponible = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
+    contexto = {
+        "cita": cita, "meeting_data": None, "external_api_url": "",
+        "mensaje_estado": "", "titulo_estado": "",
+    }
+    if cita.modalidad != "VIRTUAL":
+        contexto.update(titulo_estado="Esta cita no es virtual", mensaje_estado="La videollamada solo está disponible para citas con modalidad virtual.")
+    elif cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}:
+        contexto.update(titulo_estado="Consulta no disponible", mensaje_estado="La cita está cerrada o cancelada. Comunícate con H-Escapa para recibir ayuda.")
+    elif ahora < inicio_disponible:
+        apertura = timezone.localtime(inicio_disponible).strftime("%d/%m/%Y a las %H:%M")
+        contexto.update(titulo_estado="La sala todavía no está abierta", mensaje_estado=f"Podrás ingresar 30 minutos antes de tu cita. La sala estará disponible desde el {apertura}.")
+    elif ahora > fin_disponible:
+        contexto.update(titulo_estado="El periodo de acceso ha finalizado", mensaje_estado="La ventana de acceso a esta consulta virtual ya terminó.")
+    elif not cita.videollamada_sala:
+        contexto.update(titulo_estado="Sala pendiente de habilitación", mensaje_estado="El consultorio todavía no ha generado el enlace de esta consulta. Contacta a H-Escapa.")
+    else:
+        try:
+            config = obtener_configuracion_jitsi()
+            if es_paciente:
+                nombre, correo, moderator = cita.paciente.nombre, cita.paciente.correo, False
+            else:
+                nombre, correo, moderator = str(cita.profesional), cita.profesional.usuario.email, True
+            jwt = crear_token_jitsi(cita, nombre=nombre, correo=correo, moderator=moderator)
+        except ValueError:
+            contexto.update(titulo_estado="Videollamadas no configuradas", mensaje_estado="El servicio de videollamadas no está configurado correctamente. Contacta al administrador de H-Escapa.")
+        else:
+            contexto["meeting_data"] = {"domain": config["domain"], "roomName": cita.videollamada_sala, "jwt": jwt, "displayName": nombre}
+            contexto["external_api_url"] = f"https://{config['domain']}/external_api.js"
+
+    plantilla = "videollamada-paciente.html" if es_paciente else "frm-videollamada.html"
+    respuesta = render(request, plantilla, contexto)
+    respuesta["Referrer-Policy"] = "no-referrer"
+    respuesta["X-Robots-Tag"] = "noindex, nofollow"
+    return respuesta
+
+
+@staff_required
+@never_cache
+def videollamada_profesional(request, cita_id):
+    cita = get_object_or_404(
+        Cita.objects.select_related("paciente", "profesional", "profesional__usuario"),
+        pk=cita_id,
+    )
+    if not request.user.is_superuser and cita.profesional.usuario_id != request.user.pk:
+        raise Http404("No tienes permiso para ingresar a esta consulta virtual.")
+    return _render_sala_videollamada(request, cita, es_paciente=False)
+
+
+@staff_required
+@never_cache
+def videollamada_enviar_invitacion(request, cita_id):
+    if request.method != "POST":
+        return redirect("homeinvercita", cita_id=cita_id)
+    cita = get_object_or_404(Cita.objects.select_related("paciente", "profesional"), pk=cita_id)
+    destino = (cita.paciente.correo or "").strip()
+    if cita.modalidad != "VIRTUAL":
+        messages.error(request, "Solo puedes enviar enlaces para citas virtuales.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+    if cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}:
+        messages.error(request, "La cita está cerrada o cancelada y no admite videollamada.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+    if not destino:
+        messages.error(request, "El paciente no tiene un correo electrónico registrado.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+    try:
+        obtener_configuracion_jitsi()
+    except ValueError:
+        messages.error(request, "Configura el servidor Jitsi y sus credenciales JWT antes de enviar invitaciones.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    import secrets
+    token = secrets.token_urlsafe(32)
+    cita.videollamada_sala = cita.videollamada_sala or f"hescapa-{secrets.token_hex(24)}"
+    cita.videollamada_token_paciente_hash = hash_token_paciente(token)
+    cita.save(update_fields=["videollamada_sala", "videollamada_token_paciente_hash", "actualizado_en"])
+
+    enlace = request.build_absolute_uri(reverse(
+        "videollamada_paciente_enlace",
+        kwargs={"cita_id": cita.pk, "token": token},
+    ))
+    fecha_local = timezone.localtime(cita.fecha_hora)
+    remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+    if not remitente:
+        messages.error(request, "No está configurado el correo remitente del sistema.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    asunto = "H-Escapa | Enlace para tu consulta virtual"
+    mensaje = (
+        f"Hola {cita.paciente.nombres},\n\n"
+        "Tu consulta virtual en H-Escapa está programada con los siguientes datos:\n\n"
+        f"Profesional: {cita.profesional}\n"
+        f"Fecha: {fecha_local:%d/%m/%Y}\n"
+        f"Hora: {fecha_local:%H:%M}\n"
+        f"Duración: {cita.duracion_minutos} minutos\n\n"
+        "Para ingresar a la videollamada, abre este enlace:\n"
+        f"{enlace}\n\n"
+        "La sala estará disponible desde 30 minutos antes de la cita y hasta 30 minutos después de su hora de finalización.\n\n"
+        "No compartas este enlace con otras personas. Te recomendamos conectarte desde un lugar privado y utilizar audífonos.\n\n"
+        "H-Escapa · Psicología y Salud Mental"
+    )
+    try:
+        EmailMessage(subject=asunto, body=mensaje, from_email=remitente, to=[destino]).send(fail_silently=False)
+    except Exception:
+        messages.error(request, "No se pudo enviar la invitación. Revisa la configuración del correo del servidor.")
+    else:
+        messages.success(request, f"El enlace de la consulta virtual fue enviado a {destino}.")
+    return redirect("homeinvercita", cita_id=cita.pk)
+
+
+@never_cache
+def videollamada_paciente_enlace(request, cita_id, token):
+    cita = get_object_or_404(Cita, pk=cita_id)
+    if cita.modalidad != "VIRTUAL" or cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"} or not cita.videollamada_token_paciente_hash:
+        raise Http404("Enlace de videollamada no válido.")
+    digest = hash_token_paciente(token)
+    if not hmac.compare_digest(digest, cita.videollamada_token_paciente_hash):
+        raise Http404("Enlace de videollamada no válido.")
+    request.session[f"videollamada_paciente_{cita.pk}"] = digest
+    fin_acceso = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
+    request.session.set_expiry(max(60, int((fin_acceso - timezone.now()).total_seconds())))
+    respuesta = redirect("videollamada_paciente_sala", cita_id=cita.pk)
+    respuesta["Referrer-Policy"] = "no-referrer"
+    respuesta["X-Robots-Tag"] = "noindex, nofollow"
+    return respuesta
+
+
+@never_cache
+def videollamada_paciente_sala(request, cita_id):
+    cita = get_object_or_404(Cita.objects.select_related("paciente", "profesional"), pk=cita_id)
+    digest_sesion = request.session.get(f"videollamada_paciente_{cita.pk}", "")
+    if not digest_sesion or not cita.videollamada_token_paciente_hash or not hmac.compare_digest(digest_sesion, cita.videollamada_token_paciente_hash):
+        raise Http404("No tienes autorización para ingresar a esta sala.")
+    return _render_sala_videollamada(request, cita, es_paciente=True)
 
 
 @staff_required
