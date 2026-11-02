@@ -1606,8 +1606,15 @@ def homeinnuevacita(request):
     if request.method == "POST":
         form = CitaForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("homeincalendario")
+            cita = form.save()
+            fecha_calendario = (
+                timezone.localtime(cita.fecha_hora).date()
+                if timezone.is_aware(cita.fecha_hora)
+                else cita.fecha_hora.date()
+            )
+            return redirect(
+                f"{reverse('homeincalendario')}?vista=day&fecha={fecha_calendario.isoformat()}"
+            )
     else:
         initial = {}
         paciente_id = request.GET.get("paciente")
