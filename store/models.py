@@ -258,6 +258,8 @@ class Cita(models.Model):
     recordatorio_5_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_profesional_10_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_profesional_5_enviado = models.BooleanField(default=False, editable=False)
+    videollamada_sala = models.CharField(max_length=64, blank=True, editable=False)
+    videollamada_token_paciente_hash = models.CharField(max_length=64, blank=True, editable=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -265,17 +267,22 @@ class Cita(models.Model):
         # Si se cambia la fecha/hora, los tres recordatorios deben programarse
         # nuevamente para el nuevo horario.
         if self.pk:
-            fecha_anterior = (
+            datos_anteriores = (
                 type(self).objects.filter(pk=self.pk)
-                .values_list("fecha_hora", flat=True)
+                .values_list("fecha_hora", "modalidad")
                 .first()
             )
-            if fecha_anterior is not None and fecha_anterior != self.fecha_hora:
+            if datos_anteriores is not None and (
+                datos_anteriores[0] != self.fecha_hora
+                or datos_anteriores[1] != self.modalidad
+            ):
                 self.recordatorio_30_enviado = False
                 self.recordatorio_10_enviado = False
                 self.recordatorio_5_enviado = False
                 self.recordatorio_profesional_10_enviado = False
                 self.recordatorio_profesional_5_enviado = False
+                self.videollamada_sala = ""
+                self.videollamada_token_paciente_hash = ""
                 update_fields = kwargs.get("update_fields")
                 if update_fields is not None:
                     kwargs["update_fields"] = set(update_fields) | {
@@ -284,6 +291,8 @@ class Cita(models.Model):
                         "recordatorio_5_enviado",
                         "recordatorio_profesional_10_enviado",
                         "recordatorio_profesional_5_enviado",
+                        "videollamada_sala",
+                        "videollamada_token_paciente_hash",
                     }
         super().save(*args, **kwargs)
 
