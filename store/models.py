@@ -244,6 +244,7 @@ class Cita(models.Model):
 
     paciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, related_name="citas")
     profesional = models.ForeignKey(Profesional, on_delete=models.PROTECT, related_name="citas")
+    especialidad = models.ForeignKey(Especialidad, on_delete=models.PROTECT, related_name="citas", null=True, blank=True)
     servicio = models.ForeignKey(Servicio, on_delete=models.PROTECT, related_name="citas", null=True, blank=True)
     fecha_hora = models.DateTimeField()
     duracion_minutos = models.PositiveIntegerField(default=60)
