@@ -17,6 +17,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.contrib import messages
 from .forms import AgendamientoForm, ContactoForm
