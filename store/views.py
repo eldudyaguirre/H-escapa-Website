@@ -26,8 +26,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.templatetags.static import static
 
-from .forms import CitaForm, ReprogramarCitaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
+from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
 
 
 
@@ -578,18 +578,39 @@ def homeinreprogramarcita(request, cita_id):
 
 @staff_required
 def homeinaccioncita(request, cita_id, accion):
-    cita = get_object_or_404(Cita, pk=cita_id)
+    cita = get_object_or_404(
+        Cita.objects.select_related("paciente", "profesional"),
+        pk=cita_id,
+    )
     if request.method != "POST":
         return redirect("homeintodascitas")
 
     if accion == "iniciar":
+        if cita.estado == "EN_PROGRESO":
+            return redirect("homeinatencioncita", cita_id=cita.pk)
         if cita.estado not in {"PROGRAMADA", "CONFIRMADA"}:
-            messages.error(request, "Solo se puede iniciar una cita programada o confirmada.")
-        else:
-            cita.estado = "EN_PROGRESO"
-            cita.save(update_fields=["estado", "actualizado_en"])
-            messages.success(request, "La cita quedó marcada En progreso.")
-    elif accion == "cancelar":
+            messages.error(request, "Esta cita no está disponible para iniciar atención.")
+            return redirect("homeintodascitas")
+
+        # El inicio es manual; no se compara con fecha_hora ni con la hora actual.
+        cita.estado = "EN_PROGRESO"
+        cita.save(update_fields=["estado", "actualizado_en"])
+
+        historia = HistoriaClinica.objects.filter(cita=cita).order_by("-fecha", "-id").first()
+        if not historia:
+            HistoriaClinica.objects.create(
+                paciente=cita.paciente,
+                profesional=cita.profesional,
+                cita=cita,
+                fecha=timezone.now(),
+                motivo_consulta=cita.motivo,
+                observaciones=cita.notas,
+                registrado_por=request.user,
+            )
+        messages.success(request, "La cita está en progreso. Ya puedes registrar la atención.")
+        return redirect("homeinatencioncita", cita_id=cita.pk)
+
+    if accion == "cancelar":
         if cita.estado in {"ATENDIDA", "CANCELADA", "NO_ASISTIO"}:
             messages.error(request, "Esta cita ya está cerrada y no se puede cancelar.")
         else:
@@ -600,6 +621,105 @@ def homeinaccioncita(request, cita_id, accion):
         raise Http404("Acción de cita no válida.")
 
     return redirect("homeintodascitas")
+
+
+@staff_required
+def homeinatencioncita(request, cita_id):
+    """Espacio de trabajo de la consulta, enlazado a la bitácora del paciente."""
+    cita = get_object_or_404(
+        Cita.objects.select_related(
+            "paciente", "profesional", "especialidad", "servicio"
+        ),
+        pk=cita_id,
+    )
+
+    if cita.estado != "EN_PROGRESO":
+        messages.info(request, "Inicia la cita para abrir el espacio de atención.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    historia = HistoriaClinica.objects.filter(cita=cita).order_by("-fecha", "-id").first()
+    if not historia:
+        historia = HistoriaClinica.objects.create(
+            paciente=cita.paciente,
+            profesional=cita.profesional,
+            cita=cita,
+            fecha=timezone.now(),
+            motivo_consulta=cita.motivo,
+            observaciones=cita.notas,
+            registrado_por=request.user,
+        )
+
+    consulta_form = RegistroConsultaForm(instance=historia)
+    tarea_form = TareaClinicaForm()
+
+    if request.method == "POST":
+        accion = request.POST.get("action", "")
+
+        if accion in {"guardar_consulta", "finalizar"}:
+            consulta_form = RegistroConsultaForm(request.POST, instance=historia)
+            if consulta_form.is_valid():
+                registro = consulta_form.save(commit=False)
+                registro.paciente = cita.paciente
+                registro.profesional = cita.profesional
+                registro.cita = cita
+                registro.registrado_por = request.user
+                registro.save()
+
+                if accion == "finalizar":
+                    cita.estado = "ATENDIDA"
+                    cita.save(update_fields=["estado", "actualizado_en"])
+                    messages.success(request, "La atención fue guardada y la cita quedó como atendida.")
+                    return redirect("homeinvercita", cita_id=cita.pk)
+
+                messages.success(request, "Registro de consulta guardado correctamente.")
+                return redirect("homeinatencioncita", cita_id=cita.pk)
+
+        elif accion == "agregar_tarea":
+            tarea_form = TareaClinicaForm(request.POST)
+            if tarea_form.is_valid():
+                tarea = tarea_form.save(commit=False)
+                tarea.historia = historia
+                tarea.creada_por = request.user
+                tarea.save()
+                messages.success(request, "Tarea agregada a la consulta.")
+                return redirect("homeinatencioncita", cita_id=cita.pk)
+
+        elif accion == "alternar_tarea":
+            tarea_id = request.POST.get("tarea_id", "")
+            if tarea_id.isdigit():
+                tarea = get_object_or_404(TareaClinica, pk=tarea_id, historia=historia)
+                if tarea.estado == "PENDIENTE":
+                    tarea.estado = "COMPLETADA"
+                    tarea.completada_en = timezone.now()
+                else:
+                    tarea.estado = "PENDIENTE"
+                    tarea.completada_en = None
+                tarea.save(update_fields=["estado", "completada_en", "actualizado_en"])
+                messages.success(request, "Estado de la tarea actualizado.")
+            return redirect("homeinatencioncita", cita_id=cita.pk)
+
+        else:
+            raise Http404("Acción de consulta no válida.")
+
+    tareas = historia.tareas.select_related("creada_por").order_by("estado", "fecha_limite", "-creado_en")
+    bitacora = (
+        HistoriaClinica.objects
+        .filter(paciente=cita.paciente)
+        .exclude(pk=historia.pk)
+        .select_related("profesional", "cita")
+        .prefetch_related("tareas")
+        .order_by("-fecha", "-id")[:10]
+    )
+
+    return render(request, "frm-atencion-cita.html", {
+        "cita": cita,
+        "historia": historia,
+        "consulta_form": consulta_form,
+        "tarea_form": tarea_form,
+        "tareas": tareas,
+        "bitacora": bitacora,
+        "active_menu": "citas",
+    })
 
 
 @staff_required
@@ -1329,7 +1449,12 @@ def homeinperfilpaciente(request, paciente_id):
         pk=paciente_id,
     )
     citas = paciente.citas.select_related("profesional").order_by("-fecha_hora")
-    historias = paciente.historias_clinicas.select_related("profesional").order_by("-fecha")
+    historias = (
+        paciente.historias_clinicas
+        .select_related("profesional", "cita", "registrado_por")
+        .prefetch_related("tareas")
+        .order_by("-fecha", "-id")
+    )
     documentos = paciente.documentos.all()
     return render(
         request,
