@@ -57,19 +57,22 @@
 
   {% if cita.modalidad == "VIRTUAL" %}
     <section class="detail-video">
-      <div><strong><i class="bx bx-video"></i> Consulta virtual</strong><p>Envía al paciente su enlace privado y accede a la sala como profesional asignado.</p></div>
+      <div><strong><i class="bx bxl-google"></i> Consulta virtual con Google Meet</strong><p>Genera una reunión privada e invita al paciente y al profesional desde Google Calendar.</p></div>
       <div class="detail-video-actions">
         {% if cita.paciente.correo and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
           <form method="post" action="{% url 'videollamada_enviar_invitacion' cita.pk %}">
-            {% csrf_token %}<button type="submit"><i class="bx bx-envelope"></i> {% if cita.videollamada_token_paciente_hash %}Reenviar invitación{% else %}Enviar enlace al paciente{% endif %}</button>
+            {% csrf_token %}<button type="submit"><i class="bx bx-calendar-check"></i> {% if cita.google_calendar_event_id %}Actualizar / reenviar invitación Meet{% else %}Crear Meet y enviar invitación{% endif %}</button>
           </form>
         {% elif not cita.paciente.correo %}
           <span style="color:#8a5b1d;font-size:.84rem">Registra el correo del paciente para enviar la invitación.</span>
         {% endif %}
-        {% if cita.videollamada_sala and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
-          <a class="video-primary" href="{% url 'videollamada_profesional' cita.pk %}"><i class="bx bx-video"></i> Ingresar a la sala</a>
+        {% if cita.google_meet_url and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
+          <a class="video-primary" href="{% url 'videollamada_profesional' cita.pk %}"><i class="bx bxl-google"></i> Ingresar a Google Meet</a>
         {% endif %}
       </div>
+      {% if cita.google_meet_url %}
+        <p class="detail-video-link"><i class="bx bx-link"></i> Reunión creada y vinculada a esta cita.</p>
+      {% endif %}
     </section>
   {% endif %}
 
