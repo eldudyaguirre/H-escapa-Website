@@ -5,7 +5,7 @@
 {% block extra_head %}
 <style>
 .profile-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px}.profile-title-row h1{margin-bottom:8px}.identity .patient-menu-wrap{position:absolute;top:0;right:0;z-index:100}.patient-menu-native{position:relative}.patient-menu-native summary{list-style:none;width:42px;height:42px;border:1px solid #dce3e3;border-radius:8px;background:#fff;color:#343b39;display:grid;place-items:center;font-size:22px;cursor:pointer}.patient-menu-native summary::-webkit-details-marker{display:none}.patient-menu-native summary:hover{background:#f4f7f6}.patient-menu-native[open] summary{background:#f4f7f6}.patient-menu{position:absolute;right:0;top:48px;width:220px;background:#fff;border:1px solid #dce3e3;border-radius:9px;box-shadow:0 8px 24px #20333120;z-index:999;padding:8px;text-align:left}.patient-menu-title{font-size:14px;font-weight:700;padding:8px 10px 6px;color:#303735}.patient-menu a,.patient-menu button{width:100%;display:flex;align-items:center;gap:11px;border:0;background:transparent;color:#343b39;text-decoration:none;text-align:left;padding:9px 10px;border-radius:6px;font:inherit;font-size:14px;cursor:pointer}.patient-menu a:hover,.patient-menu button:hover{background:#f2f6f5}.patient-menu i{font-size:18px;color:#56615f}.patient-menu .danger{color:#d52b2b}.patient-menu .danger i{color:#d52b2b}.patient-menu .success{color:#249653}.patient-menu .success i{color:#249653}.patient-menu-divider{height:1px;background:#e5e9e8;margin:5px 0}
-.profile-page{padding:24px 28px 36px;min-width:0;color:#202326}.profile-page *{box-sizing:border-box}.profile-page .back{display:inline-flex;align-items:center;gap:9px;color:var(--h-escapa3-color,#005855);text-decoration:none;margin-bottom:22px}.profile-page h1{font-size:32px;font-weight:600;margin:0 0 8px}.profile-page .subtitle{font-size:17px;color:#777e83;margin:0 0 24px}.profile-layout{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);gap:22px;align-items:start}.profile-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:22px;margin-bottom:18px;min-width:0}.identity{text-align:center;padding:8px 0 20px;position:relative}.avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#e8f3f2;color:var(--h-escapa3-color,#005855);font-size:40px;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}.name{font-size:25px;font-weight:600;margin:0 0 6px}.muted{color:#777e83}.status{display:inline-block;background:#e2f7e9;color:#21834a;border-radius:20px;padding:6px 12px;font-size:13px;margin-top:12px}.status.inactive{background:#fff2d9;color:#986700}.profile-page .section-title{font-size:22px;font-weight:500;margin:0 0 18px}.profile-page .actions{display:flex;gap:9px;flex-wrap:wrap}.profile-page .action{display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;border-radius:9px;text-decoration:none;border:1px solid #dce3e3;color:var(--h-escapa3-color,#005855);background:#fff;font-size:14px}.profile-page .action.primary{background:var(--h-escapa1-color,#439b95);border-color:var(--h-escapa1-color,#439b95);color:#fff}.profile-page .info{margin-top:20px}.profile-page .info h3{font-size:17px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:9px}.profile-page .info p{font-size:14px;line-height:1.5;margin:8px 0;overflow-wrap:anywhere}.profile-page .info b{font-weight:500}.profile-page hr{border:0;border-top:1px solid #e2e5e7;margin:18px 0}.profile-page .meta{display:flex;justify-content:space-between;gap:12px;color:#777e83;font-size:12px;border-top:1px solid #e2e5e7;margin-top:20px;padding-top:15px}.profile-main{min-width:0}.profile-page .tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;background:#f0f2f2;padding:6px;border-radius:9px;margin-bottom:18px}.profile-page .tab{border:0;background:transparent;color:#687477;padding:11px 5px;border-radius:6px;min-width:0;font:inherit;font-size:14px;cursor:pointer}.profile-page .tab[aria-selected=true]{background:#fff;color:var(--h-escapa3-color,#005855);box-shadow:0 1px 4px #24323812;font-weight:600}.profile-page .summary-grid,.profile-page .vitals-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:20px}.profile-page .mini-card{border:1px solid #e2e5e7;border-radius:10px;padding:15px;min-width:0}.profile-page .mini-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;min-height:42px}.profile-page .mini-card .value{font-size:20px;margin-top:20px;line-height:1.4;overflow-wrap:anywhere}.profile-page .mini-card p{font-size:13px;margin:5px 0;color:#777e83;line-height:1.45}.profile-page .section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 12px}.profile-page .section-heading h2{font-size:20px;font-weight:500;margin:0}.profile-page .small-button{border:1px solid #dce3e3;background:#fff;border-radius:8px;padding:8px 11px;color:var(--h-escapa3-color,#005855);font:inherit;font-size:13px;cursor:pointer}.profile-page .appointment{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #e2e5e7;border-radius:9px;padding:13px;margin-top:9px}.profile-page .appointment strong{font-size:14px;font-weight:600}.profile-page .appointment p{font-size:13px;color:#777e83;margin:5px 0 0;line-height:1.4}.profile-page .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#20b56b;margin-right:9px}.profile-page .pill{white-space:nowrap;display:inline-block;padding:5px 9px;border-radius:20px;background:#e2f7e9;color:#21834a;font-size:12px}.profile-page .pill.blue{background:#e8f0ff;color:#315eac}.profile-page .vital .value{font-size:25px;font-weight:600;margin-top:15px}.profile-page .bar{height:6px;background:#f0f2f2;margin:12px 0 8px;border-radius:4px;overflow:hidden}.profile-page .bar span{display:block;height:100%;background:#e9a11b}.profile-page .bar.green span{background:#20b56b}.profile-page .note{font-size:13px;color:#777e83;margin:18px 0 0;line-height:1.5}.profile-page .panel[hidden]{display:none}
+.profile-page{padding:24px 28px 36px;min-width:0;color:#202326}.profile-page *{box-sizing:border-box}.profile-page .back{display:inline-flex;align-items:center;gap:9px;color:var(--h-escapa3-color,#005855);text-decoration:none;margin-bottom:22px}.profile-page h1{font-size:32px;font-weight:600;margin:0 0 8px}.profile-page .subtitle{font-size:17px;color:#777e83;margin:0 0 24px}.profile-layout{display:grid;grid-template-columns:minmax(270px,340px) minmax(0,1fr);gap:22px;align-items:start}.profile-card{background:#fff;border:1px solid #e2e5e7;border-radius:14px;padding:22px;margin-bottom:18px;min-width:0}.identity{text-align:center;padding:8px 0 20px;position:relative}.avatar{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#e8f3f2;color:var(--h-escapa3-color,#005855);font-size:40px;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:block}.name{font-size:25px;font-weight:600;margin:0 0 6px}.muted{color:#777e83}.status{display:inline-block;background:#e2f7e9;color:#21834a;border-radius:20px;padding:6px 12px;font-size:13px;margin-top:12px}.status.inactive{background:#fff2d9;color:#986700}.profile-page .section-title{font-size:22px;font-weight:500;margin:0 0 18px}.profile-page .actions{display:flex;gap:9px;flex-wrap:wrap}.profile-page .action{display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;border-radius:9px;text-decoration:none;border:1px solid #dce3e3;color:var(--h-escapa3-color,#005855);background:#fff;font-size:14px}.profile-page .action.primary{background:var(--h-escapa1-color,#439b95);border-color:var(--h-escapa1-color,#439b95);color:#fff}.profile-page .info{margin-top:20px}.profile-page .info h3{font-size:17px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:9px}.profile-page .info p{font-size:14px;line-height:1.5;margin:8px 0;overflow-wrap:anywhere}.profile-page .info b{font-weight:500}.profile-page hr{border:0;border-top:1px solid #e2e5e7;margin:18px 0}.profile-page .meta{display:flex;justify-content:space-between;gap:12px;color:#777e83;font-size:12px;border-top:1px solid #e2e5e7;margin-top:20px;padding-top:15px}.profile-main{min-width:0}.profile-page .tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;background:#f0f2f2;padding:6px;border-radius:9px;margin-bottom:18px}.profile-page .tab{border:0;background:transparent;color:#687477;padding:11px 5px;border-radius:6px;min-width:0;font:inherit;font-size:14px;cursor:pointer}.profile-page .tab[aria-selected=true]{background:#fff;color:var(--h-escapa3-color,#005855);box-shadow:0 1px 4px #24323812;font-weight:600}.profile-page .summary-grid,.profile-page .vitals-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:20px}.profile-page .mini-card{border:1px solid #e2e5e7;border-radius:10px;padding:15px;min-width:0}.profile-page .mini-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;min-height:42px}.profile-page .mini-card .value{font-size:20px;margin-top:20px;line-height:1.4;overflow-wrap:anywhere}.profile-page .mini-card p{font-size:13px;margin:5px 0;color:#777e83;line-height:1.45}.profile-page .section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 12px}.profile-page .section-heading h2{font-size:20px;font-weight:500;margin:0}.profile-page .small-button{border:1px solid #dce3e3;background:#fff;border-radius:8px;padding:8px 11px;color:var(--h-escapa3-color,#005855);font:inherit;font-size:13px;cursor:pointer}.profile-page .appointment{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #e2e5e7;border-radius:9px;padding:13px;margin-top:9px}.profile-page .appointment strong{font-size:14px;font-weight:600}.profile-page .appointment p{font-size:13px;color:#777e83;margin:5px 0 0;line-height:1.4}.profile-page .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#20b56b;margin-right:9px}.profile-page .pill{white-space:nowrap;display:inline-block;padding:5px 9px;border-radius:20px;background:#e2f7e9;color:#21834a;font-size:12px}.profile-page .pill.blue{background:#e8f0ff;color:#315eac}.profile-page .vital .value{font-size:25px;font-weight:600;margin-top:15px}.profile-page .bar{height:6px;background:#f0f2f2;margin:12px 0 8px;border-radius:4px;overflow:hidden}.profile-page .bar span{display:block;height:100%;background:#e9a11b}.profile-page .bar.green span{background:#20b56b}.profile-page .note{font-size:13px;color:#777e83;margin:18px 0 0;line-height:1.5}.profile-page .panel[hidden]{display:none}
 @media print{
   body{background:#fff!important}
   .profile-page{padding:0!important}
@@ -18,6 +18,32 @@
 }
 @media(max-width:1050px){.profile-page{padding:22px 18px}.profile-layout{grid-template-columns:minmax(230px,290px) minmax(0,1fr);gap:15px}.profile-card{padding:18px}.profile-page .tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.profile-page .summary-grid,.profile-page .vitals-grid{gap:9px}.profile-page .mini-card{padding:12px}}
 @media(max-width:700px){.profile-page{padding:18px 12px 28px}.profile-page h1{font-size:28px}.profile-page .subtitle{font-size:15px}.profile-layout{grid-template-columns:minmax(0,1fr);gap:0}.profile-page .profile-card{padding:17px 14px}.profile-page .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-page .tab:last-child{grid-column:1/-1}.profile-page .summary-grid,.profile-page .vitals-grid{grid-template-columns:minmax(0,1fr)}.profile-page .mini-card .value{margin-top:12px}.profile-page .appointment{align-items:flex-start;flex-direction:column}.profile-page .meta{flex-direction:column}.profile-page .section-heading{align-items:flex-start;flex-wrap:wrap}}
+
+.profile-history-list{display:grid;gap:13px}
+.profile-history-entry{border:1px solid #e2e8e6;border-radius:10px;padding:16px;background:#fff}
+.profile-history-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.profile-history-head strong{font-size:15px;color:#344944}
+.profile-history-meta{font-size:12px;color:#899490;margin-top:4px}
+.profile-history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.profile-history-field{padding:10px;border-radius:8px;background:#f8faf9;min-width:0}
+.profile-history-field.full{grid-column:1/-1}
+.profile-history-field b{display:block;margin-bottom:4px;color:#71807a;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.profile-history-field p{margin:0;color:#465a54;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.profile-history-tasks{margin-top:12px;padding-top:11px;border-top:1px solid #edf1f0}
+.profile-history-tasks h4{margin:0 0 8px;font-size:13px;color:#586a65}
+.profile-history-tasks ul{margin:0;padding-left:18px}
+.profile-history-tasks li{margin:4px 0;color:#687872;font-size:12px}
+.profile-appointment-list{display:grid;gap:9px}
+.profile-appointment-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px;border:1px solid #e4eae8;border-radius:9px}
+.profile-appointment-row strong{display:block;color:#40544e;font-size:14px}
+.profile-appointment-row p{margin:4px 0 0;color:#7d8985;font-size:12px;line-height:1.45}
+.profile-appointment-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.profile-appointment-actions a{display:inline-flex;padding:7px 10px;border:1px solid #dce5e3;border-radius:7px;color:#005855;text-decoration:none;font-size:12px}
+.profile-appointment-status{display:inline-block;padding:5px 9px;border-radius:18px;background:#f1f4f3;color:#63736d;font-size:11px;font-weight:650;white-space:nowrap}
+.profile-appointment-status.progress{background:#fff2dd;color:#a56a12}
+.profile-appointment-status.done{background:#e7f5ed;color:#2d8050}
+.profile-appointment-status.cancelled{background:#fff0f0;color:#b64d4d}
+@media(max-width:650px){.profile-history-grid{grid-template-columns:1fr}.profile-history-field.full{grid-column:auto}.profile-appointment-row{align-items:flex-start;flex-direction:column}.profile-appointment-actions{width:100%}}
 </style>
 {% endblock %}
 
@@ -102,7 +128,7 @@
 
     <div class="profile-main">
       <div class="tabs" role="tablist" aria-label="Secciones del perfil">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="resumen" data-panel="resumen">Resumen</button><button class="tab" role="tab" aria-selected="false" aria-controls="citas" data-panel="citas">Citas</button><button class="tab" role="tab" aria-selected="false" aria-controls="recetas" data-panel="recetas">Recetas</button><button class="tab" role="tab" aria-selected="false" aria-controls="laboratorio" data-panel="laboratorio">Resultados</button><button class="tab" role="tab" aria-selected="false" aria-controls="facturacion" data-panel="facturacion">Facturación</button><button class="tab" role="tab" aria-selected="false" aria-controls="documentos" data-panel="documentos">Documentos</button>
+        <button class="tab" role="tab" aria-selected="true" aria-controls="resumen" data-panel="resumen">Resumen</button><button class="tab" role="tab" aria-selected="false" aria-controls="citas" data-panel="citas">Citas</button><button class="tab" role="tab" aria-selected="false" aria-controls="historial" data-panel="historial">Bitácora</button><button class="tab" role="tab" aria-selected="false" aria-controls="recetas" data-panel="recetas">Recetas</button><button class="tab" role="tab" aria-selected="false" aria-controls="laboratorio" data-panel="laboratorio">Resultados</button><button class="tab" role="tab" aria-selected="false" aria-controls="facturacion" data-panel="facturacion">Facturación</button><button class="tab" role="tab" aria-selected="false" aria-controls="documentos" data-panel="documentos">Documentos</button>
       </div>
       <section class="profile-card panel" id="resumen" role="tabpanel">
         <h2 class="section-title">Resumen del paciente</h2><p class="muted">Vista general del estado del paciente y sus actividades recientes.</p>
@@ -118,7 +144,31 @@
         <div class="vitals-grid"><article class="mini-card vital"><div class="mini-title">Estado de ánimo</div><div class="value">Sin datos</div><p>Registro clínico pendiente</p><div class="bar"><span style="width:35%"></span></div></article><article class="mini-card vital"><div class="mini-title">Seguimiento</div><div class="value">Pendiente</div><p>Se actualizará con las sesiones</p><div class="bar"><span style="width:25%"></span></div></article><article class="mini-card vital"><div class="mini-title">Asistencia</div><div class="value">—</div><p>Sin citas registradas</p><div class="bar green"><span style="width:0%"></span></div></article></div>
         <p class="note">Los campos que aún no tienen información se muestran como pendientes. En la siguiente etapa se conectarán a la base de datos.</p>
       </section>
-      <section class="profile-card panel" id="citas" role="tabpanel" hidden><h2 class="section-title">Citas</h2><p class="muted">Aquí se mostrarán las citas asociadas a {{ paciente.nombre }} cuando conectemos la base de datos.</p><button class="small-button" type="button" onclick="window.location.href='{% url 'homeinnuevacita' %}'">Agendar cita</button></section>
+      <section class="profile-card panel" id="citas" role="tabpanel" hidden>
+        <div class="section-heading"><h2>Citas de {{ paciente.nombre }}</h2><a class="small-button" href="{% url 'homeinnuevacita' %}?paciente={{ paciente.pk|urlencode }}">Agendar cita</a></div>
+        {% if citas %}
+          <div class="profile-appointment-list">
+            {% for cita in citas %}
+              <article class="profile-appointment-row">
+                <div>
+                  <strong>{{ cita.fecha_hora|date:"d/m/Y H:i" }} · {{ cita.profesional }}</strong>
+                  <p>{% if cita.especialidad %}{{ cita.especialidad.nombre }}{% elif cita.servicio %}{{ cita.servicio.nombre }}{% else %}Atención{% endif %} · {{ cita.get_modalidad_display }} · {{ cita.duracion_minutos }} min</p>
+                </div>
+                <div class="profile-appointment-actions">
+                  <span class="profile-appointment-status{% if cita.estado == 'EN_PROGRESO' %} progress{% elif cita.estado == 'ATENDIDA' %} done{% elif cita.estado == 'CANCELADA' %} cancelled{% endif %}">{{ cita.get_estado_display }}</span>
+                  {% if cita.estado == "EN_PROGRESO" %}
+                    <a href="{% url 'homeinatencioncita' cita.pk %}">Continuar atención</a>
+                  {% else %}
+                    <a href="{% url 'homeinvercita' cita.pk %}">Ver cita</a>
+                  {% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">Este paciente todavía no tiene citas registradas.</p>
+        {% endif %}
+      </section>
       <section class="profile-card panel" id="recetas" role="tabpanel" hidden><h2 class="section-title">Recetas</h2><p class="muted">No hay recetas conectadas para este paciente.</p></section>
       <section class="profile-card panel" id="laboratorio" role="tabpanel" hidden><h2 class="section-title">Resultados</h2><p class="muted">No hay resultados registrados para este paciente.</p></section>
       <section class="profile-card panel" id="facturacion" role="tabpanel" hidden><h2 class="section-title">Facturación</h2><p class="muted">La información de facturación se mostrará al conectar la base de datos.</p></section><section class="profile-card panel" id="documentos" role="tabpanel" hidden>
@@ -152,7 +202,50 @@
 </form>
 </div>
 </section>
-      <section class="profile-card panel" id="historial" role="tabpanel" hidden><h2 class="section-title">Historial clínico</h2><p class="muted">Las notas y sesiones clínicas se mostrarán cuando se conecte la base de datos.</p></section>
+      <section class="profile-card panel" id="historial" role="tabpanel" hidden>
+        <div class="section-heading"><h2>Bitácora de consultas</h2><span class="muted">{{ historias|length }} registro{{ historias|length|pluralize:"s" }}</span></div>
+        <p class="muted">Registro cronológico de las consultas, observaciones, anotaciones y seguimiento de {{ paciente.nombre }}.</p>
+        {% if historias %}
+          <div class="profile-history-list">
+            {% for registro in historias %}
+              <article class="profile-history-entry">
+                <div class="profile-history-head">
+                  <div>
+                    <strong>{{ registro.motivo_consulta|default:"Consulta clínica" }}</strong>
+                    <div class="profile-history-meta">{{ registro.fecha|date:"d/m/Y H:i" }} · {{ registro.profesional }}{% if registro.cita %} · Cita #{{ registro.cita.pk }}{% endif %}</div>
+                  </div>
+                  {% if registro.cita %}
+                    <a class="small-button" href="{% url 'homeinvercita' registro.cita.pk %}">Ver cita</a>
+                  {% endif %}
+                </div>
+                <div class="profile-history-grid">
+                  {% if registro.evaluacion %}<div class="profile-history-field full"><b>Evaluación</b><p>{{ registro.evaluacion }}</p></div>{% endif %}
+                  {% if registro.diagnostico %}<div class="profile-history-field"><b>Diagnóstico / impresión</b><p>{{ registro.diagnostico }}</p></div>{% endif %}
+                  {% if registro.intervencion %}<div class="profile-history-field"><b>Intervención</b><p>{{ registro.intervencion }}</p></div>{% endif %}
+                  {% if registro.observaciones %}<div class="profile-history-field full"><b>Observaciones</b><p>{{ registro.observaciones }}</p></div>{% endif %}
+                  {% if registro.anotaciones %}<div class="profile-history-field full"><b>Anotaciones</b><p>{{ registro.anotaciones }}</p></div>{% endif %}
+                  {% if registro.sugerencias_proxima_cita %}<div class="profile-history-field full"><b>Sugerencias para la próxima cita</b><p>{{ registro.sugerencias_proxima_cita }}</p></div>{% endif %}
+                  {% if registro.fecha_proxima_cita %}<div class="profile-history-field"><b>Fecha sugerida</b><p>{{ registro.fecha_proxima_cita|date:"d/m/Y" }}</p></div>{% endif %}
+                  {% if registro.plan_seguimiento %}<div class="profile-history-field full"><b>Plan de seguimiento</b><p>{{ registro.plan_seguimiento }}</p></div>{% endif %}
+                </div>
+                {% if registro.tareas.all %}
+                  <div class="profile-history-tasks">
+                    <h4>Tareas asociadas</h4>
+                    <ul>
+                      {% for tarea in registro.tareas.all %}
+                        <li>{% if tarea.estado == "COMPLETADA" %}✓{% else %}○{% endif %} {{ tarea.descripcion }} · {{ tarea.get_estado_display }}{% if tarea.fecha_limite %} · Fecha límite: {{ tarea.fecha_limite|date:"d/m/Y" }}{% endif %}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+                <div class="profile-history-meta">Registrado: {{ registro.creado_en|date:"d/m/Y H:i" }}{% if registro.registrado_por %} · {{ registro.registrado_por.get_short_name|default:registro.registrado_por.username }}{% endif %}</div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">Todavía no hay consultas registradas en la bitácora de este paciente. Los registros se crearán al iniciar y documentar sus citas.</p>
+        {% endif %}
+      </section>
     </div>
   </div>
 </section>
