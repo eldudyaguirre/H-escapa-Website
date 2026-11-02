@@ -1,80 +1,76 @@
-# Videollamadas de H-Escapa
+# Google Meet en H-Escapa
 
 ## Arquitectura
 
-La aplicación integra Jitsi Meet mediante su IFrame API. Esta implementación está preparada para una **instancia propia de Jitsi Meet con autenticación JWT HS256**. No utiliza una sala pública compartida.
+H-Escapa crea una reunión única de Google Meet por cada cita virtual mediante Google Calendar API. La cuenta de Google autorizada es la organizadora de los eventos; el paciente y el profesional reciben las invitaciones de Calendar y el paciente recibe además un correo de acceso privado de H-Escapa.
 
-El profesional ingresa desde el detalle de la cita con su usuario del sistema. El paciente recibe por correo un enlace privado que acredita el acceso a esa cita. El backend valida la cita y emite un JWT de corta duración, restringido a una sala concreta.
+El enlace de Meet se guarda en la cita junto con el identificador del evento de Google Calendar. Si se vuelve a enviar la invitación, H-Escapa actualiza el evento existente y conserva la misma reunión. Si se reprograma la cita, también se actualiza el evento. Si se cancela la cita o se cambia de virtual a presencial, H-Escapa intenta cancelar el evento de Google Calendar y notifica a los invitados.
 
-## Configuración de H-Escapa
+El enlace privado del paciente contiene un token aleatorio; en la base de datos se guarda únicamente su hash. Al reenviar la invitación se invalida el enlace privado anterior. El paciente puede acceder sin tener una cuenta de usuario en H-Escapa. Google Meet puede solicitar que el organizador admita a invitados externos según la configuración de la cuenta.
 
-Define estas variables en el mismo entorno que utiliza el proceso Django (por ejemplo, el archivo `.env` que carga el servicio):
+## Requisitos en Google Cloud
 
-```dotenv
-JITSI_DOMAIN=video.tu-dominio.com
-JITSI_SUB=meet.jitsi
-JITSI_APP_ID=hescapa
-JITSI_APP_SECRET=CAMBIA_POR_UN_SECRETO_LARGO_Y_ALEATORIO
-```
+1. Utiliza un proyecto de Google Cloud para H-Escapa.
+2. En **APIs y servicios → Biblioteca**, habilita **Google Calendar API**.
+3. Configura la pantalla de consentimiento OAuth. Agrega como usuario de prueba la cuenta de Google que organizará las reuniones si la aplicación permanece en modo de pruebas.
+4. En **Credenciales**, crea un **ID de cliente OAuth 2.0** de tipo **Aplicación web**.
+5. Agrega esta URI autorizada de redireccionamiento, exactamente como está escrita:
 
-- `JITSI_DOMAIN`: solo el nombre del dominio, sin `https://`, rutas ni barra final.
-- `JITSI_SUB`: debe coincidir con `XMPP_DOMAIN` de Jitsi. En Docker el valor predeterminado es `meet.jitsi`; si cambiaste `XMPP_DOMAIN`, coloca aquí ese mismo valor.
-- `JITSI_APP_ID`: identificador de la aplicación; debe coincidir con `JWT_APP_ID` del servidor Jitsi.
-- `JITSI_APP_SECRET`: secreto compartido; debe coincidir exactamente con `JWT_APP_SECRET` del servidor Jitsi.
+   `https://h-escapa.com/google-calendar/oauth/callback/`
 
-Genera un secreto aleatorio desde PowerShell con:
+   Si el dominio canónico de la instalación cambia, actualiza tanto esta URI en Google Cloud como `GOOGLE_CALENDAR_REDIRECT_URI` en el servidor.
 
-```powershell
-python -c "import secrets; print(secrets.token_urlsafe(48))"
-```
+La cuenta de Google que autorice H-Escapa será la propietaria de los eventos que se creen en su calendario principal. Conviene usar una cuenta institucional dedicada a las citas, no una cuenta personal de un profesional.
 
-No guardes ese secreto en GitHub ni lo incluyas en capturas o correos.
+## Variables del servidor
 
-## Configuración del servidor Jitsi
-
-En el archivo de entorno de la instalación propia de Jitsi (por ejemplo, el `.env` de Docker Compose), configura la autenticación JWT:
+En el archivo `.env` de la instalación de H-Escapa, configura:
 
 ```dotenv
-ENABLE_AUTH=1
-AUTH_TYPE=jwt
-JWT_APP_ID=hescapa
-JWT_APP_SECRET=EL_MISMO_SECRETO_CONFIGURADO_EN_H_ESCAPA
-JWT_ACCEPTED_ISSUERS=hescapa
-JWT_ACCEPTED_AUDIENCES=hescapa
-JWT_ALLOW_EMPTY=0
-JWT_SIGN_TYPE=HS256
-ENABLE_GUESTS=0
-XMPP_MUC_MODULES=token_affiliation
-JICOFO_ENABLE_AUTH=0
-ENABLE_AUTO_OWNER=0
-WAIT_FOR_HOST_DISABLE_AUTO_OWNERS=1
-ENABLE_RECORDING=0
+GOOGLE_CALENDAR_CLIENT_ID=tu-cliente-oauth.apps.googleusercontent.com
+GOOGLE_CALENDAR_CLIENT_SECRET=tu-secreto-oauth
+GOOGLE_CALENDAR_REDIRECT_URI=https://h-escapa.com/google-calendar/oauth/callback/
 ```
 
-Usa el mismo secreto en Jitsi y en H-Escapa. No habilites acceso anónimo si quieres que todos los participantes deban presentar un JWT.
+No agregues manualmente `GOOGLE_CALENDAR_REFRESH_TOKEN`: H-Escapa lo guardará en el archivo `.env` después de que el administrador complete el consentimiento de Google. El archivo `.env` no debe subirse a GitHub ni compartirse.
 
-**Separación de permisos:** H-Escapa emite `context.user.affiliation=owner` y `moderator=true` para el profesional, y `context.user.affiliation=member` para el paciente. El módulo `token_affiliation` debe estar activo en el MUC; Jicofo no debe promover automáticamente a todos los usuarios autenticados. Por eso se incluyen `JICOFO_ENABLE_AUTH=0`, `ENABLE_AUTO_OWNER=0` y `WAIT_FOR_HOST_DISABLE_AUTO_OWNERS=1`. No elimines estos parámetros si quieres que el paciente no pueda expulsar participantes, cerrar la sala o administrar la reunión. Esta configuración debe verificarse en la versión concreta de Jitsi que se despliegue.
+El usuario de Windows que ejecuta el servicio Django debe tener permiso de escritura en el archivo `.env` para que la autorización pueda persistirse. Reinicia el servicio si agregas o cambias las credenciales del cliente OAuth.
 
-Reinicia o recrea los servicios Jitsi de acuerdo con el método de instalación para aplicar los cambios.
+## Conectar la cuenta desde H-Escapa
 
-La instancia de Jitsi debe tener HTTPS y conectividad de medios configurada. En Docker, publica los puertos TCP 80 y 443 y UDP 10000 para el tráfico de medios. Si el servidor está detrás de NAT, configura `JVB_ADVERTISE_IPS` con su IP pública para que los clientes puedan establecer el flujo de audio y video. La aplicación carga `external_api.js` desde el dominio configurado.
+1. Ejecuta las migraciones: `python manage.py migrate`.
+2. Inicia sesión en H-Escapa con el usuario administrador.
+3. Abre **Citas → Consultas virtuales**.
+4. Pulsa **Conectar Google**.
+5. Selecciona la cuenta institucional de Google y acepta el permiso para administrar eventos del calendario.
+6. Al regresar a H-Escapa, el módulo mostrará **Google Calendar conectado**.
+
+La autorización solicita el alcance `https://www.googleapis.com/auth/calendar.events`, utilizado para crear, actualizar y cancelar los eventos de las consultas.
 
 ## Flujo de uso
 
 1. Registra una cita y selecciona modalidad **Virtual**.
-2. Abre el detalle de la cita y pulsa **Enviar enlace al paciente**.
-3. H-Escapa genera una sala exclusiva y manda el enlace al correo registrado del paciente.
-4. El profesional asignado entra primero desde **Ingresar a la sala** en el detalle de la cita. Esto crea/inicia la reunión y le da el rol de anfitrión.
-5. El paciente abre el enlace recibido por correo y entra como participante, sin permisos de anfitrión.
-6. La sala se habilita desde 30 minutos antes y hasta 30 minutos después de la finalización prevista.
+2. Abre el detalle de la cita y pulsa **Crear Meet y enviar invitación**.
+3. H-Escapa crea el evento privado y solicita a Google una conferencia Meet única.
+4. Cuando Google confirma que el enlace está listo, se invita al paciente y al profesional desde Google Calendar. También se envía al paciente un correo de H-Escapa con su enlace privado de acceso.
+5. El profesional entra desde **Ingresar a Google Meet** en el detalle de la cita. El paciente abre el enlace privado recibido por correo.
+6. El acceso desde H-Escapa se habilita desde 30 minutos antes de la cita y hasta 30 minutos después de la hora prevista de finalización.
 
-El enlace del paciente es una credencial privada: no debe reenviarse. En la base de datos se guarda su hash, no el token original. Volver a enviar la invitación invalida el enlace anterior. Cambiar fecha, hora o modalidad de la cita elimina la sala y revoca el enlace anterior.
+La generación de la conferencia puede tardar unos segundos. Mientras Google la procesa, H-Escapa conserva el identificador del evento y permite volver a comprobarlo sin crear otra reunión. Las invitaciones de Calendar se envían después de que exista el enlace Meet.
 
-## Requisitos y límites de esta primera versión
+## Seguridad y privacidad
 
-- El profesional debe tener una cuenta activa y asociada a la cita.
-- El paciente debe tener un correo válido registrado. El enlace funciona sin una cuenta de paciente porque el portal actual no tiene autenticación de pacientes.
-- La cámara y el micrófono requieren permisos del navegador y una conexión HTTPS.
-- El backend no graba ni almacena audio o video. La configuración de grabación del servidor Jitsi también debe permanecer deshabilitada.
-- Esta integración usa JWT HS256 de una instalación propia de Jitsi. No es la configuración JWT de Jitsi as a Service (JaaS); para JaaS se necesita adaptar el emisor JWT al tipo de credencial de ese servicio.
-- Antes de usarla con pacientes reales, valida con una cita de prueba, dos dispositivos y cuentas de prueba. Revisa además las obligaciones de privacidad, consentimiento informado y protección de datos aplicables a teleconsulta.
+- El evento usa un título genérico: **Consulta virtual H-Escapa**. No se agregan motivos de consulta ni datos clínicos a la descripción del calendario.
+- El evento se crea con visibilidad privada y sin permitir que los invitados modifiquen o reenvíen la invitación a otras personas.
+- Cada cita tiene un identificador y una conferencia Meet propios. No se reutiliza el enlace de otra cita.
+- El profesional solo puede abrir la consulta si es el profesional asignado o un superusuario.
+- El paciente solo puede abrir la página de acceso con el token privado que recibió por correo.
+- El token no se guarda en texto claro en la base de datos.
+- H-Escapa no graba ni almacena audio o video. La llamada ocurre en Google Meet.
+- Los enlaces se abren en una pestaña nueva de Google Meet; no se incrustan dentro de H-Escapa.
+
+## Nota sobre el estado de publicación OAuth
+
+Si la pantalla de consentimiento es de tipo externo y la aplicación permanece en estado **Testing**, Google limita la duración de los refresh tokens para estos permisos y puede requerir volver a autorizar la cuenta cada siete días. Para operación continua, revisa el estado de publicación y los requisitos de verificación de OAuth de Google. Si la organización utiliza Google Workspace, el administrador puede evaluar configurar la aplicación como interna, según sus políticas.
+
+Antes de atender pacientes reales, realiza una prueba con una cita virtual, dos direcciones de correo y dos dispositivos. Comprueba la invitación de Calendar, el correo privado, el acceso desde el teléfono y la cancelación/reprogramación de la cita.
