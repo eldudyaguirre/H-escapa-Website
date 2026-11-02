@@ -76,6 +76,10 @@
   .clinical-disclaimer{margin-top:12px;padding:11px 13px;border-radius:9px;background:#f4f8f7;color:#76857f;font-size:.7rem;line-height:1.5}
   .clinical-message{padding:10px 13px;border-radius:8px;background:#eaf6ef;border:1px solid #cde8d5;color:#286b41;font-size:.81rem}
   .clinical-message.error{background:#fff1f0;border-color:#f0d3d0;color:#a53e35}
+  .availability-controls{display:flex;align-items:center;gap:8px}
+  .availability-controls select{flex:1;min-width:180px}
+  .availability-field small{margin-top:7px;color:#7b8983}
+  .consultation-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
   @media(max-width:1050px){.patient-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.patient-main{grid-column:1/3}.patient-strip-action{grid-column:3;grid-row:1}.consultation-layout{grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr)}}
   @media(max-width:760px){.consultation-page{padding:18px 12px 30px}.consultation-head h1{font-size:1.7rem}.consultation-head-actions{width:100%}.consultation-head-actions .consultation-btn{flex:1}.patient-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:14px}.patient-main{grid-column:1/-1}.patient-strip-action{grid-column:1/-1;grid-row:auto;justify-self:stretch}.consultation-layout{grid-template-columns:1fr}.consultation-panel-body{padding:15px}.clinical-form-grid{grid-template-columns:1fr}.clinical-field.full{grid-column:auto}.consultation-form-actions{align-items:stretch;flex-direction:column}.consultation-form-actions .right{width:100%}.consultation-form-actions .right .consultation-btn{flex:1}}
 </style>
@@ -155,6 +159,20 @@
                   {{ field }}
                   {% for error in field.errors %}<div class="clinical-error">{{ error }}</div>{% endfor %}
                 </div>
+                {% if field.name == 'fecha_proxima_cita' and not atencion_finalizada %}
+                  <div class="clinical-field full availability-field">
+                    <label for="hora_proxima_cita">Horario disponible</label>
+                    <div class="availability-controls">
+                      <select id="hora_proxima_cita" name="hora_proxima_cita" disabled>
+                        <option value="">Selecciona primero una fecha</option>
+                      </select>
+                      <button type="button" class="consultation-btn" id="consultar_horarios_proxima">
+                        <i class="bx bx-refresh"></i> Actualizar horarios
+                      </button>
+                    </div>
+                    <small id="estado_disponibilidad_proxima" aria-live="polite">Selecciona la fecha de próxima cita para calcular los horarios libres.</small>
+                  </div>
+                {% endif %}
               {% endfor %}
             </div>
             {% if consulta_form.non_field_errors %}<div class="clinical-error">{{ consulta_form.non_field_errors }}</div>{% endif %}
@@ -163,6 +181,7 @@
                 <span class="consultation-form-note">Los cambios no se guardan hasta pulsar uno de los botones.</span>
                 <div class="right">
                   <button class="consultation-btn primary" type="submit" name="action" value="guardar_consulta"><i class="bx bx-save"></i> Guardar registro</button>
+                  <button class="consultation-btn" type="submit" name="action" value="agendar_proxima" id="btn_agendar_proxima" disabled><i class="bx bx-calendar-check"></i> Guardar y agendar próxima cita</button>
                   <button class="consultation-btn finish" type="submit" name="action" value="finalizar" onclick="return confirm('¿Guardar el registro y finalizar esta atención? La cita pasará a estado Atendida.');"><i class="bx bx-check-circle"></i> Finalizar atención</button>
                 </div>
               </div>
@@ -271,4 +290,75 @@
     </aside>
   </div>
 </section>
+{% if not atencion_finalizada %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const fechaInput = document.getElementById("id_fecha_proxima_cita");
+  const horaSelect = document.getElementById("hora_proxima_cita");
+  const actualizarBtn = document.getElementById("consultar_horarios_proxima");
+  const agendarBtn = document.getElementById("btn_agendar_proxima");
+  const estado = document.getElementById("estado_disponibilidad_proxima");
+  const endpoint = "{% url 'horarios_proxima_cita' cita.pk %}";
+
+  if (!fechaInput || !horaSelect || !actualizarBtn || !agendarBtn || !estado) return;
+
+  function mostrarEstado(mensaje) {
+    estado.textContent = mensaje;
+  }
+
+  function limpiarHorarios(mensaje) {
+    horaSelect.innerHTML = '<option value="">No hay horario seleccionado</option>';
+    horaSelect.disabled = true;
+    agendarBtn.disabled = true;
+    mostrarEstado(mensaje);
+  }
+
+  async function consultarHorarios() {
+    const fecha = fechaInput.value;
+    limpiarHorarios(fecha ? "Calculando disponibilidad..." : "Selecciona la fecha de próxima cita.");
+    if (!fecha) return;
+
+    actualizarBtn.disabled = true;
+    try {
+      const respuesta = await fetch(endpoint + "?fecha=" + encodeURIComponent(fecha), {
+        method: "GET",
+        headers: {"Accept": "application/json"}
+      });
+      const datos = await respuesta.json();
+      if (!respuesta.ok) throw new Error(datos.error || "No se pudo consultar la disponibilidad.");
+
+      if (!datos.horarios || datos.horarios.length === 0) {
+        mostrarEstado("No hay horarios disponibles para esa fecha. Prueba con otro día.");
+        return;
+      }
+
+      horaSelect.innerHTML = '<option value="">Selecciona una hora</option>';
+      datos.horarios.forEach(function (hora) {
+        const opcion = document.createElement("option");
+        opcion.value = hora;
+        opcion.textContent = hora;
+        horaSelect.appendChild(opcion);
+      });
+      horaSelect.disabled = false;
+      mostrarEstado(
+        datos.horarios.length + " horarios disponibles · Sesión de " +
+        datos.duracion_minutos + " minutos, más el tiempo de preparación."
+      );
+    } catch (error) {
+      mostrarEstado(error.message || "Ocurrió un error al consultar los horarios.");
+    } finally {
+      actualizarBtn.disabled = false;
+    }
+  }
+
+  fechaInput.addEventListener("change", consultarHorarios);
+  actualizarBtn.addEventListener("click", consultarHorarios);
+  horaSelect.addEventListener("change", function () {
+    agendarBtn.disabled = !horaSelect.value;
+  });
+
+  if (fechaInput.value) consultarHorarios();
+});
+</script>
+{% endif %}
 {% endblock %}
