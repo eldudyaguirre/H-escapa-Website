@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from functools import wraps
 from pathlib import Path
+import csv
 import hashlib
 import os
 import mimetypes
@@ -14,7 +15,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
 from django.utils import timezone
-from django.http import FileResponse, Http404, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.core.mail import EmailMessage
 from django.core.cache import cache
 from django.contrib import messages
@@ -510,6 +511,163 @@ def homein(request):
         "profesionales_recientes": profesionales_recientes,
         "citas_proximas": citas_proximas,
         "fecha_hoy": hoy,
+    })
+
+
+@staff_required
+def homeintodascitas(request):
+    """Lista y filtra las citas registradas en el consultorio."""
+    hoy = timezone.localdate()
+    vista = request.GET.get("vista", "all")
+    if vista not in {"all", "upcoming", "today", "completed", "cancelled"}:
+        vista = "all"
+
+    citas_base = Cita.objects.select_related(
+        "paciente", "profesional", "especialidad", "servicio"
+    ).all()
+
+    total_citas = citas_base.count()
+    total_proximas = citas_base.filter(
+        fecha_hora__date__gte=hoy
+    ).exclude(estado__in=["ATENDIDA", "CANCELADA", "NO_ASISTIO"]).count()
+    total_hoy = citas_base.filter(fecha_hora__date=hoy).count()
+    total_completadas = citas_base.filter(estado="ATENDIDA").count()
+    total_canceladas = citas_base.filter(estado="CANCELADA").count()
+
+    citas = citas_base
+    if vista == "upcoming":
+        citas = citas.filter(
+            fecha_hora__date__gte=hoy
+        ).exclude(estado__in=["ATENDIDA", "CANCELADA", "NO_ASISTIO"])
+    elif vista == "today":
+        citas = citas.filter(fecha_hora__date=hoy)
+    elif vista == "completed":
+        citas = citas.filter(estado="ATENDIDA")
+    elif vista == "cancelled":
+        citas = citas.filter(estado="CANCELADA")
+
+    q = request.GET.get("q", "").strip()
+    profesional_id = request.GET.get("profesional", "").strip()
+    modalidad = request.GET.get("modalidad", "").strip()
+    fecha_desde_txt = request.GET.get("desde", "").strip()
+    fecha_hasta_txt = request.GET.get("hasta", "").strip()
+    fecha_desde = None
+    fecha_hasta = None
+
+    if q:
+        citas = citas.filter(
+            models.Q(paciente__nombres__icontains=q)
+            | models.Q(paciente__apellidos__icontains=q)
+            | models.Q(paciente__cedula__icontains=q)
+            | models.Q(profesional__nombre__icontains=q)
+            | models.Q(profesional__apellido__icontains=q)
+            | models.Q(especialidad__nombre__icontains=q)
+            | models.Q(servicio__nombre__icontains=q)
+            | models.Q(motivo__icontains=q)
+        )
+
+    if profesional_id:
+        citas = citas.filter(profesional_id=profesional_id)
+
+    if modalidad in {"PRESENCIAL", "VIRTUAL"}:
+        citas = citas.filter(modalidad=modalidad)
+    else:
+        modalidad = ""
+
+    try:
+        if fecha_desde_txt:
+            fecha_desde = date.fromisoformat(fecha_desde_txt)
+            citas = citas.filter(fecha_hora__date__gte=fecha_desde)
+    except ValueError:
+        fecha_desde_txt = ""
+    try:
+        if fecha_hasta_txt:
+            fecha_hasta = date.fromisoformat(fecha_hasta_txt)
+            citas = citas.filter(fecha_hora__date__lte=fecha_hasta)
+    except ValueError:
+        fecha_hasta_txt = ""
+
+    citas = citas.order_by("-fecha_hora", "-id")
+
+    # Exportación CSV con los mismos filtros aplicados a la pantalla.
+    if request.GET.get("export") == "csv":
+        respuesta = HttpResponse(content_type="text/csv; charset=utf-8")
+        respuesta["Content-Disposition"] = 'attachment; filename="citas_hescapa.csv"'
+        respuesta.write("\ufeff")
+        writer = csv.writer(respuesta, delimiter=";")
+        writer.writerow([
+            "Paciente", "Cédula", "Profesional", "Fecha", "Hora",
+            "Especialidad", "Modalidad", "Duración (min)", "Estado", "Motivo", "Notas",
+        ])
+
+        def valor_csv(valor):
+            texto = "" if valor is None else str(valor)
+            return "'" + texto if texto.startswith(("=", "+", "-", "@")) else texto
+
+        for cita in citas:
+            fecha_local = timezone.localtime(cita.fecha_hora) if timezone.is_aware(cita.fecha_hora) else cita.fecha_hora
+            especialidad = (
+                cita.especialidad.nombre if cita.especialidad
+                else cita.servicio.nombre if cita.servicio
+                else ""
+            )
+            writer.writerow([
+                valor_csv(cita.paciente.nombre),
+                valor_csv(cita.paciente.cedula),
+                valor_csv(str(cita.profesional)),
+                fecha_local.strftime("%d/%m/%Y"),
+                fecha_local.strftime("%H:%M"),
+                valor_csv(especialidad),
+                cita.get_modalidad_display(),
+                cita.duracion_minutos,
+                cita.get_estado_display(),
+                valor_csv(cita.motivo),
+                valor_csv(cita.notas),
+            ])
+        return respuesta
+
+    profesionales = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
+    page_obj = Paginator(citas, 15).get_page(request.GET.get("page"))
+
+    parametros = request.GET.copy()
+    for clave in ("page", "export", "vista"):
+        parametros.pop(clave, None)
+
+    tab_urls = {}
+    for clave in ("all", "upcoming", "today", "completed", "cancelled"):
+        datos_tab = parametros.copy()
+        datos_tab["vista"] = clave
+        tab_urls[clave] = f"{reverse('homeintodascitas')}?{datos_tab.urlencode()}"
+
+    parametros_exportar = request.GET.copy()
+    parametros_exportar.pop("page", None)
+    parametros_exportar["export"] = "csv"
+    csv_url = f"{reverse('homeintodascitas')}?{parametros_exportar.urlencode()}"
+
+    parametros_paginacion = request.GET.copy()
+    parametros_paginacion.pop("page", None)
+    parametros_paginacion.pop("export", None)
+
+    return render(request, "frm-todascitas.html", {
+        "active_menu": "citas",
+        "vista": vista,
+        "q": q,
+        "profesional_id": profesional_id,
+        "modalidad": modalidad,
+        "fecha_desde": fecha_desde_txt,
+        "fecha_hasta": fecha_hasta_txt,
+        "profesionales": profesionales,
+        "page_obj": page_obj,
+        "citas_count": page_obj.paginator.count,
+        "total_citas": total_citas,
+        "total_proximas": total_proximas,
+        "total_hoy": total_hoy,
+        "total_completadas": total_completadas,
+        "total_canceladas": total_canceladas,
+        "tab_urls": tab_urls,
+        "csv_url": csv_url,
+        "pagination_query": parametros_paginacion.urlencode(),
+        "filtros_activos": bool(q or profesional_id or modalidad or fecha_desde_txt or fecha_hasta_txt),
     })
 
 
