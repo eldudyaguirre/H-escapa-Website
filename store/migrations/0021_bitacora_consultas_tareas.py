@@ -78,10 +78,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="tareaclinica",
-            index=models.Index(fields=["historia", "estado"], name="store_tareac_histori_9a0f20_idx"),
+            index=models.Index(fields=["historia", "estado"], name="clin_tarea_hist_est_idx"),
         ),
         migrations.AddIndex(
             model_name="tareaclinica",
-            index=models.Index(fields=["fecha_limite", "estado"], name="store_tareac_fecha_l_2e90e3_idx"),
+            index=models.Index(fields=["fecha_limite", "estado"], name="clin_tarea_fecha_est_idx"),
         ),
     ]
