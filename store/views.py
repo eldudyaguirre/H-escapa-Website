@@ -567,8 +567,10 @@ def homeintodascitas(request):
             | models.Q(motivo__icontains=q)
         )
 
-    if profesional_id:
+    if profesional_id and profesional_id.isdigit():
         citas = citas.filter(profesional_id=profesional_id)
+    else:
+        profesional_id = ""
 
     if modalidad in {"PRESENCIAL", "VIRTUAL"}:
         citas = citas.filter(modalidad=modalidad)
@@ -627,7 +629,7 @@ def homeintodascitas(request):
             ])
         return respuesta
 
-    profesionales = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
+    profesionales = Profesional.objects.order_by("apellido", "nombre")
     page_obj = Paginator(citas, 15).get_page(request.GET.get("page"))
 
     parametros = request.GET.copy()
