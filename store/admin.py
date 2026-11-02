@@ -42,7 +42,7 @@ class PacienteAdmin(admin.ModelAdmin):
 
 @admin.register(Cita)
 class CitaAdmin(admin.ModelAdmin):
-    list_display = ("fecha_hora", "paciente", "profesional", "especialidad", "servicio", "duracion_minutos", "modalidad", "estado", "recordatorio_30_enviado", "recordatorio_10_enviado", "recordatorio_5_enviado")
+    list_display = ("fecha_hora", "paciente", "profesional", "especialidad", "servicio", "duracion_minutos", "modalidad", "estado", "recordatorio_30_enviado", "recordatorio_10_enviado", "recordatorio_5_enviado", "recordatorio_profesional_10_enviado", "recordatorio_profesional_5_enviado")
     list_filter = ("estado", "modalidad", "profesional", "especialidad")
     search_fields = (
         "paciente__nombres",
