@@ -1,20 +1,240 @@
 {% extends "frm-menpri.html" %}
-{% block title %}H-Escapa | Calendario{% endblock %}
-{% block extra_head %}<style>
-.page{padding:24px 28px}.btn{padding:12px 18px;background:#419b94;color:#fff;text-decoration:none;border-radius:8px}.table{width:100%;border-collapse:collapse;background:#fff;margin-top:22px}.table th,.table td{padding:14px;border-bottom:1px solid #eee;text-align:left}.badge{padding:5px 10px;border-radius:15px;background:#e2f7e9}@media(max-width:700px){.page{padding:16px 12px}.table{font-size:13px}}
-</style>{% endblock %}
-{% block content %}<section class="page"><h1>Calendario de citas</h1><p>Solo las citas creadas por el equipo ocupan disponibilidad. Las solicitudes del sitio web son avisos y no reservan horarios.</p><a class="btn" href="{% url 'homeinnuevacita' %}">+ Nueva cita</a>
-<form method="get" style="margin-top:20px;padding:16px;background:#fff;border:1px solid #e2eae8;border-radius:10px;display:flex;gap:10px;align-items:end;flex-wrap:wrap">
-<div><label for="agenda-profesional">Profesional</label><br><select id="agenda-profesional" name="profesional" required style="padding:9px;border:1px solid #ccd8d5;border-radius:6px"><option value="">Seleccionar</option>{% for profesional in profesionales %}<option value="{{ profesional.pk }}" {% if profesional_sel.pk == profesional.pk %}selected{% endif %}>{{ profesional }}</option>{% endfor %}</select></div>
-<div><label for="agenda-servicio">Servicio / duración</label><br><select id="agenda-servicio" name="servicio" required style="padding:9px;border:1px solid #ccd8d5;border-radius:6px"><option value="">Seleccionar</option>{% for servicio in servicios %}<option value="{{ servicio.slug }}" {% if servicio_sel.slug == servicio.slug %}selected{% endif %}>{{ servicio.nombre }} · {{ servicio.duracion_minutos }} min</option>{% endfor %}</select></div>
-<div><label for="agenda-fecha">Fecha</label><br><input id="agenda-fecha" type="date" name="fecha" value="{{ fecha_sel }}" min="{% now 'Y-m-d' %}" required style="padding:9px;border:1px solid #ccd8d5;border-radius:6px"></div>
-<button class="btn" type="submit">Consultar disponibilidad</button>
-</form>
-{% if profesional_sel and servicio_sel and fecha_sel %}
-<div style="margin:12px 0 20px;padding:16px;background:#f5faf8;border:1px solid #dce9e6;border-radius:10px">
-<strong>Horarios disponibles para {{ profesional_sel }} — {{ servicio_sel.nombre }} ({{ servicio_sel.duracion_minutos }} min), {{ fecha_sel }}</strong>
-<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">{% for hora in horarios_disponibles %}<span style="padding:7px 10px;border-radius:7px;background:#e2f7e9;color:#23665f">{{ hora }}</span>{% empty %}<span>No hay horarios disponibles para los criterios seleccionados.</span>{% endfor %}</div>
-<small style="display:block;margin-top:10px;color:#64736f">Se calculan intervalos de 5 minutos y se respeta la duración del servicio, el tiempo de preparación y las citas reales registradas. Las solicitudes web no bloquean horarios.</small>
-</div>
-{% endif %}
-<div style="overflow:auto"><table class="table"><thead><tr><th>Fecha y hora</th><th>Paciente</th><th>Profesional</th><th>Servicio</th><th>Duración</th><th>Modalidad</th><th>Estado</th><th>Motivo</th></tr></thead><tbody>{% for cita in citas %}<tr><td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td><td>{{ cita.paciente }}</td><td>{{ cita.profesional }}</td><td>{% if cita.especialidad %}{{ cita.especialidad.nombre }}{% elif cita.servicio %}{{ cita.servicio.nombre }}{% else %}-{% endif %}</td><td>{{ cita.duracion_minutos }} min</td><td>{{ cita.get_modalidad_display }}</td><td><span class="badge">{{ cita.get_estado_display }}</span></td><td>{{ cita.motivo|default:"-" }}</td></tr>{% empty %}<tr><td colspan="8">No hay citas registradas.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% block title %}H-Escapa | Calendario de citas{% endblock %}
+
+{% block extra_head %}
+<style>
+  .calendar-page{max-width:1550px;margin:0 auto;padding:28px 28px 42px;color:#2c403b}
+  .calendar-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .calendar-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;color:#478f89;text-decoration:none;font-size:.84rem;font-weight:600}
+  .calendar-page-head h1{margin:0 0 6px;font:500 2.05rem Marcellus,serif;color:#203b39}
+  .calendar-page-head p{margin:0;color:#7c8985;font-size:.9rem}
+  .calendar-head-actions{display:flex;gap:9px;flex-wrap:wrap}
+  .calendar-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:9px 15px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#52645f;text-decoration:none;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer}
+  .calendar-btn:hover{background:#f2f8f7;border-color:#c5dcd7;color:#005855}
+  .calendar-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  .calendar-btn.primary:hover{background:#064b47;color:#fff}
+  .calendar-card{overflow:hidden;background:#fff;border:1px solid #e1e8e6;border-radius:15px;box-shadow:0 7px 24px rgba(26,53,50,.055)}
+  .calendar-card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px 23px 16px}
+  .calendar-card-title h2{margin:0 0 5px;color:#2a3e39;font-size:1.25rem;font-weight:700}
+  .calendar-card-title p{margin:0;color:#899590;font-size:.8rem}
+  .calendar-date-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .calendar-today{min-height:36px;padding:7px 13px}
+  .calendar-arrow{width:36px;min-width:36px;height:36px;padding:0}
+  .calendar-period{min-width:160px;text-align:center;color:#3b504a;font-size:.9rem;font-weight:650}
+  .calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 23px;border-top:1px solid #edf1f0;border-bottom:1px solid #edf1f0}
+  .calendar-view-tabs{display:inline-flex;gap:3px;padding:4px;border-radius:9px;background:#f0f3f2}
+  .calendar-view-tabs a{display:inline-flex;align-items:center;justify-content:center;min-width:65px;padding:7px 13px;border-radius:7px;color:#687873;text-decoration:none;font-size:.82rem;font-weight:650}
+  .calendar-view-tabs a:hover{color:#005855}
+  .calendar-view-tabs a.active{background:#fff;color:#005855;box-shadow:0 1px 4px rgba(20,45,42,.12)}
+  .calendar-filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .calendar-filters label{color:#73817d;font-size:.8rem;font-weight:600}
+  .calendar-filters select{min-width:190px;height:38px;padding:7px 30px 7px 11px;border:1px solid #dce5e3;border-radius:8px;background:#fff;color:#40534e;font:inherit;font-size:.83rem}
+  .calendar-period-info{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 23px;color:#8a9692;font-size:.77rem}
+  .calendar-period-info strong{color:#60716b;font-weight:650}
+  .calendar-timeline{padding:0 20px 20px}
+  .calendar-hour-row{display:grid;grid-template-columns:86px minmax(0,1fr);min-height:92px;border-top:1px solid #edf1f0}
+  .calendar-hour-label{display:flex;align-items:flex-start;justify-content:center;padding:13px 8px 0 0;border-right:1px solid #edf1f0;color:#899590;font-size:.77rem;font-weight:600;white-space:nowrap}
+  .calendar-hour-events{display:flex;align-items:stretch;gap:9px;padding:7px 0 7px 10px;min-width:0;flex-wrap:wrap}
+  .calendar-empty-slot{flex:1;min-height:65px}
+  .calendar-event{display:block;flex:1 1 260px;min-width:220px;max-width:520px;padding:10px 12px;border:1px solid;border-radius:9px;color:#3d514c;text-decoration:none;transition:transform .15s,box-shadow .15s}
+  .calendar-event:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(35,65,60,.09)}
+  .calendar-event.programada{background:#eff5ff;border-color:#cadcf9}
+  .calendar-event.confirmada{background:#edf4ff;border-color:#c7dafa}
+  .calendar-event.en-progreso{background:#fff6e8;border-color:#f0d7a9}
+  .calendar-event.atendida{background:#edf8f0;border-color:#cbe7d2}
+  .calendar-event.cancelada{background:#fff1f0;border-color:#f1d0cc}
+  .calendar-event.no-asistio{background:#f4f0fa;border-color:#ded3ed}
+  .calendar-event-top{display:flex;justify-content:space-between;align-items:flex-start;gap:9px}
+  .calendar-event-top strong{color:#344943;font-size:.86rem;font-weight:700;line-height:1.35}
+  .calendar-event-status{display:inline-flex;align-items:center;flex:0 0 auto;padding:3px 7px;border-radius:20px;background:rgba(255,255,255,.72);color:#52645f;font-size:.68rem;font-weight:700;white-space:nowrap}
+  .calendar-event-meta{display:flex;justify-content:space-between;gap:10px;margin-top:7px;color:#687974;font-size:.74rem}
+  .calendar-event-doctor{margin-top:4px;color:#83908b;font-size:.73rem}
+  .calendar-event-time{font-weight:650}
+  .calendar-week-scroll{overflow-x:auto;padding:0 14px 18px}
+  .calendar-week-grid{display:grid;grid-template-columns:76px repeat(7,minmax(145px,1fr));min-width:1130px;border-top:1px solid #edf1f0}
+  .calendar-week-head{min-height:64px;padding:10px 7px;border-bottom:1px solid #e9efed;border-left:1px solid #edf1f0;text-align:center}
+  .calendar-week-head strong{display:block;color:#5a6b66;font-size:.75rem;font-weight:700}
+  .calendar-week-head span{display:inline-flex;align-items:center;justify-content:center;margin-top:4px;width:27px;height:27px;border-radius:50%;color:#4c605a;font-size:.85rem;font-weight:700}
+  .calendar-week-head.today span{background:#005855;color:#fff}
+  .calendar-week-corner{border-bottom:1px solid #e9efed}
+  .calendar-week-hour{display:flex;justify-content:center;padding:10px 3px;border-bottom:1px solid #edf1f0;color:#8a9692;font-size:.71rem;white-space:nowrap}
+  .calendar-week-cell{min-height:87px;padding:4px;border-left:1px solid #edf1f0;border-bottom:1px solid #edf1f0;min-width:0}
+  .calendar-week-cell .calendar-event{min-width:0;max-width:none;width:100%;padding:7px;margin:0 0 4px;border-radius:7px}
+  .calendar-week-cell .calendar-event-top{display:block}
+  .calendar-week-cell .calendar-event-top strong{display:block;font-size:.72rem;overflow-wrap:anywhere}
+  .calendar-week-cell .calendar-event-status{margin-top:4px;font-size:.61rem}
+  .calendar-week-cell .calendar-event-meta{display:block;margin-top:4px;font-size:.65rem}
+  .calendar-week-cell .calendar-event-meta span:last-child,.calendar-week-cell .calendar-event-doctor{display:none}
+  .calendar-month-wrap{padding:0 18px 18px;overflow-x:auto}
+  .calendar-month-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));min-width:900px;border-top:1px solid #edf1f0;border-left:1px solid #edf1f0}
+  .calendar-month-weekday{padding:11px 8px;text-align:center;border-right:1px solid #edf1f0;border-bottom:1px solid #edf1f0;color:#84918d;font-size:.72rem;font-weight:700;text-transform:uppercase}
+  .calendar-month-day{min-height:128px;padding:7px;border-right:1px solid #edf1f0;border-bottom:1px solid #edf1f0;background:#fff}
+  .calendar-month-day.outside{background:#fafcfb}
+  .calendar-month-day-number{display:flex;align-items:center;justify-content:center;width:26px;height:26px;margin-bottom:5px;border-radius:50%;color:#52645e;font-size:.78rem;font-weight:650}
+  .calendar-month-day.outside .calendar-month-day-number{color:#bdc6c2}
+  .calendar-month-day.today .calendar-month-day-number{background:#005855;color:#fff}
+  .calendar-month-event{display:block;margin:4px 0;padding:5px 6px;border-left:3px solid #7fa9d8;border-radius:5px;background:#f0f5fc;color:#40534e;text-decoration:none;font-size:.68rem;line-height:1.35;overflow:hidden}
+  .calendar-month-event.programada,.calendar-month-event.confirmada{border-left-color:#5790d6;background:#edf4ff}
+  .calendar-month-event.en-progreso{border-left-color:#d79a35;background:#fff6e8}
+  .calendar-month-event.atendida{border-left-color:#5aaf76;background:#edf8f0}
+  .calendar-month-event.cancelada{border-left-color:#d46a63;background:#fff1f0}
+  .calendar-month-event.no-asistio{border-left-color:#9a7bc4;background:#f4f0fa}
+  .calendar-month-event strong{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-weight:700}
+  .calendar-month-event span{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;opacity:.8}
+  .calendar-no-events{padding:38px 18px;text-align:center;color:#8a9692}
+  .calendar-no-events i{display:block;margin-bottom:8px;color:#a8b9b4;font-size:30px}
+  .calendar-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 23px 17px;border-top:1px solid #edf1f0}
+  .calendar-legend-item{display:flex;align-items:center;gap:6px;color:#788681;font-size:.72rem}
+  .calendar-legend-dot{width:8px;height:8px;border-radius:50%}
+  @media(max-width:760px){.calendar-page{padding:18px 12px 28px}.calendar-page-head h1{font-size:1.7rem}.calendar-card-head{padding:16px}.calendar-toolbar{padding:12px 14px}.calendar-date-controls{width:100%;justify-content:space-between}.calendar-period{flex:1;min-width:100px}.calendar-period-info{padding:10px 15px}.calendar-timeline{padding:0 10px 14px}.calendar-hour-row{grid-template-columns:66px minmax(0,1fr)}.calendar-hour-label{font-size:.69rem}.calendar-hour-events{padding-left:7px}.calendar-event{min-width:0;flex-basis:100%;padding:9px}.calendar-head-actions{width:100%}.calendar-head-actions .calendar-btn{flex:1}.calendar-filters{width:100%}.calendar-filters select{flex:1;min-width:0}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="calendar-page">
+  <header class="calendar-page-head">
+    <div>
+      <a class="calendar-back" href="{% url 'homeintodascitas' %}"><i class="bx bx-arrow-back"></i> Volver a todas las citas</a>
+      <h1>Calendario de citas</h1>
+      <p>Visualiza y organiza las citas del consultorio por día, semana o mes.</p>
+    </div>
+    <div class="calendar-head-actions">
+      <a class="calendar-btn" href="{% url 'homeintodascitas' %}"><i class="bx bx-list-ul"></i> Todas las citas</a>
+      <a class="calendar-btn primary" href="{% url 'homeinnuevacita' %}"><i class="bx bx-plus"></i> Nueva cita</a>
+    </div>
+  </header>
+
+  <section class="calendar-card">
+    <div class="calendar-card-head">
+      <div class="calendar-card-title">
+        <h2>Agenda</h2>
+        <p>{{ total_periodo }} cita{{ total_periodo|pluralize:"s" }} en el período seleccionado</p>
+      </div>
+      <div class="calendar-date-controls">
+        <a class="calendar-btn calendar-today" href="{{ today_url }}">Hoy</a>
+        <a class="calendar-btn calendar-arrow" href="{{ prev_url }}" aria-label="Período anterior"><i class="bx bx-chevron-left"></i></a>
+        <span class="calendar-period">{{ periodo_texto }}</span>
+        <a class="calendar-btn calendar-arrow" href="{{ next_url }}" aria-label="Período siguiente"><i class="bx bx-chevron-right"></i></a>
+      </div>
+    </div>
+
+    <div class="calendar-toolbar">
+      <nav class="calendar-view-tabs" aria-label="Vista del calendario">
+        <a class="{% if vista == 'day' %}active{% endif %}" href="{{ tab_urls.day }}">Día</a>
+        <a class="{% if vista == 'week' %}active{% endif %}" href="{{ tab_urls.week }}">Semana</a>
+        <a class="{% if vista == 'month' %}active{% endif %}" href="{{ tab_urls.month }}">Mes</a>
+      </nav>
+      <form class="calendar-filters" method="get" action="{% url 'homeincalendario' %}">
+        <input type="hidden" name="vista" value="{{ vista }}">
+        <input type="hidden" name="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}">
+        <label for="calendar-profesional"><i class="bx bx-user"></i> Profesional</label>
+        <select id="calendar-profesional" name="profesional" onchange="this.form.submit()">
+          <option value="">Todos los profesionales</option>
+          {% for profesional in profesionales %}
+            <option value="{{ profesional.pk }}" {% if profesional_id == profesional.pk|stringformat:"s" %}selected{% endif %}>{{ profesional }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <div class="calendar-period-info">
+      <strong>{% if vista == 'day' %}Agenda diaria{% elif vista == 'week' %}Agenda semanal{% else %}Agenda mensual{% endif %}</strong>
+      <span>{{ total_periodo }} cita{{ total_periodo|pluralize:"s" }}{% if profesional_id %} · Profesional filtrado{% else %} · Todos los profesionales{% endif %}</span>
+    </div>
+
+    {% if vista == "day" %}
+      {% if day_slots %}
+        <div class="calendar-timeline">
+          {% for slot in day_slots %}
+            <div class="calendar-hour-row">
+              <div class="calendar-hour-label">{{ slot.label }}</div>
+              <div class="calendar-hour-events">
+                {% for cita in slot.citas %}
+                  <a class="calendar-event {% if cita.estado == 'PROGRAMADA' %}programada{% elif cita.estado == 'CONFIRMADA' %}confirmada{% elif cita.estado == 'EN_PROGRESO' %}en-progreso{% elif cita.estado == 'ATENDIDA' %}atendida{% elif cita.estado == 'CANCELADA' %}cancelada{% else %}no-asistio{% endif %}" href="{% url 'homeinvercita' cita.pk %}">
+                    <div class="calendar-event-top">
+                      <strong>{{ cita.paciente.nombre }}</strong>
+                      <span class="calendar-event-status">{{ cita.get_estado_display }}</span>
+                    </div>
+                    <div class="calendar-event-meta">
+                      <span class="calendar-event-time">{{ cita.calendar_hora }} – {{ cita.calendar_hora_fin }}</span>
+                      <span>{{ cita.calendar_especialidad }}</span>
+                    </div>
+                    <div class="calendar-event-doctor">{{ cita.profesional }}</div>
+                  </a>
+                {% empty %}
+                  <div class="calendar-empty-slot"></div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="calendar-no-events"><i class="bx bx-calendar-x"></i><strong>No hay citas para este día</strong><br>Selecciona otra fecha o registra una nueva cita.</div>
+      {% endif %}
+    {% elif vista == "week" %}
+      <div class="calendar-week-scroll">
+        <div class="calendar-week-grid">
+          <div class="calendar-week-corner"></div>
+          {% for dia in week_days %}
+            <div class="calendar-week-head {% if dia.es_hoy %}today{% endif %}">
+              <strong>{{ dia.fecha|date:"D" }}</strong>
+              <span>{{ dia.fecha|date:"d" }}</span>
+            </div>
+          {% endfor %}
+          {% for slot in week_slots %}
+            <div class="calendar-week-hour">{{ slot.label }}</div>
+            {% for columna in slot.columnas %}
+              <div class="calendar-week-cell">
+                {% for cita in columna.citas %}
+                  <a class="calendar-event {% if cita.estado == 'PROGRAMADA' %}programada{% elif cita.estado == 'CONFIRMADA' %}confirmada{% elif cita.estado == 'EN_PROGRESO' %}en-progreso{% elif cita.estado == 'ATENDIDA' %}atendida{% elif cita.estado == 'CANCELADA' %}cancelada{% else %}no-asistio{% endif %}" href="{% url 'homeinvercita' cita.pk %}">
+                    <div class="calendar-event-top">
+                      <strong>{{ cita.paciente.nombre }}</strong>
+                      <span class="calendar-event-status">{{ cita.get_estado_display }}</span>
+                    </div>
+                    <div class="calendar-event-meta"><span>{{ cita.calendar_hora }} – {{ cita.calendar_hora_fin }}</span></div>
+                    <div class="calendar-event-doctor">{{ cita.profesional }}</div>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="calendar-month-wrap">
+        <div class="calendar-month-grid">
+          {% for nombre_dia in week_day_names %}
+            <div class="calendar-month-weekday">{{ nombre_dia }}</div>
+          {% endfor %}
+          {% for semana in month_grid %}
+            {% for dia in semana %}
+              <div class="calendar-month-day {% if not dia.en_mes %}outside{% endif %} {% if dia.es_hoy %}today{% endif %}">
+                <div class="calendar-month-day-number">{{ dia.fecha|date:"d" }}</div>
+                {% for cita in dia.citas %}
+                  {% if forloop.counter <= 3 %}
+                    <a class="calendar-month-event {% if cita.estado == 'PROGRAMADA' %}programada{% elif cita.estado == 'CONFIRMADA' %}confirmada{% elif cita.estado == 'EN_PROGRESO' %}en-progreso{% elif cita.estado == 'ATENDIDA' %}atendida{% elif cita.estado == 'CANCELADA' %}cancelada{% else %}no-asistio{% endif %}" href="{% url 'homeinvercita' cita.pk %}" title="{{ cita.paciente.nombre }} · {{ cita.calendar_hora }} · {{ cita.profesional }}">
+                      <strong>{{ cita.calendar_hora }} · {{ cita.paciente.nombre }}</strong>
+                      <span>{{ cita.profesional }}</span>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+                {% if dia.citas|length > 3 %}
+                  <span style="display:block;padding:4px 5px;color:#788681;font-size:.66rem">+{{ dia.citas|length|add:"-3" }} más</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="calendar-legend">
+      <span class="calendar-legend-item"><i class="calendar-legend-dot" style="background:#5790d6"></i> Programada / Confirmada</span>
+      <span class="calendar-legend-item"><i class="calendar-legend-dot" style="background:#d79a35"></i> En progreso</span>
+      <span class="calendar-legend-item"><i class="calendar-legend-dot" style="background:#5aaf76"></i> Atendida</span>
+      <span class="calendar-legend-item"><i class="calendar-legend-dot" style="background:#d46a63"></i> Cancelada</span>
+      <span class="calendar-legend-item"><i class="calendar-legend-dot" style="background:#9a7bc4"></i> No asistió</span>
+    </div>
+  </section>
+</section>
+{% endblock %}
