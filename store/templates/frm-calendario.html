@@ -146,7 +146,7 @@
     </div>
 
     {% if vista == "day" %}
-      {% if total_periodo %}
+      {% if day_slots %}
         <div class="calendar-timeline">
           {% for slot in day_slots %}
             <div class="calendar-hour-row">
@@ -171,9 +171,9 @@
             </div>
           {% endfor %}
           <div class="calendar-hour-row calendar-close-row">
-            <div class="calendar-hour-label">10:00 PM</div>
+            <div class="calendar-hour-label">11:00 PM</div>
             <div class="calendar-hour-events">
-              <div class="calendar-close-note">Fin de atención · Las citas pueden finalizar hasta esta hora.</div>
+              <div class="calendar-close-note">Fin de atención · El último bloque es de 10:00 PM a 11:00 PM.</div>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@
               </div>
             {% endfor %}
           {% endfor %}
-          <div class="calendar-week-hour">10:00 PM</div>
+          <div class="calendar-week-hour">11:00 PM</div>
           {% for dia in week_days %}
             <div class="calendar-week-cell" style="display:flex;align-items:center;justify-content:center;color:#81908b;font-size:.68rem">Cierre de atención</div>
           {% endfor %}
