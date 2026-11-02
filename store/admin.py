@@ -5,6 +5,7 @@ from .models import (
     Cita,
     EtiquetaBlog,
     HistoriaClinica,
+    TareaClinica,
     Paciente,
     Post,
     Profesional,
@@ -65,6 +66,14 @@ class HistoriaClinicaAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "fecha"
     list_select_related = ("paciente", "profesional", "cita")
+
+
+@admin.register(TareaClinica)
+class TareaClinicaAdmin(admin.ModelAdmin):
+    list_display = ("descripcion", "historia", "prioridad", "estado", "fecha_limite", "creada_por")
+    list_filter = ("estado", "prioridad")
+    search_fields = ("descripcion", "detalle", "historia__paciente__nombres", "historia__paciente__apellidos")
+    list_select_related = ("historia", "creada_por")
 
 
 @admin.register(CategoriaBlog)
