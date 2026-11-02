@@ -168,6 +168,8 @@
                   <span class="profile-appointment-status{% if cita.estado == 'EN_PROGRESO' %} progress{% elif cita.estado == 'ATENDIDA' %} done{% elif cita.estado == 'CANCELADA' %} cancelled{% endif %}">{{ cita.get_estado_display }}</span>
                   {% if cita.estado == "EN_PROGRESO" %}
                     <a href="{% url 'homeinatencioncita' cita.pk %}">Continuar atención</a>
+                  {% elif cita.estado == "ATENDIDA" %}
+                    <a href="{% url 'homeinatencioncita' cita.pk %}">Ver consulta y tareas</a>
                   {% else %}
                     <a href="{% url 'homeinvercita' cita.pk %}">Ver cita</a>
                   {% endif %}
