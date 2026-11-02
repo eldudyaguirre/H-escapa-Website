@@ -827,7 +827,7 @@ def homeincalendario(request):
         citas_por_dia.setdefault(inicio_local.date(), []).append(cita)
 
     horas_inicio = [8] + [c.calendar_inicio.hour for c in citas]
-    horas_fin = [22] + [
+    horas_fin = [23] + [
         min(24, c.calendar_fin.hour + (1 if c.calendar_fin.minute else 0))
         for c in citas
     ]
