@@ -545,9 +545,10 @@ def _render_sala_videollamada(request, cita, es_paciente=False):
         try:
             config = obtener_configuracion_jitsi()
             if es_paciente:
-                nombre, correo, moderator = cita.paciente.nombre, cita.paciente.correo, False
+                # El proveedor de video solo recibe un identificador genérico del paciente.
+                nombre, correo, moderator = "Paciente", "", False
             else:
-                nombre, correo, moderator = str(cita.profesional), cita.profesional.usuario.email, True
+                nombre, correo, moderator = str(cita.profesional), "", True
             jwt = crear_token_jitsi(cita, nombre=nombre, correo=correo, moderator=moderator)
         except ValueError:
             contexto.update(titulo_estado="Videollamadas no configuradas", mensaje_estado="El servicio de videollamadas no está configurado correctamente. Contacta al administrador de H-Escapa.")
