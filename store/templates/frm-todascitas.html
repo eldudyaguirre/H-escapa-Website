@@ -249,6 +249,8 @@
                       {% csrf_token %}
                       <button type="submit" class="aa-action-item danger"><i class="bx bx-x-circle"></i> Cancelar cita</button>
                     </form>
+                  {% elif cita.estado == "ATENDIDA" %}
+                    <a href="{% url 'homeinatencioncita' cita.pk %}"><i class="bx bx-clipboard"></i> Ver consulta y tareas</a>
                   {% endif %}
                 </div>
               </details>
