@@ -1,0 +1,44 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Reprogramar cita{% endblock %}
+{% block extra_head %}
+<style>
+  .reschedule-page{max-width:850px;margin:0 auto;padding:30px 28px 42px;color:#263b3a}
+  .reschedule-page h1{margin:8px 0 6px;font:500 2rem Marcellus,serif;color:#203b39}
+  .reschedule-page>p{margin:0 0 22px;color:#7b8985;line-height:1.55}
+  .reschedule-card{background:#fff;border:1px solid #e1e9e7;border-radius:14px;padding:25px;box-shadow:0 7px 22px rgba(26,53,50,.05)}
+  .reschedule-summary{padding:14px 16px;margin-bottom:20px;border-radius:10px;background:#f3f8f7;color:#526760;line-height:1.6;font-size:.88rem}
+  .reschedule-summary strong{color:#29413c}
+  .reschedule-field label{display:block;margin-bottom:7px;color:#586a65;font-size:.84rem;font-weight:600}
+  .reschedule-field input{width:100%;max-width:430px;box-sizing:border-box;border:1px solid #dce5e3;border-radius:9px;padding:12px;background:#fff;color:#344944;font:inherit}
+  .reschedule-errors{margin-top:7px;color:#b42318;font-size:.8rem}
+  .reschedule-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:24px;flex-wrap:wrap}
+  .reschedule-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 17px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#53645f;text-decoration:none;font:inherit;font-size:.88rem;font-weight:600}
+  .reschedule-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  @media(max-width:650px){.reschedule-page{padding:19px 12px 28px}.reschedule-card{padding:18px}.reschedule-page h1{font-size:1.7rem}.reschedule-actions>*{flex:1}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="reschedule-page">
+  <a href="{% url 'homeinvercita' cita.pk %}" style="color:#438f89;text-decoration:none"><i class="bx bx-arrow-back"></i> Volver al detalle</a>
+  <h1>Reprogramar cita</h1>
+  <p>Selecciona una nueva fecha y hora. Se comprobará el horario del profesional y que no exista otra cita en ese intervalo.</p>
+  <form method="post" class="reschedule-card">
+    {% csrf_token %}
+    <div class="reschedule-summary">
+      <strong>{{ cita.paciente.nombre }}</strong><br>
+      Profesional: {{ cita.profesional }}<br>
+      Fecha actual: {{ cita.fecha_hora|date:"d/m/Y H:i" }} · Duración: {{ cita.duracion_minutos }} minutos
+    </div>
+    <div class="reschedule-field">
+      <label for="{{ form.fecha_hora.id_for_label }}">{{ form.fecha_hora.label }}</label>
+      {{ form.fecha_hora }}
+      {% for error in form.fecha_hora.errors %}<div class="reschedule-errors">{{ error }}</div>{% endfor %}
+    </div>
+    {% if form.non_field_errors %}<div class="reschedule-errors">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="reschedule-actions">
+      <a class="reschedule-btn" href="{% url 'homeinvercita' cita.pk %}">Cancelar</a>
+      <button class="reschedule-btn primary" type="submit"><i class="bx bx-calendar-check"></i> Guardar nueva fecha</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
