@@ -24,6 +24,12 @@
   .vv-status.CONFIRMADA{background:#e8f1ff;color:#3568aa}.vv-status.EN_PROGRESO{background:#e6f4f2;color:#26716a}
   .vv-status.ATENDIDA{background:#e7f5ed;color:#2d8050}.vv-status.CANCELADA,.vv-status.NO_ASISTIO{background:#fff0f0;color:#b64d4d}
   .vv-empty{text-align:center;padding:40px 20px;color:#7b8985}
+  .vv-google{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding:16px 18px;border:1px solid #dce9e6;border-radius:12px;background:#f7fbfa}
+  .vv-google strong{display:block;color:#245a55;margin-bottom:4px}
+  .vv-google p{margin:0;color:#71827c;font-size:.86rem;line-height:1.5}
+  .vv-google.connected{background:#eff8f4;border-color:#cce8d8}
+  .vv-google .vv-action{white-space:nowrap}
+
   @media(max-width:800px){.vv-page{padding:20px 12px}.vv-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.vv-head h1{font-size:1.7rem}}
 </style>
 {% endblock %}
@@ -33,6 +39,26 @@
     <div><h1>Consultas virtuales</h1><p>Administra las citas virtuales, envía invitaciones y accede a las salas.</p></div>
     <a class="vv-action primary" href="{% url 'homeinnuevacita' %}"><i class="bx bx-plus"></i> Nueva cita</a>
   </header>
+  <section class="vv-google{% if google_calendar_conectado %} connected{% endif %}">
+    <div>
+      {% if google_calendar_conectado %}
+        <strong><i class="bx bx-check-circle"></i> Google Calendar conectado</strong>
+        <p>H-Escapa puede crear reuniones Meet y enviar invitaciones al paciente y al profesional.</p>
+      {% elif google_calendar_es_superusuario and google_calendar_oauth_configurado %}
+        <strong><i class="bx bx-link-external"></i> Conecta la cuenta de Google Calendar</strong>
+        <p>Autoriza la cuenta que organizará las reuniones virtuales de H-Escapa.</p>
+      {% elif google_calendar_es_superusuario %}
+        <strong><i class="bx bx-cog"></i> Falta configurar las credenciales de Google</strong>
+        <p>Agrega GOOGLE_CALENDAR_CLIENT_ID y GOOGLE_CALENDAR_CLIENT_SECRET al archivo .env del servidor.</p>
+      {% else %}
+        <strong><i class="bx bx-info-circle"></i> Google Calendar pendiente de conexión</strong>
+        <p>Solicita al administrador que conecte la cuenta que organizará las reuniones Meet.</p>
+      {% endif %}
+    </div>
+    {% if not google_calendar_conectado and google_calendar_es_superusuario and google_calendar_oauth_configurado %}
+      <a class="vv-action primary" href="{% url 'google_calendar_autorizar' %}"><i class="bx bxl-google"></i> Conectar Google</a>
+    {% endif %}
+  </section>
   <section class="vv-stats">
     <div class="vv-stat"><span>Total virtuales</span><strong>{{ total_virtuales }}</strong></div>
     <div class="vv-stat"><span>Programadas / confirmadas</span><strong>{{ total_activas }}</strong></div>
