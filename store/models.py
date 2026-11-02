@@ -409,8 +409,8 @@ class DocumentoPaciente(models.Model):
         verbose_name = "Documento del paciente"
         verbose_name_plural = "Documentos del paciente"
         indexes = [
-            models.Index(fields=["paciente", "tipo"], name="store_docume_pacient_4a7e1d_idx"),
-            models.Index(fields=["paciente", "-creado_en"], name="store_docume_pacient_1f2b6d_idx"),
+            models.Index(fields=["paciente", "tipo"], name="docpac_pac_tipo_idx"),
+            models.Index(fields=["paciente", "-creado_en"], name="docpac_pac_creado_idx"),
         ]
 
     def __str__(self):
@@ -570,9 +570,9 @@ class InteraccionWeb(models.Model):
         verbose_name = "Interacción web"
         verbose_name_plural = "Interacciones web"
         indexes = [
-            models.Index(fields=["tipo", "estado"], name="store_inter_tipo_est_9d9c7b_idx"),
-            models.Index(fields=["email"], name="store_inter_email_0c2e5d_idx"),
-            models.Index(fields=["-creado_en"], name="store_inter_creado_7d2eaf_idx"),
+            models.Index(fields=["tipo", "estado"], name="inter_tipo_estado_idx"),
+            models.Index(fields=["email"], name="inter_email_idx"),
+            models.Index(fields=["-creado_en"], name="inter_creado_idx"),
         ]
 
     def __str__(self):
