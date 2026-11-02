@@ -34,6 +34,20 @@ showMenu('header-toggle', 'navbar');
 /*==================== ACTIVE MENU STATE ====================*/
 const nav = document.getElementById('navbar');
 if (nav) {
+    // Los submenús se controlan exclusivamente con clic, nunca con hover.
+    nav.querySelectorAll('.nav__dropdown > button.nav__link').forEach(button => {
+        const dropdown = button.closest('.nav__dropdown');
+        if (!dropdown) return;
+
+        // Sincronizar el estado visual con el atributo accesible al cargar la página.
+        button.setAttribute('aria-expanded', String(dropdown.classList.contains('show-dropdown')));
+
+        button.addEventListener('click', () => {
+            const isOpen = dropdown.classList.toggle('show-dropdown');
+            button.setAttribute('aria-expanded', String(isOpen));
+        });
+    });
+
     const mainLinks = nav.querySelectorAll('.nav__link');
     const submenuItems = nav.querySelectorAll('.nav__dropdown-item');
 
@@ -54,6 +68,7 @@ if (nav) {
             if (parent) {
                 parent.classList.add('active');
                 parent.setAttribute('aria-current', 'page');
+                parent.setAttribute('aria-expanded', 'true');
             }
         }
     }
