@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
@@ -87,12 +88,22 @@ def _enviar_recordatorio(cita_id, minutos, campo, destinatario_tipo):
                 f"Profesional: {profesional}\n"
                 f"Modalidad: {modalidad}\n"
             )
+            filas_detalle = [
+                {"etiqueta": "Profesional", "valor": profesional},
+                {"etiqueta": "Modalidad", "valor": modalidad},
+            ]
         else:
+            telefono = cita.paciente.telefono or "No registrado"
             detalles = (
                 f"Paciente: {paciente}\n"
-                f"Teléfono del paciente: {cita.paciente.telefono or 'No registrado'}\n"
+                f"Teléfono del paciente: {telefono}\n"
                 f"Modalidad: {modalidad}\n"
             )
+            filas_detalle = [
+                {"etiqueta": "Paciente", "valor": paciente},
+                {"etiqueta": "Teléfono del paciente", "valor": telefono},
+                {"etiqueta": "Modalidad", "valor": modalidad},
+            ]
 
         mensaje = (
             f"{saludo}\n\n"
@@ -103,11 +114,27 @@ def _enviar_recordatorio(cita_id, minutos, campo, destinatario_tipo):
             "H-Escapa"
         )
 
+        # La versión HTML mejora la presentación, mientras que el texto plano
+        # se conserva como alternativa para clientes de correo que no muestran HTML.
+        html_mensaje = render_to_string(
+            "emails/recordatorio-cita.html",
+            {
+                "saludo": saludo,
+                "cuerpo_inicial": cuerpo_inicial,
+                "minutos": minutos,
+                "fecha": fecha_local.strftime("%d/%m/%Y"),
+                "hora": fecha_local.strftime("%H:%M"),
+                "filas_detalle": filas_detalle,
+                "logo_url": "https://h-escapa.com/static/img/logo-blanco.png",
+            },
+        )
+
         resultado = send_mail(
             subject=asunto,
             message=mensaje,
             from_email=remitente,
             recipient_list=[correo],
+            html_message=html_mensaje,
             fail_silently=False,
         )
         if resultado != 1:
