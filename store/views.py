@@ -743,8 +743,8 @@ def homeinatencioncita(request, cita_id):
                                     estado="PROGRAMADA",
                                     motivo="Seguimiento",
                                     notas=(
-                                        historia.sugerencias_proxima_cita
-                                        or historia.plan_seguimiento
+                                        registro.sugerencias_proxima_cita
+                                        or registro.plan_seguimiento
                                         or ""
                                     ),
                                 )
