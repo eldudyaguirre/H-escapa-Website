@@ -143,7 +143,7 @@
     </div>
 
     {% if vista == "day" %}
-      {% if day_slots %}
+      {% if total_periodo %}
         <div class="calendar-timeline">
           {% for slot in day_slots %}
             <div class="calendar-hour-row">
@@ -177,7 +177,7 @@
           <div class="calendar-week-corner"></div>
           {% for dia in week_days %}
             <div class="calendar-week-head {% if dia.es_hoy %}today{% endif %}">
-              <strong>{{ dia.fecha|date:"D" }}</strong>
+              <strong>{{ dia.nombre }}</strong>
               <span>{{ dia.fecha|date:"d" }}</span>
             </div>
           {% endfor %}
