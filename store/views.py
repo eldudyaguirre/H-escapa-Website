@@ -18,12 +18,13 @@ from django.contrib.auth.models import Group, Permission
 from django.db import models, transaction
 from django.utils import timezone
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.contrib import messages
 from .forms import AgendamientoForm, ContactoForm
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.templatetags.static import static
 from django.views.decorators.cache import never_cache
@@ -876,12 +877,28 @@ def videollamada_enviar_invitacion(request, cita_id):
     )
 
     try:
-        enviados = EmailMessage(
+        html_mensaje = render_to_string(
+            "emails/invitacion-google-meet.html",
+            {
+                "nombre": cita.paciente.nombres,
+                "profesional": str(cita.profesional),
+                "fecha": fecha_local.strftime("%d/%m/%Y"),
+                "hora": fecha_local.strftime("%H:%M"),
+                "duracion": cita.duracion_minutos,
+                "enlace_acceso": enlace_acceso,
+                "logo_url": request.build_absolute_uri(
+                    static("img/logo-blanco.png")
+                ),
+            },
+        )
+        correo = EmailMultiAlternatives(
             subject=asunto,
             body=mensaje,
             from_email=remitente,
             to=[destino],
-        ).send(fail_silently=False)
+        )
+        correo.attach_alternative(html_mensaje, "text/html")
+        enviados = correo.send(fail_silently=False)
         if enviados != 1:
             raise RuntimeError("El servidor de correo no confirmó el envío.")
     except Exception:
