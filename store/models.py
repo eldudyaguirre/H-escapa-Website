@@ -253,8 +253,33 @@ class Cita(models.Model):
     estado = models.CharField(max_length=12, choices=ESTADOS, default="PROGRAMADA")
     motivo = models.CharField(max_length=250, blank=True)
     notas = models.TextField(blank=True)
+    recordatorio_30_enviado = models.BooleanField(default=False, editable=False)
+    recordatorio_10_enviado = models.BooleanField(default=False, editable=False)
+    recordatorio_5_enviado = models.BooleanField(default=False, editable=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Si se cambia la fecha/hora, los tres recordatorios deben programarse
+        # nuevamente para el nuevo horario.
+        if self.pk:
+            fecha_anterior = (
+                type(self).objects.filter(pk=self.pk)
+                .values_list("fecha_hora", flat=True)
+                .first()
+            )
+            if fecha_anterior is not None and fecha_anterior != self.fecha_hora:
+                self.recordatorio_30_enviado = False
+                self.recordatorio_10_enviado = False
+                self.recordatorio_5_enviado = False
+                update_fields = kwargs.get("update_fields")
+                if update_fields is not None:
+                    kwargs["update_fields"] = set(update_fields) | {
+                        "recordatorio_30_enviado",
+                        "recordatorio_10_enviado",
+                        "recordatorio_5_enviado",
+                    }
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["fecha_hora"]
