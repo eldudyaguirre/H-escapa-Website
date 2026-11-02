@@ -258,14 +258,17 @@ class Cita(models.Model):
     recordatorio_5_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_profesional_10_enviado = models.BooleanField(default=False, editable=False)
     recordatorio_profesional_5_enviado = models.BooleanField(default=False, editable=False)
-    videollamada_sala = models.CharField(max_length=64, blank=True, editable=False)
+    google_calendar_event_id = models.CharField(max_length=255, blank=True, editable=False)
+    google_meet_url = models.URLField(max_length=500, blank=True, editable=False)
     videollamada_token_paciente_hash = models.CharField(max_length=64, blank=True, editable=False)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         # Si cambia la fecha/hora o modalidad, se reinician recordatorios
-        # y se revoca cualquier enlace de videollamada anterior.
+        # y se revoca el enlace privado del paciente. El evento de Google Calendar
+        # se conserva para que la próxima invitación actualice fecha y asistentes
+        # sin generar una reunión Meet duplicada.
         if self.pk:
             datos_anteriores = (
                 type(self).objects.filter(pk=self.pk)
@@ -281,7 +284,6 @@ class Cita(models.Model):
                 self.recordatorio_5_enviado = False
                 self.recordatorio_profesional_10_enviado = False
                 self.recordatorio_profesional_5_enviado = False
-                self.videollamada_sala = ""
                 self.videollamada_token_paciente_hash = ""
                 update_fields = kwargs.get("update_fields")
                 if update_fields is not None:
@@ -291,7 +293,6 @@ class Cita(models.Model):
                         "recordatorio_5_enviado",
                         "recordatorio_profesional_10_enviado",
                         "recordatorio_profesional_5_enviado",
-                        "videollamada_sala",
                         "videollamada_token_paciente_hash",
                     }
         super().save(*args, **kwargs)
