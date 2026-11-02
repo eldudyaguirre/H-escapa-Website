@@ -123,7 +123,7 @@
         <p><b>Teléfono:</b> {{ paciente.telefono_emergencia|default:"No registrado" }}</p>
         <p><b>Correo:</b> {{ paciente.correo_emergencia|default:"No registrado" }}</p>
       </section>
-      <div class="meta"><span>Ficha de demostración</span><span>Datos clínicos por completar</span></div>
+      <div class="meta"><span>Ficha del paciente</span><span>Información registrada en H-Escapa</span></div>
     </aside>
 
     <div class="profile-main">
@@ -133,15 +133,25 @@
       <section class="profile-card panel" id="resumen" role="tabpanel">
         <h2 class="section-title">Resumen del paciente</h2><p class="muted">Vista general del estado del paciente y sus actividades recientes.</p>
         <div class="summary-grid">
-          <article class="mini-card"><div class="mini-title"><i class="bx bx-calendar" aria-hidden="true"></i> Próxima cita</div><div class="value">Por agendar</div><p>Próxima sesión programada</p><p>Consulta con {{ paciente.doctor }}</p></article>
-          <article class="mini-card"><div class="mini-title"><i class="bx bx-notepad" aria-hidden="true"></i> Sesiones</div><div class="value">—</div><p>Sesiones registradas</p><p>Se mostrará al conectar datos</p></article>
-          <article class="mini-card"><div class="mini-title"><i class="bx bx-file" aria-hidden="true"></i> Documentos</div><div class="value">—</div><p>Archivos asociados al paciente</p><p>Se mostrará al conectar datos</p></article>
+          <article class="mini-card"><div class="mini-title"><i class="bx bx-calendar" aria-hidden="true"></i> Próxima cita</div><div class="value">{% if proxima_cita %}{{ proxima_cita.fecha_hora|date:"d/m/Y H:i" }}{% else %}Por agendar{% endif %}</div><p>{% if proxima_cita %}{{ proxima_cita.profesional }}{% else %}No hay citas futuras{% endif %}</p></article>
+          <article class="mini-card"><div class="mini-title"><i class="bx bx-notepad" aria-hidden="true"></i> Sesiones</div><div class="value">{{ total_sesiones }}</div><p>Registros en la bitácora clínica</p><p>Consultas documentadas</p></article>
+          <article class="mini-card"><div class="mini-title"><i class="bx bx-file" aria-hidden="true"></i> Documentos</div><div class="value">{{ total_documentos }}</div><p>Archivos asociados al paciente</p><p>Documentos registrados</p></article>
         </div>
         <div class="section-heading"><h2>Citas recientes</h2><button class="small-button" type="button" data-goto="citas">Ver todas</button></div>
-        <div class="appointment"><div><strong><span class="dot"></span>Consulta de seguimiento</strong><p>Fecha y hora pendientes de conexión</p><p>{{ paciente.doctor }}</p></div><span class="pill blue">Por confirmar</span></div>
-        <div class="appointment"><div><strong><span class="dot"></span>Evaluación inicial</strong><p>Sin registro de fecha</p><p>Información de ejemplo</p></div><span class="pill">Pendiente</span></div>
-        <div class="section-heading"><h2>Indicadores de seguimiento</h2><button class="small-button" type="button" data-goto="historial">Ver historial</button></div>
-        <div class="vitals-grid"><article class="mini-card vital"><div class="mini-title">Estado de ánimo</div><div class="value">Sin datos</div><p>Registro clínico pendiente</p><div class="bar"><span style="width:35%"></span></div></article><article class="mini-card vital"><div class="mini-title">Seguimiento</div><div class="value">Pendiente</div><p>Se actualizará con las sesiones</p><div class="bar"><span style="width:25%"></span></div></article><article class="mini-card vital"><div class="mini-title">Asistencia</div><div class="value">—</div><p>Sin citas registradas</p><div class="bar green"><span style="width:0%"></span></div></article></div>
+        {% for cita in citas|slice:":3" %}
+          <div class="appointment">
+            <div><strong><span class="dot"></span>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</strong><p>{{ cita.profesional }} · {% if cita.especialidad %}{{ cita.especialidad.nombre }}{% elif cita.servicio %}{{ cita.servicio.nombre }}{% else %}Atención{% endif %}</p></div>
+            <span class="pill{% if cita.estado == 'EN_PROGRESO' %} blue{% endif %}">{{ cita.get_estado_display }}</span>
+          </div>
+        {% empty %}
+          <p class="muted">Este paciente todavía no tiene citas registradas.</p>
+        {% endfor %}
+        <div class="section-heading"><h2>Indicadores de seguimiento</h2><button class="small-button" type="button" data-goto="historial">Ver bitácora</button></div>
+        <div class="vitals-grid">
+          <article class="mini-card vital"><div class="mini-title">Consultas registradas</div><div class="value">{{ total_sesiones }}</div><p>Sesiones documentadas en la bitácora</p></article>
+          <article class="mini-card vital"><div class="mini-title">Tareas pendientes</div><div class="value">{{ tareas_pendientes }}</div><p>Actividades que requieren seguimiento</p></article>
+          <article class="mini-card vital"><div class="mini-title">Citas registradas</div><div class="value">{{ total_citas }}</div><p>Consultas asociadas al paciente</p></article>
+        </div>
         <p class="note">Los campos que aún no tienen información se muestran como pendientes. En la siguiente etapa se conectarán a la base de datos.</p>
       </section>
       <section class="profile-card panel" id="citas" role="tabpanel" hidden>
