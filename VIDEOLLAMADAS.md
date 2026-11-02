@@ -48,6 +48,7 @@ XMPP_MUC_MODULES=token_affiliation
 JICOFO_ENABLE_AUTH=0
 ENABLE_AUTO_OWNER=0
 WAIT_FOR_HOST_DISABLE_AUTO_OWNERS=1
+ENABLE_RECORDING=0
 ```
 
 Usa el mismo secreto en Jitsi y en H-Escapa. No habilites acceso anónimo si quieres que todos los participantes deban presentar un JWT.
@@ -56,7 +57,7 @@ Usa el mismo secreto en Jitsi y en H-Escapa. No habilites acceso anónimo si qui
 
 Reinicia o recrea los servicios Jitsi de acuerdo con el método de instalación para aplicar los cambios.
 
-La instancia de Jitsi debe tener HTTPS y conectividad de medios configurada. En una instalación Docker estándar, revisa también el firewall y la publicación de puertos de Jitsi, especialmente UDP 10000. La aplicación carga `external_api.js` desde el dominio configurado.
+La instancia de Jitsi debe tener HTTPS y conectividad de medios configurada. En Docker, publica los puertos TCP 80 y 443 y UDP 10000 para el tráfico de medios. Si el servidor está detrás de NAT, configura `JVB_ADVERTISE_IPS` con su IP pública para que los clientes puedan establecer el flujo de audio y video. La aplicación carga `external_api.js` desde el dominio configurado.
 
 ## Flujo de uso
 
