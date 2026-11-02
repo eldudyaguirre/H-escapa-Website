@@ -60,6 +60,7 @@
   .aa-status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
   .aa-status.programada{background:#fff4df;color:#a66a10}
   .aa-status.confirmada{background:#e8f1ff;color:#3568aa}
+  .aa-status.en-progreso{background:#fff2dd;color:#a56a12}
   .aa-status.atendida{background:#e7f5ed;color:#2d8050}
   .aa-status.cancelada{background:#fff0f0;color:#b64d4d}
   .aa-status.no-asistio{background:#f1edf8;color:#7656a2}
@@ -72,6 +73,15 @@
   .aa-actions-menu{position:absolute;right:0;top:38px;z-index:20;min-width:180px;padding:6px;background:#fff;border:1px solid #e1e9e7;border-radius:10px;box-shadow:0 12px 28px rgba(23,48,45,.14);text-align:left}
   .aa-actions-menu a{display:block;padding:9px 10px;border-radius:7px;color:#52645f;text-decoration:none;font-size:.82rem}
   .aa-actions-menu a:hover{background:#f0f7f6;color:#005855}
+  .aa-actions-label{display:block;padding:7px 10px 6px;color:#64736e;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+  .aa-actions-menu a{display:flex;align-items:center;gap:8px}
+  .aa-actions-menu a i,.aa-action-item i{font-size:15px}
+  .aa-actions-menu form{margin:0}
+  .aa-action-item{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:0;border-radius:7px;background:transparent;color:#52645f;text-align:left;font:inherit;font-size:.82rem;cursor:pointer}
+  .aa-action-item:hover{background:#f0f7f6;color:#005855}
+  .aa-action-item.danger{color:#d04444}
+  .aa-action-item.danger:hover{background:#fff0f0;color:#b42318}
+  .aa-action-separator{height:1px;margin:5px 4px;background:#edf1f0}
   .aa-empty{padding:54px 20px;text-align:center;color:#86938f}
   .aa-empty i{display:block;margin:0 auto 10px;font-size:34px;color:#a8bbb6}
   .aa-empty strong{display:block;margin-bottom:5px;color:#52645f;font-size:.98rem}
@@ -197,6 +207,8 @@
                 <span class="aa-status programada">Programada</span>
               {% elif cita.estado == "CONFIRMADA" %}
                 <span class="aa-status confirmada">Confirmada</span>
+              {% elif cita.estado == "EN_PROGRESO" %}
+                <span class="aa-status en-progreso">En progreso</span>
               {% elif cita.estado == "ATENDIDA" %}
                 <span class="aa-status atendida">Atendida</span>
               {% elif cita.estado == "CANCELADA" %}
@@ -214,10 +226,27 @@
             <td><span class="aa-duration">{{ cita.duracion_minutos }} min</span></td>
             <td class="aa-actions">
               <details class="aa-actions">
-                <summary aria-label="Acciones de {{ cita.paciente.nombre }}"><i class="bx bx-dots-horizontal-rounded"></i></summary>
+                <summary aria-label="Acciones de la cita de {{ cita.paciente.nombre }}"><i class="bx bx-dots-horizontal-rounded"></i></summary>
                 <div class="aa-actions-menu">
-                  <a href="{% url 'homeinperfilpaciente' cita.paciente.pk %}">Ver paciente</a>
-                  <a href="{% url 'homeinnuevacita' %}?paciente={{ cita.paciente.pk|urlencode }}">Agendar otra cita</a>
+                  <strong class="aa-actions-label">Acciones</strong>
+                  <a href="{% url 'homeinvercita' cita.pk %}"><i class="bx bx-file"></i> Ver detalles</a>
+                  {% if cita.estado != "ATENDIDA" and cita.estado != "CANCELADA" and cita.estado != "NO_ASISTIO" %}
+                    <a href="{% url 'homeineditarcita' cita.pk %}"><i class="bx bx-edit"></i> Editar cita</a>
+                    <a href="{% url 'homeinreprogramarcita' cita.pk %}"><i class="bx bx-calendar-edit"></i> Reprogramar</a>
+                    {% if cita.estado == "PROGRAMADA" or cita.estado == "CONFIRMADA" %}
+                      <form method="post" action="{% url 'homeinaccioncita' cita.pk 'iniciar' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="aa-action-item"><i class="bx bx-check"></i> Marcar en progreso</button>
+                      </form>
+                    {% endif %}
+                    <div class="aa-action-separator"></div>
+                    <form method="post" action="{% url 'homeinaccioncita' cita.pk 'cancelar' %}" onsubmit="return confirm('¿Seguro que deseas cancelar esta cita?');">
+                      {% csrf_token %}
+                      <button type="submit" class="aa-action-item danger"><i class="bx bx-x-circle"></i> Cancelar cita</button>
+                    </form>
+                  {% endif %}
+                  <div class="aa-action-separator"></div>
+                  <a href="{% url 'homeinperfilpaciente' cita.paciente.pk %}"><i class="bx bx-user"></i> Ver paciente</a>
                 </div>
               </details>
             </td>
