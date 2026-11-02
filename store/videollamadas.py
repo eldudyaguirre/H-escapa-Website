@@ -12,15 +12,18 @@ from datetime import timedelta
 def obtener_configuracion_jitsi():
     """Obtiene y valida la configuración JWT de una instancia Jitsi autogestionada."""
     domain = (os.getenv("JITSI_DOMAIN") or "").strip().lower().rstrip("/")
+    sub = (os.getenv("JITSI_SUB") or "meet.jitsi").strip().lower()
     app_id = (os.getenv("JITSI_APP_ID") or "").strip()
     secret = (os.getenv("JITSI_APP_SECRET") or "").strip()
     if not domain or not app_id or not secret:
         raise ValueError("Falta configurar JITSI_DOMAIN, JITSI_APP_ID y JITSI_APP_SECRET.")
     if "://" in domain or not re.fullmatch(r"[a-z0-9.-]+(?::[0-9]{1,5})?", domain):
         raise ValueError("JITSI_DOMAIN debe contener únicamente el dominio del servidor, sin https:// ni rutas.")
+    if not re.fullmatch(r"[a-z0-9.*-]+", sub):
+        raise ValueError("JITSI_SUB debe coincidir con el XMPP_DOMAIN de Jitsi o con el subdominio autorizado.")
     if domain == "meet.jit.si":
         raise ValueError("meet.jit.si está destinado a pruebas; configura una instancia Jitsi propia para producción.")
-    return {"domain": domain, "app_id": app_id, "secret": secret}
+    return {"domain": domain, "sub": sub, "app_id": app_id, "secret": secret}
 
 
 def hash_token_paciente(token):
@@ -45,15 +48,17 @@ def crear_token_jitsi(cita, nombre, correo="", moderator=False):
     header = {"alg": "HS256", "typ": "JWT"}
     usuario = {
         "name": (nombre or "Participante")[:120],
-        "moderator": bool(moderator),
+        "affiliation": "owner" if moderator else "member",
     }
+    if moderator:
+        usuario["moderator"] = True
     if correo:
         usuario["email"] = correo[:254]
 
     payload = {
         "aud": config["app_id"],
         "iss": config["app_id"],
-        "sub": config["domain"],
+        "sub": config["sub"],
         "room": cita.videollamada_sala,
         "iat": ahora,
         "nbf": ahora - 10,
