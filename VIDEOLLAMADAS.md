@@ -12,11 +12,13 @@ Define estas variables en el mismo entorno que utiliza el proceso Django (por ej
 
 ```dotenv
 JITSI_DOMAIN=video.tu-dominio.com
+JITSI_SUB=meet.jitsi
 JITSI_APP_ID=hescapa
 JITSI_APP_SECRET=CAMBIA_POR_UN_SECRETO_LARGO_Y_ALEATORIO
 ```
 
 - `JITSI_DOMAIN`: solo el nombre del dominio, sin `https://`, rutas ni barra final.
+- `JITSI_SUB`: debe coincidir con `XMPP_DOMAIN` de Jitsi. En Docker el valor predeterminado es `meet.jitsi`; si cambiaste `XMPP_DOMAIN`, coloca aquí ese mismo valor.
 - `JITSI_APP_ID`: identificador de la aplicación; debe coincidir con `JWT_APP_ID` del servidor Jitsi.
 - `JITSI_APP_SECRET`: secreto compartido; debe coincidir exactamente con `JWT_APP_SECRET` del servidor Jitsi.
 
@@ -42,9 +44,17 @@ JWT_ACCEPTED_AUDIENCES=hescapa
 JWT_ALLOW_EMPTY=0
 JWT_SIGN_TYPE=HS256
 ENABLE_GUESTS=0
+XMPP_MUC_MODULES=token_affiliation
+JICOFO_ENABLE_AUTH=0
+ENABLE_AUTO_OWNER=0
+WAIT_FOR_HOST_DISABLE_AUTO_OWNERS=1
 ```
 
-Usa el mismo secreto en Jitsi y en H-Escapa. No habilites acceso anónimo si quieres que todos los participantes deban presentar un JWT. Reinicia o recrea los servicios Jitsi de acuerdo con el método de instalación para aplicar los cambios.
+Usa el mismo secreto en Jitsi y en H-Escapa. No habilites acceso anónimo si quieres que todos los participantes deban presentar un JWT.
+
+**Separación de permisos:** H-Escapa emite `context.user.affiliation=owner` y `moderator=true` para el profesional, y `context.user.affiliation=member` para el paciente. El módulo `token_affiliation` debe estar activo en el MUC; Jicofo no debe promover automáticamente a todos los usuarios autenticados. Por eso se incluyen `JICOFO_ENABLE_AUTH=0`, `ENABLE_AUTO_OWNER=0` y `WAIT_FOR_HOST_DISABLE_AUTO_OWNERS=1`. No elimines estos parámetros si quieres que el paciente no pueda expulsar participantes, cerrar la sala o administrar la reunión. Esta configuración debe verificarse en la versión concreta de Jitsi que se despliegue.
+
+Reinicia o recrea los servicios Jitsi de acuerdo con el método de instalación para aplicar los cambios.
 
 La instancia de Jitsi debe tener HTTPS y conectividad de medios configurada. En una instalación Docker estándar, revisa también el firewall y la publicación de puertos de Jitsi, especialmente UDP 10000. La aplicación carga `external_api.js` desde el dominio configurado.
 
@@ -53,8 +63,9 @@ La instancia de Jitsi debe tener HTTPS y conectividad de medios configurada. En 
 1. Registra una cita y selecciona modalidad **Virtual**.
 2. Abre el detalle de la cita y pulsa **Enviar enlace al paciente**.
 3. H-Escapa genera una sala exclusiva y manda el enlace al correo registrado del paciente.
-4. El profesional asignado entra desde **Ingresar a la sala** en el detalle de la cita.
-5. La sala se habilita desde 30 minutos antes y hasta 30 minutos después de la finalización prevista.
+4. El profesional asignado entra primero desde **Ingresar a la sala** en el detalle de la cita. Esto crea/inicia la reunión y le da el rol de anfitrión.
+5. El paciente abre el enlace recibido por correo y entra como participante, sin permisos de anfitrión.
+6. La sala se habilita desde 30 minutos antes y hasta 30 minutos después de la finalización prevista.
 
 El enlace del paciente es una credencial privada: no debe reenviarse. En la base de datos se guarda su hash, no el token original. Volver a enviar la invitación invalida el enlace anterior. Cambiar fecha, hora o modalidad de la cita elimina la sala y revoca el enlace anterior.
 
