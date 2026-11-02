@@ -132,8 +132,9 @@ def _calendar_request(method, endpoint, access_token, params=None, payload=None)
         if response.status_code == 403:
             raise GoogleCalendarError(
                 "La cuenta no tiene permisos para crear eventos o Google Calendar "
-                "API no está habilitada en el proyecto."
-            , 403)
+                "API no está habilitada en el proyecto.",
+                403,
+            )
         mensaje = "Google Calendar rechazó la operación."
         if detail:
             mensaje = f"{mensaje} Detalle: {detail[:240]}"
@@ -223,11 +224,14 @@ def _datos_evento(cita):
 def crear_o_actualizar_evento_meet(cita):
     """
     Crea un evento privado con una conferencia Meet única o actualiza el evento
-    ya asociado a la cita. Devuelve event_id, meet_url y conference_status.
+    ya asociado a la cita. Los asistentes se invitan solo cuando Meet está listo.
+    Devuelve event_id, meet_url y conference_status.
     """
     access_token = obtener_access_token()
     payload = _datos_evento(cita)
+    asistentes = payload.pop("attendees")
     evento = None
+    ya_tenia_meet = False
 
     if cita.google_calendar_event_id:
         event_id = quote(cita.google_calendar_event_id, safe="")
@@ -243,24 +247,32 @@ def crear_o_actualizar_evento_meet(cita):
             evento_actual = None
 
         if evento_actual and evento_actual.get("status") != "cancelled":
+            ya_tenia_meet = bool(_obtener_enlace_meet(evento_actual))
             estado = _obtener_estado_conferencia(evento_actual)
-            if not _obtener_enlace_meet(evento_actual) and estado == "failure":
+            if not ya_tenia_meet and estado == "failure":
                 payload["conferenceData"] = {
                     "createRequest": {
                         "requestId": uuid4().hex,
                         "conferenceSolutionKey": {"type": "hangoutsMeet"},
                     }
                 }
+            cuerpo_actualizacion = dict(payload)
+            if ya_tenia_meet:
+                cuerpo_actualizacion["attendees"] = asistentes
             evento = _calendar_request(
                 "PATCH",
                 f"calendars/primary/events/{event_id}",
                 access_token,
-                params={"sendUpdates": "all", "conferenceDataVersion": 1},
-                payload=payload,
+                params={
+                    "sendUpdates": "all" if ya_tenia_meet else "none",
+                    "conferenceDataVersion": 1,
+                },
+                payload=cuerpo_actualizacion,
             )
 
     if evento is None:
-        payload["conferenceData"] = {
+        cuerpo_creacion = dict(payload)
+        cuerpo_creacion["conferenceData"] = {
             "createRequest": {
                 "requestId": uuid4().hex,
                 "conferenceSolutionKey": {"type": "hangoutsMeet"},
@@ -270,8 +282,8 @@ def crear_o_actualizar_evento_meet(cita):
             "POST",
             "calendars/primary/events",
             access_token,
-            params={"sendUpdates": "all", "conferenceDataVersion": 1},
-            payload=payload,
+            params={"sendUpdates": "none", "conferenceDataVersion": 1},
+            payload=cuerpo_creacion,
         )
 
     event_id = evento.get("id") or cita.google_calendar_event_id
@@ -284,7 +296,7 @@ def crear_o_actualizar_evento_meet(cita):
     estado = _obtener_estado_conferencia(evento)
 
     # Google genera Meet de forma asíncrona. Consultamos brevemente; si sigue
-    # pendiente guardamos el event_id para continuar la próxima vez sin duplicar.
+    # pendiente guardamos el event_id para continuar sin duplicar reuniones.
     for _ in range(6):
         if meet_url or estado == "failure":
             break
@@ -298,12 +310,36 @@ def crear_o_actualizar_evento_meet(cita):
         meet_url = _obtener_enlace_meet(evento)
         estado = _obtener_estado_conferencia(evento)
 
+    # Las invitaciones se envían después de que el enlace Meet exista. Así los
+    # participantes reciben desde el primer correo el enlace de acceso correcto.
+    if meet_url:
+        correos_evento = {
+            (asistente.get("email") or "").casefold()
+            for asistente in (evento.get("attendees") or [])
+        }
+        faltan_asistentes = any(
+            (asistente["email"] or "").casefold() not in correos_evento
+            for asistente in asistentes
+        )
+        if faltan_asistentes or not ya_tenia_meet:
+            cuerpo_invitacion = dict(payload)
+            cuerpo_invitacion["attendees"] = asistentes
+            event_id_encoded = quote(event_id, safe="")
+            evento = _calendar_request(
+                "PATCH",
+                f"calendars/primary/events/{event_id_encoded}",
+                access_token,
+                params={"sendUpdates": "all", "conferenceDataVersion": 1},
+                payload=cuerpo_invitacion,
+            )
+            meet_url = _obtener_enlace_meet(evento) or meet_url
+            estado = _obtener_estado_conferencia(evento) or "success"
+
     return {
         "event_id": event_id,
         "meet_url": meet_url,
         "conference_status": estado or ("success" if meet_url else "pending"),
     }
-
 
 def cancelar_evento_google_calendar(event_id):
     """Elimina el evento de la cita y notifica la cancelación a los invitados."""
