@@ -138,10 +138,23 @@
     <div class="nav__list">
       <div class="nav__items"><h3 class="nav__subtitle">Consultorio</h3>
         <a href="{% url 'homein' %}" class="nav__link{% if active_menu == 'inicio' %} active{% endif %}"{% if active_menu == 'inicio' %} aria-current="page"{% endif %}><i class="bx bx-home nav__icon" aria-hidden="true"></i><span class="nav__name">Inicio</span></a>
-        <a href="{% url 'homeincalendario' %}" class="nav__link{% if active_menu == 'calendario' %} active{% endif %}"{% if active_menu == 'calendario' %} aria-current="page"{% endif %}><i class="bx bx-calendar nav__icon" aria-hidden="true"></i><span class="nav__name">Calendario</span></a>
+        <div class="nav__dropdown{% if active_menu == 'citas' or active_menu == 'calendario' %} show-dropdown{% endif %}">
+          <button type="button" class="nav__link{% if active_menu == 'citas' or active_menu == 'calendario' %} active{% endif %}" aria-expanded="{% if active_menu == 'citas' or active_menu == 'calendario' %}true{% else %}false{% endif %}" aria-controls="submenu-citas">
+            <i class="bx bx-calendar-event nav__icon" aria-hidden="true"></i>
+            <span class="nav__name">Citas</span>
+            <i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i>
+          </button>
+          <div class="nav__dropdown-collapse" id="submenu-citas">
+            <div class="nav__dropdown-content">
+              <a href="#" class="nav__dropdown-item">Todas las citas</a>
+              <a href="{% url 'homeinnuevacita' %}" class="nav__dropdown-item">Nueva cita</a>
+              <a href="{% url 'homeincalendario' %}" class="nav__dropdown-item">Calendario</a>
+            </div>
+          </div>
+        </div>
         <a href="{% url 'homeininteraccionesweb' %}" class="nav__link{% if active_menu == 'interacciones' %} active{% endif %}"><i class="bx bx-globe nav__icon" aria-hidden="true"></i><span class="nav__name">Solicitudes web</span></a>
         <div class="nav__dropdown{% if active_menu == 'pacientes' %} show-dropdown{% endif %}"><button type="button" class="nav__link{% if active_menu == 'pacientes' %} active{% endif %}" aria-expanded="{% if active_menu == 'pacientes' %}true{% else %}false{% endif %}" aria-controls="submenu-pacientes"><i class="bx bx-user nav__icon" aria-hidden="true"></i><span class="nav__name">Pacientes</span><i class="bx bx-chevron-down nav__icon nav__dropdown-icon" aria-hidden="true"></i></button><div class="nav__dropdown-collapse" id="submenu-pacientes"><div class="nav__dropdown-content"><a href="{% url 'homeinpacientes' %}" class="nav__dropdown-item{% if active_menu == 'pacientes' %} active{% endif %}">Pacientes</a><a href="#" class="nav__dropdown-item">Certificados</a><a href="#" class="nav__dropdown-item">Video-consulta</a></div></div></div>
-        <a href="{% url 'homeinnuevacita' %}" class="nav__link{% if active_menu == 'citas' %} active{% endif %}"><i class="bx bx-calendar-event nav__icon" aria-hidden="true"></i><span class="nav__name">Agendar cita</span></a>
+
         <div class="nav__dropdown{% if active_menu == 'staff' %} show-dropdown{% endif %}">
           <button type="button" class="nav__link{% if active_menu == 'staff' %} active{% endif %}" aria-expanded="{% if active_menu == 'staff' %}true{% else %}false{% endif %}" aria-controls="submenu-staff">
             <i class="bx bx-group nav__icon" aria-hidden="true"></i>
