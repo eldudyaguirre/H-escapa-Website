@@ -108,6 +108,25 @@
         visibility: visible !important;
       }
     }
+
+    /* Control definitivo de submenús: se abren solo con la clase puesta por clic. */
+    .nav .nav__dropdown {
+      max-height: 21px !important;
+      overflow: hidden !important;
+    }
+    .nav .nav__dropdown:hover:not(.show-dropdown) {
+      max-height: 21px !important;
+    }
+    .nav .nav__dropdown.show-dropdown,
+    .nav .nav__dropdown.show-dropdown:hover {
+      max-height: 100rem !important;
+    }
+    .nav .nav__dropdown:hover:not(.show-dropdown) > .nav__link .nav__dropdown-icon {
+      transform: rotate(0deg) !important;
+    }
+    .nav .nav__dropdown.show-dropdown > .nav__link .nav__dropdown-icon {
+      transform: rotate(180deg) !important;
+    }
 </style>
   {% block extra_head %}{% endblock %}
 </head>
@@ -251,5 +270,29 @@
 </script>
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script><script src="{% static 'js/bootstrap.min.js' %}"></script><script src="{% static 'js/validator.min.js' %}"></script><script src="{% static 'js/jquery.slicknav.js' %}"></script><script src="{% static 'js/swiper-bundle.min.js' %}"></script><script src="{% static 'js/jquery.waypoints.min.js' %}"></script><script src="{% static 'js/jquery.counterup.min.js' %}"></script><script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script><script src="{% static 'js/SmoothScroll.js' %}"></script><script src="{% static 'js/parallaxie.js' %}"></script><script src="{% static 'js/gsap.min.js' %}"></script><script src="{% static 'js/magiccursor.js' %}"></script><script src="{% static 'js/SplitText.js' %}"></script><script src="{% static 'js/ScrollTrigger.min.js' %}"></script><script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script><script src="{% static 'js/wow.min.js' %}"></script><script src="{% static 'js/function.js' %}"></script><script src="{% static 'js/mainfrmmenprinci.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
+  <script>
+  // Captura el clic antes de cualquier listener antiguo que pudiera venir de caché.
+  // Impide que scripts anteriores vuelvan a alternar el mismo submenú o dependan del hover.
+  (function () {
+    const sidebar = document.getElementById('navbar');
+    if (!sidebar) return;
+
+    document.addEventListener('click', function (event) {
+      const button = event.target.closest('#navbar .nav__dropdown > button.nav__link');
+      if (!button) return;
+
+      const dropdown = button.closest('.nav__dropdown');
+      if (!dropdown) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const isOpen = !dropdown.classList.contains('show-dropdown');
+      dropdown.classList.toggle('show-dropdown', isOpen);
+      button.setAttribute('aria-expanded', String(isOpen));
+    }, true);
+  })();
+  </script>
 </body>
 </html>
