@@ -264,8 +264,8 @@ class Cita(models.Model):
     actualizado_en = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        # Si se cambia la fecha/hora, los tres recordatorios deben programarse
-        # nuevamente para el nuevo horario.
+        # Si cambia la fecha/hora o modalidad, se reinician recordatorios
+        # y se revoca cualquier enlace de videollamada anterior.
         if self.pk:
             datos_anteriores = (
                 type(self).objects.filter(pk=self.pk)
