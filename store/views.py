@@ -560,7 +560,10 @@ def google_calendar_autorizar(request):
         "client_id": config["client_id"],
         "redirect_uri": _google_calendar_redirect_uri(request),
         "response_type": "code",
-        "scope": "https://www.googleapis.com/auth/calendar.events",
+        "scope": (
+            "https://www.googleapis.com/auth/calendar.events "
+            "https://www.googleapis.com/auth/meetings.space.created"
+        ),
         "access_type": "offline",
         "include_granted_scopes": "true",
         "prompt": "consent select_account",
@@ -908,6 +911,14 @@ def videollamada_enviar_invitacion(request, cita_id):
             "el correo de acceso de H-Escapa. Puedes volver a enviar la invitación.",
         )
     else:
+        if resultado_meet.get("cohost_error"):
+            messages.warning(
+                request,
+                "La invitación se envió, pero no se pudo asignar al profesional "
+                "como coanfitrión de Meet. El paciente podría necesitar que el "
+                "organizador admita su ingreso. "
+                f"Detalle: {resultado_meet['cohost_error']}",
+            )
         messages.success(
             request,
             f"Google Meet quedó listo. Se invitó al paciente y al profesional "
