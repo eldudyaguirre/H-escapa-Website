@@ -833,9 +833,10 @@ def homeincalendario(request):
     hora_inicio = max(0, min(horas_inicio))
     hora_fin = min(24, max(horas_fin))
     agenda_horas = [
-        {"hora": h, "label": date(2000, 1, 1).replace(hour=0).strftime("%I:%M %p") if False else (
-            f"{(h % 12) or 12:02d}:00 {'AM' if h < 12 else 'PM'}"
-        )}
+        {
+            "hora": h,
+            "label": f"{((h % 12) or 12):02d}:00 {'AM' if h < 12 else 'PM'}",
+        }
         for h in range(hora_inicio, max(hora_inicio + 1, hora_fin))
     ]
 
@@ -859,6 +860,7 @@ def homeincalendario(request):
             dia = fecha_inicio + timedelta(days=offset)
             week_days.append({
                 "fecha": dia,
+                "nombre": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"][dia.weekday()],
                 "es_hoy": dia == hoy,
                 "citas": citas_por_dia.get(dia, []),
             })
@@ -901,8 +903,8 @@ def homeincalendario(request):
         next_month = (
             fecha_seleccionada.replace(day=28) + timedelta(days=4)
         ).replace(day=1)
-        previous_date = previous_month.replace(day=min(fecha_seleccionada.day, previous_month.day))
-        next_date = next_month.replace(day=min(fecha_seleccionada.day, month_calendar.monthrange(next_month.year, next_month.month)[1]))
+        previous_date = previous_month.replace(day=1)
+        next_date = next_month
 
     def calendar_url(fecha, modo=vista):
         params = request.GET.copy()
