@@ -35,6 +35,9 @@
   .calendar-hour-row{display:grid;grid-template-columns:86px minmax(0,1fr);min-height:92px;border-top:1px solid #edf1f0}
   .calendar-hour-label{display:flex;align-items:flex-start;justify-content:center;padding:13px 8px 0 0;border-right:1px solid #edf1f0;color:#899590;font-size:.77rem;font-weight:600;white-space:nowrap}
   .calendar-hour-events{display:flex;align-items:stretch;gap:9px;padding:7px 0 7px 10px;min-width:0;flex-wrap:wrap}
+  .calendar-close-row{min-height:48px;border-top:1px dashed #dbe5e2;background:#fbfdfc}
+  .calendar-close-row .calendar-hour-label{align-items:center;padding-top:0;color:#526a63;font-weight:700}
+  .calendar-close-note{display:flex;align-items:center;padding:8px 12px;color:#81908b;font-size:.75rem}
   .calendar-empty-slot{flex:1;min-height:65px}
   .calendar-event{display:block;flex:1 1 260px;min-width:220px;max-width:520px;padding:10px 12px;border:1px solid;border-radius:9px;color:#3d514c;text-decoration:none;transition:transform .15s,box-shadow .15s}
   .calendar-event:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(35,65,60,.09)}
@@ -167,6 +170,12 @@
               </div>
             </div>
           {% endfor %}
+          <div class="calendar-hour-row calendar-close-row">
+            <div class="calendar-hour-label">10:00 PM</div>
+            <div class="calendar-hour-events">
+              <div class="calendar-close-note">Fin de atención · Las citas pueden finalizar hasta esta hora.</div>
+            </div>
+          </div>
         </div>
       {% else %}
         <div class="calendar-no-events"><i class="bx bx-calendar-x"></i><strong>No hay citas para este día</strong><br>Selecciona otra fecha o registra una nueva cita.</div>
@@ -197,6 +206,10 @@
                 {% endfor %}
               </div>
             {% endfor %}
+          {% endfor %}
+          <div class="calendar-week-hour">10:00 PM</div>
+          {% for dia in week_days %}
+            <div class="calendar-week-cell" style="display:flex;align-items:center;justify-content:center;color:#81908b;font-size:.68rem">Cierre de atención</div>
           {% endfor %}
         </div>
       </div>
