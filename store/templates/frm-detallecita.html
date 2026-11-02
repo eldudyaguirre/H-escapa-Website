@@ -24,6 +24,10 @@
   .detail-state.done{background:#e7f5ed;color:#2d8050}
   .detail-state.cancelled{background:#fff0f0;color:#b64d4d}
   .detail-notes{white-space:pre-wrap;font-weight:400!important;color:#64736e!important}
+  .detail-video{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:0 0 18px;padding:18px 20px;background:#eef7f5;border:1px solid #d5e9e5;border-radius:13px}
+  .detail-video strong{display:block;color:#24514c;margin-bottom:4px}.detail-video p{margin:0;color:#61736f;font-size:.88rem}
+  .detail-video-actions{display:flex;gap:9px;flex-wrap:wrap}.detail-video button,.detail-video a{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:1px solid #c8dfda;border-radius:9px;background:#fff;color:#315e58;text-decoration:none;font-size:.86rem;font-weight:700;cursor:pointer}
+  .detail-video .video-primary{background:#005855;border-color:#005855;color:#fff}
   @media(max-width:650px){.detail-page{padding:19px 12px 28px}.detail-grid{grid-template-columns:1fr}.detail-field.full{grid-column:auto}.detail-head h1{font-size:1.7rem}.detail-actions{width:100%}.detail-btn{flex:1;justify-content:center}}
 </style>
 {% endblock %}
@@ -50,6 +54,24 @@
       {% endif %}
     </div>
   </header>
+
+  {% if cita.modalidad == "VIRTUAL" %}
+    <section class="detail-video">
+      <div><strong><i class="bx bx-video"></i> Consulta virtual</strong><p>Envía al paciente su enlace privado y accede a la sala como profesional asignado.</p></div>
+      <div class="detail-video-actions">
+        {% if cita.paciente.correo and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
+          <form method="post" action="{% url 'videollamada_enviar_invitacion' cita.pk %}">
+            {% csrf_token %}<button type="submit"><i class="bx bx-envelope"></i> Enviar enlace al paciente</button>
+          </form>
+        {% elif not cita.paciente.correo %}
+          <span style="color:#8a5b1d;font-size:.84rem">Registra el correo del paciente para enviar la invitación.</span>
+        {% endif %}
+        {% if cita.videollamada_sala and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
+          <a class="video-primary" href="{% url 'videollamada_profesional' cita.pk %}"><i class="bx bx-video"></i> Ingresar a la sala</a>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
 
   <article class="detail-card">
     <div class="detail-card-head">
