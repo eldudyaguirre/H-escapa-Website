@@ -673,6 +673,40 @@ def videollamada_paciente_sala(request, cita_id):
 
 
 @staff_required
+def homeinvideollamadas(request):
+    """Panel de seguimiento de todas las citas con modalidad virtual."""
+    vista = request.GET.get("vista", "activas")
+    if vista not in {"activas", "en_progreso", "finalizadas", "todas"}:
+        vista = "activas"
+
+    base = Cita.objects.select_related(
+        "paciente", "profesional", "especialidad", "servicio"
+    ).filter(modalidad="VIRTUAL")
+    total = base.count()
+    activas = base.filter(estado__in=["PROGRAMADA", "CONFIRMADA"]).count()
+    en_progreso = base.filter(estado="EN_PROGRESO").count()
+    finalizadas = base.filter(estado__in=["ATENDIDA", "CANCELADA", "NO_ASISTIO"]).count()
+
+    citas = base
+    if vista == "activas":
+        citas = citas.filter(estado__in=["PROGRAMADA", "CONFIRMADA"])
+    elif vista == "en_progreso":
+        citas = citas.filter(estado="EN_PROGRESO")
+    elif vista == "finalizadas":
+        citas = citas.filter(estado__in=["ATENDIDA", "CANCELADA", "NO_ASISTIO"])
+
+    return render(request, "frm-videollamadas.html", {
+        "citas": citas.order_by("fecha_hora"),
+        "vista": vista,
+        "total_virtuales": total,
+        "total_activas": activas,
+        "total_en_progreso": en_progreso,
+        "total_finalizadas": finalizadas,
+        "active_menu": "citas",
+    })
+
+
+@staff_required
 def homeinvercita(request, cita_id):
     cita = get_object_or_404(
         Cita.objects.select_related("paciente", "profesional", "especialidad", "servicio"),
