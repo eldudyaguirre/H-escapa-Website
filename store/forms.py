@@ -461,3 +461,62 @@ class AgendamientoForm(forms.Form):
         if profesional and fecha and hora and servicio and hora not in horarios_disponibles(profesional, fecha, servicio):
             self.add_error("hora", "Ese horario ya no está disponible. Actualiza las opciones e inténtalo de nuevo.")
         return cleaned
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+            "titulo", "resumen", "contenido", "imagen_destacada",
+            "categoria", "etiquetas", "estado",
+            "meta_titulo", "meta_descripcion",
+        ]
+        widgets = {
+            "titulo": forms.TextInput(attrs={
+                "class": "blog-input",
+                "placeholder": "Ej.: Cómo manejar la ansiedad en el día a día",
+                "maxlength": "200",
+            }),
+            "resumen": forms.Textarea(attrs={
+                "class": "blog-input",
+                "rows": 3,
+                "placeholder": "Un resumen breve que aparecerá en la portada del blog.",
+            }),
+            "contenido": forms.HiddenInput(attrs={
+                "id": "id_contenido",
+            }),
+            "imagen_destacada": forms.ClearableFileInput(attrs={
+                "class": "blog-input",
+                "accept": "image/jpeg,image/png,image/webp",
+            }),
+            "categoria": forms.Select(attrs={"class": "blog-input"}),
+            "etiquetas": forms.SelectMultiple(attrs={
+                "class": "blog-input",
+                "size": "5",
+            }),
+            "estado": forms.Select(attrs={"class": "blog-input"}),
+            "meta_titulo": forms.TextInput(attrs={
+                "class": "blog-input",
+                "placeholder": "Título para buscadores (opcional)",
+                "maxlength": "200",
+            }),
+            "meta_descripcion": forms.Textarea(attrs={
+                "class": "blog-input",
+                "rows": 2,
+                "placeholder": "Descripción para buscadores (opcional)",
+                "maxlength": "300",
+            }),
+        }
+
+    def clean_contenido(self):
+        contenido = sanitize_blog_html(self.cleaned_data.get("contenido") or "").strip()
+        if not contenido:
+            raise forms.ValidationError("El contenido del artículo no puede estar vacío.")
+        return contenido
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categoria"].queryset = CategoriaBlog.objects.filter(activa=True).order_by("nombre")
+        self.fields["categoria"].required = False
+        self.fields["etiquetas"].queryset = EtiquetaBlog.objects.all().order_by("nombre")
+        self.fields["etiquetas"].required = False
