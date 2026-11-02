@@ -173,7 +173,7 @@ class Command(BaseCommand):
                     f"Simulación terminada. Recordatorios que se enviarían: {simuladas}."
                 )
             )
-        else:
+        elif enviadas or errores:
             self.stdout.write(
                 f"Proceso terminado. Correos enviados: {enviadas}. Errores: {errores}."
             )
