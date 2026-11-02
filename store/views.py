@@ -587,6 +587,10 @@ def videollamada_enviar_invitacion(request, cita_id):
     if cita.estado not in {"PROGRAMADA", "CONFIRMADA", "EN_PROGRESO"}:
         messages.error(request, "La cita está cerrada o cancelada y no admite videollamada.")
         return redirect("homeinvercita", cita_id=cita.pk)
+    fin_acceso = cita.fecha_hora + timedelta(minutes=(cita.duracion_minutos or 60) + 30)
+    if timezone.now() > fin_acceso:
+        messages.error(request, "El horario de esta cita ya finalizó. No se puede enviar una nueva invitación.")
+        return redirect("homeinvercita", cita_id=cita.pk)
     if not destino:
         messages.error(request, "El paciente no tiene un correo electrónico registrado.")
         return redirect("homeinvercita", cita_id=cita.pk)
@@ -594,6 +598,11 @@ def videollamada_enviar_invitacion(request, cita_id):
         obtener_configuracion_jitsi()
     except ValueError:
         messages.error(request, "Configura el servidor Jitsi y sus credenciales JWT antes de enviar invitaciones.")
+        return redirect("homeinvercita", cita_id=cita.pk)
+
+    remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
+    if not remitente:
+        messages.error(request, "No está configurado el correo remitente del sistema.")
         return redirect("homeinvercita", cita_id=cita.pk)
 
     import secrets
@@ -607,11 +616,6 @@ def videollamada_enviar_invitacion(request, cita_id):
         kwargs={"cita_id": cita.pk, "token": token},
     ))
     fecha_local = timezone.localtime(cita.fecha_hora)
-    remitente = settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER
-    if not remitente:
-        messages.error(request, "No está configurado el correo remitente del sistema.")
-        return redirect("homeinvercita", cita_id=cita.pk)
-
     asunto = "H-Escapa | Enlace para tu consulta virtual"
     mensaje = (
         f"Hola {cita.paciente.nombres},\n\n"
@@ -627,7 +631,14 @@ def videollamada_enviar_invitacion(request, cita_id):
         "H-Escapa · Psicología y Salud Mental"
     )
     try:
-        EmailMessage(subject=asunto, body=mensaje, from_email=remitente, to=[destino]).send(fail_silently=False)
+        enviados = EmailMessage(
+            subject=asunto,
+            body=mensaje,
+            from_email=remitente,
+            to=[destino],
+        ).send(fail_silently=False)
+        if enviados != 1:
+            raise RuntimeError("El servidor de correo no confirmó el envío.")
     except Exception:
         messages.error(request, "No se pudo enviar la invitación. Revisa la configuración del correo del servidor.")
     else:
