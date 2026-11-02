@@ -1,0 +1,91 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Tu consulta virtual | H-Escapa</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2f6f5;font-family:Arial,Helvetica,sans-serif;color:#344745;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+    Tu consulta virtual está programada. Revisa los detalles y guarda tu enlace privado de acceso.
+  </div>
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f2f6f5;border-collapse:collapse;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:100%;max-width:600px;background:#fff;border-collapse:separate;border-spacing:0;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(24,68,62,.08);">
+          <tr>
+            <td align="center" style="padding:25px 22px;background:#439b95;border-bottom:4px solid #b9c56c;">
+              <img src="{{ logo_url }}" width="150" alt="H-Escapa" style="display:block;width:150px;max-width:70%;height:auto;border:0;">
+              <div style="padding-top:9px;color:#eff9f7;font-size:10px;letter-spacing:2px;text-transform:uppercase;">Psicología y Salud Mental</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 36px 12px;">
+              <div style="font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#849590;">Invitación a consulta virtual</div>
+              <h1 style="margin:10px 0 14px;color:#439b95;font-size:25px;line-height:1.25;">Hola {{ nombre }}</h1>
+              <p style="margin:0;color:#586b65;font-size:15px;line-height:1.7;">
+                Tu consulta virtual en H-Escapa está programada. Aquí tienes los datos de tu cita y el acceso privado a Google Meet.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:18px 36px 10px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:separate;border-spacing:0;background:#f4f9f8;border:1px solid #e1ece9;border-radius:13px;">
+                <tr>
+                  <td style="padding:18px 20px;border-bottom:1px solid #e1ece9;">
+                    <div style="font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#849590;">Profesional</div>
+                    <div style="padding-top:6px;font-size:15px;font-weight:bold;color:#344745;">{{ profesional }}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                      <tr>
+                        <td width="50%" valign="top">
+                          <div style="font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#849590;">Fecha</div>
+                          <div style="padding-top:6px;font-size:16px;font-weight:bold;color:#245a55;">{{ fecha }}</div>
+                        </td>
+                        <td width="50%" valign="top">
+                          <div style="font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#849590;">Hora</div>
+                          <div style="padding-top:6px;font-size:16px;font-weight:bold;color:#245a55;">{{ hora }}</div>
+                        </td>
+                      </tr>
+                    </table>
+                    <div style="padding-top:15px;font-size:12px;color:#71827c;">Duración: {{ duracion }} minutos</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:22px 36px 12px;">
+              <a href="{{ enlace_acceso }}" style="display:inline-block;padding:15px 26px;border-radius:9px;background:#439b95;color:#fff;text-decoration:none;font-size:15px;font-weight:bold;">
+                Ingresar a mi consulta virtual
+              </a>
+              <p style="margin:14px 0 0;color:#84938e;font-size:12px;line-height:1.6;">
+                El enlace abrirá una página segura de H-Escapa desde donde podrás ingresar a Google Meet cuando la sala esté disponible.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:18px 36px 30px;">
+              <div style="padding:14px 16px;background:#fff9ed;border:1px solid #f0e2c5;border-radius:10px;color:#78633e;font-size:12px;line-height:1.6;">
+                <strong style="display:block;padding-bottom:4px;color:#8b6c34;">Antes de tu consulta</strong>
+                Conéctate desde un lugar privado, comprueba tu cámara y micrófono y utiliza audífonos. No compartas este enlace de acceso con otras personas.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:18px 20px;background:#f8faf9;border-top:1px solid #e8efed;">
+              <div style="font-size:11px;line-height:1.6;color:#879691;">H-Escapa · Psicología y Salud Mental</div>
+              <div style="padding-top:4px;font-size:10px;color:#a0aca8;">Este es un mensaje automático de invitación a consulta virtual.</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
