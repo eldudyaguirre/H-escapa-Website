@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from functools import wraps
 from pathlib import Path
 import csv
+import calendar as month_calendar
 import hashlib
 import os
 import mimetypes
@@ -762,27 +763,191 @@ def homeintodascitas(request):
 
 @staff_required
 def homeincalendario(request):
-    citas = Cita.objects.select_related("paciente", "profesional", "especialidad", "servicio").order_by("fecha_hora")
-    profesionales = Profesional.objects.filter(activo=True).order_by("apellido", "nombre")
-    servicios = Servicio.objects.filter(activo=True).order_by("nombre")
-    profesional_id = request.GET.get("profesional", "")
-    servicio_slug = request.GET.get("servicio", "")
+    """Calendario de citas por día, semana o mes, con filtro por profesional."""
+    hoy = timezone.localdate()
+    vista = request.GET.get("vista", "day")
+    if vista not in {"day", "week", "month"}:
+        vista = "day"
+
     fecha_txt = request.GET.get("fecha", "")
-    horarios = []
-    profesional_sel = None
-    servicio_sel = None
     try:
-        from datetime import date as date_type
-        if profesional_id and servicio_slug and fecha_txt:
-            profesional_sel = profesionales.get(pk=profesional_id)
-            servicio_sel = servicios.get(slug=servicio_slug)
-            horarios = horarios_disponibles(profesional_sel, date_type.fromisoformat(fecha_txt), servicio_sel)
-    except (ValueError, Profesional.DoesNotExist, Servicio.DoesNotExist):
-        horarios = []
+        fecha_seleccionada = date.fromisoformat(fecha_txt) if fecha_txt else hoy
+    except ValueError:
+        fecha_seleccionada = hoy
+
+    profesional_id = request.GET.get("profesional", "").strip()
+    profesionales = Profesional.objects.order_by("apellido", "nombre")
+    profesional_sel = None
+    if profesional_id and profesional_id.isdigit():
+        profesional_sel = profesionales.filter(pk=profesional_id).first()
+    else:
+        profesional_id = ""
+
+    if vista == "day":
+        fecha_inicio = fecha_seleccionada
+        fecha_fin = fecha_seleccionada
+        month_weeks = []
+    elif vista == "week":
+        fecha_inicio = fecha_seleccionada - timedelta(days=fecha_seleccionada.weekday())
+        fecha_fin = fecha_inicio + timedelta(days=6)
+        month_weeks = []
+    else:
+        first_day = fecha_seleccionada.replace(day=1)
+        month_weeks = month_calendar.Calendar(firstweekday=0).monthdatescalendar(
+            fecha_seleccionada.year, fecha_seleccionada.month
+        )
+        fecha_inicio = month_weeks[0][0]
+        fecha_fin = month_weeks[-1][-1]
+
+    citas_qs = Cita.objects.select_related(
+        "paciente", "profesional", "especialidad", "servicio"
+    ).filter(
+        fecha_hora__date__gte=fecha_inicio,
+        fecha_hora__date__lte=fecha_fin,
+    )
+    if profesional_sel:
+        citas_qs = citas_qs.filter(profesional=profesional_sel)
+
+    citas = list(citas_qs.order_by("fecha_hora", "id"))
+    citas_por_dia = {}
+
+    for cita in citas:
+        inicio_local = timezone.localtime(cita.fecha_hora) if timezone.is_aware(cita.fecha_hora) else cita.fecha_hora
+        fin_local = inicio_local + timedelta(minutes=cita.duracion_minutos or 60)
+        cita.calendar_inicio = inicio_local
+        cita.calendar_fin = fin_local
+        cita.calendar_hora = inicio_local.strftime("%I:%M %p").lstrip("0")
+        cita.calendar_hora_fin = fin_local.strftime("%I:%M %p").lstrip("0")
+        cita.calendar_especialidad = (
+            cita.especialidad.nombre if cita.especialidad
+            else cita.servicio.nombre if cita.servicio
+            else "Atención"
+        )
+        citas_por_dia.setdefault(inicio_local.date(), []).append(cita)
+
+    horas_inicio = [8] + [c.calendar_inicio.hour for c in citas]
+    horas_fin = [18] + [
+        min(24, c.calendar_fin.hour + (1 if c.calendar_fin.minute else 0))
+        for c in citas
+    ]
+    hora_inicio = max(0, min(horas_inicio))
+    hora_fin = min(24, max(horas_fin))
+    agenda_horas = [
+        {"hora": h, "label": date(2000, 1, 1).replace(hour=0).strftime("%I:%M %p") if False else (
+            f"{(h % 12) or 12:02d}:00 {'AM' if h < 12 else 'PM'}"
+        )}
+        for h in range(hora_inicio, max(hora_inicio + 1, hora_fin))
+    ]
+
+    dia_actual = {
+        "fecha": fecha_seleccionada,
+        "citas": citas_por_dia.get(fecha_seleccionada, []),
+    }
+    day_slots = []
+    for hora in agenda_horas:
+        day_slots.append({
+            "label": hora["label"],
+            "citas": [
+                cita for cita in dia_actual["citas"]
+                if cita.calendar_inicio.hour == hora["hora"]
+            ],
+        })
+
+    week_days = []
+    if vista == "week":
+        for offset in range(7):
+            dia = fecha_inicio + timedelta(days=offset)
+            week_days.append({
+                "fecha": dia,
+                "es_hoy": dia == hoy,
+                "citas": citas_por_dia.get(dia, []),
+            })
+
+    week_slots = []
+    if vista == "week":
+        for hora in agenda_horas:
+            columnas = []
+            for dia in week_days:
+                columnas.append({
+                    "fecha": dia["fecha"],
+                    "citas": [
+                        cita for cita in dia["citas"]
+                        if cita.calendar_inicio.hour == hora["hora"]
+                    ],
+                })
+            week_slots.append({"label": hora["label"], "columnas": columnas})
+
+    month_grid = []
+    if vista == "month":
+        for semana in month_weeks:
+            fila = []
+            for dia in semana:
+                fila.append({
+                    "fecha": dia,
+                    "en_mes": dia.month == fecha_seleccionada.month,
+                    "es_hoy": dia == hoy,
+                    "citas": citas_por_dia.get(dia, []),
+                })
+            month_grid.append(fila)
+
+    if vista == "day":
+        previous_date = fecha_seleccionada - timedelta(days=1)
+        next_date = fecha_seleccionada + timedelta(days=1)
+    elif vista == "week":
+        previous_date = fecha_seleccionada - timedelta(days=7)
+        next_date = fecha_seleccionada + timedelta(days=7)
+    else:
+        previous_month = fecha_seleccionada.replace(day=1) - timedelta(days=1)
+        next_month = (
+            fecha_seleccionada.replace(day=28) + timedelta(days=4)
+        ).replace(day=1)
+        previous_date = previous_month.replace(day=min(fecha_seleccionada.day, previous_month.day))
+        next_date = next_month.replace(day=min(fecha_seleccionada.day, month_calendar.monthrange(next_month.year, next_month.month)[1]))
+
+    def calendar_url(fecha, modo=vista):
+        params = request.GET.copy()
+        params["vista"] = modo
+        params["fecha"] = fecha.isoformat()
+        params.pop("page", None)
+        return f"{reverse('homeincalendario')}?{params.urlencode()}"
+
+    tab_urls = {
+        modo: calendar_url(fecha_seleccionada, modo)
+        for modo in ("day", "week", "month")
+    }
+    total_periodo = len(citas)
+
+    if vista == "day":
+        periodo_texto = fecha_seleccionada.strftime("%d/%m/%Y")
+    elif vista == "week":
+        periodo_texto = f"{fecha_inicio.strftime('%d/%m')} – {fecha_fin.strftime('%d/%m/%Y')}"
+    else:
+        nombres_meses = [
+            "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+        ]
+        periodo_texto = f"{nombres_meses[fecha_seleccionada.month - 1].capitalize()} {fecha_seleccionada.year}"
+
     return render(request, "frm-calendario.html", {
-        "citas": citas, "profesionales": profesionales, "servicios": servicios,
-        "profesional_sel": profesional_sel, "servicio_sel": servicio_sel,
-        "fecha_sel": fecha_txt, "horarios_disponibles": horarios,
+        "active_menu": "calendario",
+        "vista": vista,
+        "fecha_seleccionada": fecha_seleccionada,
+        "fecha_inicio": fecha_inicio,
+        "fecha_fin": fecha_fin,
+        "hoy": hoy,
+        "profesionales": profesionales,
+        "profesional_id": profesional_id,
+        "periodo_texto": periodo_texto,
+        "prev_url": calendar_url(previous_date),
+        "next_url": calendar_url(next_date),
+        "today_url": calendar_url(hoy),
+        "tab_urls": tab_urls,
+        "total_periodo": total_periodo,
+        "day_slots": day_slots,
+        "week_days": week_days,
+        "week_slots": week_slots,
+        "month_grid": month_grid,
+        "week_day_names": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
     })
 
 
