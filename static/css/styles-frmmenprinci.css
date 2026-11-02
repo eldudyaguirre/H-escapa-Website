@@ -77,8 +77,8 @@
 .nav__dropdown-item { display: block; font-size: var(--smaller-font-size); font-weight: var(--font-medium); color: var(--text-color); }
 .nav__dropdown-item:hover { color: var(--h-escapa3-color); }
 .nav__dropdown-icon { margin-left: auto; transition: .4s; }
-.nav__dropdown:hover, .nav__dropdown.show-dropdown { max-height: 100rem; }
-.nav__dropdown:hover .nav__dropdown-icon, .nav__dropdown.show-dropdown .nav__dropdown-icon { transform: rotate(180deg); }
+.nav__dropdown.show-dropdown { max-height: 100rem; }
+.nav__dropdown.show-dropdown .nav__dropdown-icon { transform: rotate(180deg); }
 .show-menu { left: 0; }
 
 /* Estado activo del módulo: verde oscuro; los módulos inactivos usan el mismo tono claro del menú. */
