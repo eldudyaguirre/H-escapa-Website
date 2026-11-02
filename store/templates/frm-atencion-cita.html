@@ -1,0 +1,270 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Atención de consulta{% endblock %}
+
+{% block extra_head %}
+<style>
+  .consultation-page{max-width:1580px;margin:0 auto;padding:26px 28px 44px;color:#2d403c}
+  .consultation-page *{box-sizing:border-box}
+  .consultation-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:19px}
+  .consultation-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;color:#478f89;text-decoration:none;font-size:.84rem;font-weight:600}
+  .consultation-head h1{margin:0 0 6px;font:500 2rem Marcellus,serif;color:#203b39}
+  .consultation-head p{margin:0;color:#7c8985;font-size:.88rem}
+  .consultation-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .consultation-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:39px;padding:9px 14px;border:1px solid #dce5e3;border-radius:9px;background:#fff;color:#53655f;text-decoration:none;font:inherit;font-size:.83rem;font-weight:650;cursor:pointer}
+  .consultation-btn:hover{background:#f2f8f7;border-color:#c4dcd6;color:#005855}
+  .consultation-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  .consultation-btn.primary:hover{background:#064b47;color:#fff}
+  .consultation-btn.finish{background:#287d51;border-color:#287d51;color:#fff}
+  .consultation-btn.finish:hover{background:#216945;color:#fff}
+  .consultation-status{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 10px;border-radius:30px;background:#fff3df;color:#9a6414;font-size:.74rem;font-weight:700}
+  .consultation-status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .patient-strip{display:grid;grid-template-columns:minmax(220px,1.3fr) repeat(3,minmax(125px,.8fr)) auto;gap:12px;align-items:center;margin-bottom:18px;padding:17px 19px;background:#fff;border:1px solid #e1e9e7;border-radius:13px;box-shadow:0 5px 18px rgba(28,53,49,.045)}
+  .patient-main{display:flex;align-items:center;gap:12px;min-width:0}
+  .patient-avatar{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border-radius:50%;background:#e6f2f0;color:#176d65;font-weight:750}
+  .patient-main strong{display:block;color:#30443f;font-size:.94rem}
+  .patient-main small{display:block;margin-top:3px;color:#899590;font-size:.75rem}
+  .patient-meta label{display:block;color:#98a29f;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .patient-meta strong{display:block;margin-top:4px;color:#52645f;font-size:.82rem;font-weight:600;overflow-wrap:anywhere}
+  .patient-strip-action{justify-self:end}
+  .clinical-alerts{display:grid;gap:9px;margin-bottom:16px}
+  .clinical-alert{padding:11px 14px;border:1px solid #f0dfbd;border-radius:9px;background:#fff9ec;color:#7d5b21;font-size:.82rem;line-height:1.5}
+  .clinical-alert strong{color:#67480f}
+  .consultation-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(315px,.85fr);gap:18px;align-items:start}
+  .consultation-panel{min-width:0;margin-bottom:17px;background:#fff;border:1px solid #e1e9e7;border-radius:13px;box-shadow:0 5px 18px rgba(28,53,49,.045);overflow:hidden}
+  .consultation-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 19px;border-bottom:1px solid #edf1f0}
+  .consultation-panel-head h2{display:flex;align-items:center;gap:8px;margin:0;color:#334741;font-size:1rem;font-weight:700}
+  .consultation-panel-head p{margin:4px 0 0;color:#8a9691;font-size:.75rem}
+  .consultation-panel-body{padding:18px 19px}
+  .clinical-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .clinical-field{min-width:0}
+  .clinical-field.full{grid-column:1/-1}
+  .clinical-field label{display:block;margin-bottom:6px;color:#5b6d67;font-size:.79rem;font-weight:700}
+  .clinical-field input,.clinical-field select,.clinical-field textarea{display:block;width:100%;max-width:100%;border:1px solid #dce5e3;border-radius:8px;padding:10px 11px;background:#fff;color:#344944;font:inherit;font-size:.84rem;outline:none;transition:border-color .15s,box-shadow .15s}
+  .clinical-field textarea{min-height:88px;resize:vertical;line-height:1.5}
+  .clinical-field input:focus,.clinical-field select:focus,.clinical-field textarea:focus{border-color:#65aaa2;box-shadow:0 0 0 3px rgba(67,155,149,.12)}
+  .clinical-field small{display:block;margin-top:5px;color:#9aa49f;font-size:.7rem}
+  .clinical-error{margin-top:5px;color:#b42318;font-size:.75rem}
+  .consultation-form-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #edf1f0;flex-wrap:wrap}
+  .consultation-form-actions .right{display:flex;gap:8px;flex-wrap:wrap}
+  .consultation-form-note{color:#8a9691;font-size:.72rem;line-height:1.45}
+  .task-form-grid{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:11px}
+  .task-form-grid .wide{grid-column:1/-1}
+  .task-form-grid label{display:block;margin-bottom:6px;color:#5b6d67;font-size:.77rem;font-weight:700}
+  .task-form-grid input,.task-form-grid textarea,.task-form-grid select{width:100%;border:1px solid #dce5e3;border-radius:8px;padding:9px 10px;background:#fff;color:#344944;font:inherit;font-size:.82rem}
+  .task-form-grid textarea{min-height:64px;resize:vertical}
+  .task-add-row{display:flex;justify-content:flex-end;margin-top:12px}
+  .task-list{display:grid;gap:9px;margin-top:15px}
+  .task-item{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:9px;align-items:start;padding:11px;border:1px solid #e8eeec;border-radius:9px;background:#fff}
+  .task-check{width:20px;height:20px;margin:2px 0 0;accent-color:#27885d;cursor:pointer}
+  .task-copy strong{display:block;color:#40534d;font-size:.81rem;line-height:1.4}
+  .task-copy p{margin:4px 0 0;color:#7e8b86;font-size:.73rem;line-height:1.45;white-space:pre-wrap}
+  .task-copy .task-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;color:#9aa49f;font-size:.67rem}
+  .task-priority{display:inline-flex;padding:3px 7px;border-radius:20px;background:#f0f4f3;color:#65736e;font-size:.65rem;font-weight:700}
+  .task-priority.ALTA{background:#fff0ed;color:#bb4d3e}
+  .task-priority.BAJA{background:#eef4fb;color:#52739c}
+  .task-item.completed .task-copy strong{text-decoration:line-through;color:#8e9994}
+  .task-item.completed{background:#fbfcfb}
+  .task-empty{padding:17px;text-align:center;color:#8c9893;font-size:.77rem}
+  .clinical-timeline{display:grid;gap:13px}
+  .timeline-item{position:relative;padding:0 0 0 17px;border-left:2px solid #e1eeeb}
+  .timeline-item:before{content:"";position:absolute;left:-6px;top:3px;width:10px;height:10px;border-radius:50%;background:#439b95;border:2px solid #fff;box-shadow:0 0 0 1px #b8d5cf}
+  .timeline-date{color:#87938e;font-size:.69rem;font-weight:650}
+  .timeline-item h3{margin:4px 0 5px;color:#3f534d;font-size:.82rem}
+  .timeline-item p{margin:4px 0;color:#71807a;font-size:.74rem;line-height:1.5;white-space:pre-wrap}
+  .timeline-item a{display:inline-flex;margin-top:6px;color:#39877f;text-decoration:none;font-size:.73rem;font-weight:650}
+  .timeline-empty{padding:18px;text-align:center;color:#8c9893;font-size:.78rem}
+  .clinical-disclaimer{margin-top:12px;padding:11px 13px;border-radius:9px;background:#f4f8f7;color:#76857f;font-size:.7rem;line-height:1.5}
+  .clinical-message{padding:10px 13px;border-radius:8px;background:#eaf6ef;border:1px solid #cde8d5;color:#286b41;font-size:.81rem}
+  .clinical-message.error{background:#fff1f0;border-color:#f0d3d0;color:#a53e35}
+  @media(max-width:1050px){.patient-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.patient-main{grid-column:1/3}.patient-strip-action{grid-column:3;grid-row:1}.consultation-layout{grid-template-columns:minmax(0,1.2fr) minmax(290px,.8fr)}}
+  @media(max-width:760px){.consultation-page{padding:18px 12px 30px}.consultation-head h1{font-size:1.7rem}.consultation-head-actions{width:100%}.consultation-head-actions .consultation-btn{flex:1}.patient-strip{grid-template-columns:repeat(2,minmax(0,1fr));padding:14px}.patient-main{grid-column:1/-1}.patient-strip-action{grid-column:1/-1;grid-row:auto;justify-self:stretch}.consultation-layout{grid-template-columns:1fr}.consultation-panel-body{padding:15px}.clinical-form-grid{grid-template-columns:1fr}.clinical-field.full{grid-column:auto}.consultation-form-actions{align-items:stretch;flex-direction:column}.consultation-form-actions .right{width:100%}.consultation-form-actions .right .consultation-btn{flex:1}}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="consultation-page">
+  <header class="consultation-head">
+    <div>
+      <a class="consultation-back" href="{% url 'homeintodascitas' %}"><i class="bx bx-arrow-back"></i> Volver a todas las citas</a>
+      <h1>Atención de consulta</h1>
+      <p>Cita #{{ cita.pk }} · {{ cita.fecha_hora|date:"d/m/Y H:i" }} · {{ cita.profesional }}</p>
+      <span class="consultation-status">En progreso</span>
+    </div>
+    <div class="consultation-head-actions">
+      <a class="consultation-btn" href="{% url 'homeinvercita' cita.pk %}"><i class="bx bx-file"></i> Detalles de la cita</a>
+      <a class="consultation-btn primary" href="{% url 'homeinperfilpaciente' cita.paciente.pk %}"><i class="bx bx-user"></i> Ficha del paciente</a>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="clinical-alerts">
+      {% for message in messages %}
+        <div class="clinical-message{% if 'error' in message.tags %} error{% endif %}" role="status">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <section class="patient-strip">
+    <div class="patient-main">
+      <div class="patient-avatar">{{ cita.paciente.nombres|slice:":1"|upper }}{{ cita.paciente.apellidos|slice:":1"|upper }}</div>
+      <div>
+        <strong>{{ cita.paciente.nombre }}</strong>
+        <small>Cédula {{ cita.paciente.cedula }} · {% if cita.paciente.edad is not None %}{{ cita.paciente.edad }} años{% else %}Edad no registrada{% endif %}</small>
+      </div>
+    </div>
+    <div class="patient-meta"><label>Teléfono</label><strong>{{ cita.paciente.telefono|default:"No registrado" }}</strong></div>
+    <div class="patient-meta"><label>Correo</label><strong>{{ cita.paciente.correo|default:"No registrado" }}</strong></div>
+    <div class="patient-meta"><label>Modalidad</label><strong>{{ cita.get_modalidad_display }}</strong></div>
+    <div class="patient-strip-action">
+      <a class="consultation-btn" href="{% url 'homeinperfilpaciente' cita.paciente.pk %}"><i class="bx bx-folder-open"></i> Abrir ficha completa</a>
+    </div>
+  </section>
+
+  <div class="clinical-alerts">
+    {% if cita.paciente.alergias %}
+      <div class="clinical-alert"><strong><i class="bx bx-error-circle"></i> Alergias:</strong> {{ cita.paciente.alergias }}</div>
+    {% endif %}
+    {% if cita.paciente.medicamentos_actuales %}
+      <div class="clinical-alert"><strong><i class="bx bx-capsule"></i> Medicación actual:</strong> {{ cita.paciente.medicamentos_actuales }}</div>
+    {% endif %}
+    {% if cita.paciente.condiciones_cronicas %}
+      <div class="clinical-alert"><strong><i class="bx bx-heart"></i> Condiciones crónicas:</strong> {{ cita.paciente.condiciones_cronicas }}</div>
+    {% endif %}
+    {% if cita.paciente.observaciones %}
+      <div class="clinical-alert"><strong><i class="bx bx-note"></i> Observaciones de la ficha:</strong> {{ cita.paciente.observaciones }}</div>
+    {% endif %}
+  </div>
+
+  <div class="consultation-layout">
+    <div>
+      <section class="consultation-panel">
+        <div class="consultation-panel-head">
+          <div>
+            <h2><i class="bx bx-notepad"></i> Registro de consulta</h2>
+            <p>Documenta lo trabajado durante esta atención. El registro quedará en la bitácora del paciente.</p>
+          </div>
+          <span class="consultation-status">Sesión actual</span>
+        </div>
+        <div class="consultation-panel-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="clinical-form-grid">
+              {% for field in consulta_form %}
+                <div class="clinical-field{% if field.name == 'motivo_consulta' or field.name == 'intervencion' or field.name == 'observaciones' or field.name == 'anotaciones' or field.name == 'sugerencias_proxima_cita' or field.name == 'plan_seguimiento' %} full{% endif %}">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+                  {% for error in field.errors %}<div class="clinical-error">{{ error }}</div>{% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+            {% if consulta_form.non_field_errors %}<div class="clinical-error">{{ consulta_form.non_field_errors }}</div>{% endif %}
+            <div class="consultation-form-actions">
+              <span class="consultation-form-note">Los cambios no se guardan hasta pulsar uno de los botones.</span>
+              <div class="right">
+                <button class="consultation-btn primary" type="submit" name="action" value="guardar_consulta"><i class="bx bx-save"></i> Guardar registro</button>
+                <button class="consultation-btn finish" type="submit" name="action" value="finalizar" onclick="return confirm('¿Guardar el registro y finalizar esta atención? La cita pasará a estado Atendida.');"><i class="bx bx-check-circle"></i> Finalizar atención</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="consultation-panel">
+        <div class="consultation-panel-head">
+          <div>
+            <h2><i class="bx bx-list-check"></i> Tareas de esta consulta</h2>
+            <p>Registra compromisos y actividades para dar seguimiento.</p>
+          </div>
+        </div>
+        <div class="consultation-panel-body">
+          <form method="post">
+            {% csrf_token %}
+            <div class="task-form-grid">
+              <div>
+                <label for="{{ tarea_form.descripcion.id_for_label }}">{{ tarea_form.descripcion.label }}</label>
+                {{ tarea_form.descripcion }}
+                {% for error in tarea_form.descripcion.errors %}<div class="clinical-error">{{ error }}</div>{% endfor %}
+              </div>
+              <div>
+                <label for="{{ tarea_form.prioridad.id_for_label }}">{{ tarea_form.prioridad.label }}</label>
+                {{ tarea_form.prioridad }}
+              </div>
+              <div>
+                <label for="{{ tarea_form.fecha_limite.id_for_label }}">{{ tarea_form.fecha_limite.label }}</label>
+                {{ tarea_form.fecha_limite }}
+              </div>
+              <div class="wide">
+                <label for="{{ tarea_form.detalle.id_for_label }}">{{ tarea_form.detalle.label }}</label>
+                {{ tarea_form.detalle }}
+              </div>
+            </div>
+            <div class="task-add-row">
+              <button class="consultation-btn primary" type="submit" name="action" value="agregar_tarea"><i class="bx bx-plus"></i> Agregar tarea</button>
+            </div>
+          </form>
+
+          <div class="task-list">
+            {% for tarea in tareas %}
+              <div class="task-item{% if tarea.estado == 'COMPLETADA' %} completed{% endif %}">
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="alternar_tarea">
+                  <input type="hidden" name="tarea_id" value="{{ tarea.pk }}">
+                  <button class="task-check" type="submit" aria-label="{% if tarea.estado == 'PENDIENTE' %}Marcar completada{% else %}Marcar pendiente{% endif %}">
+                    {% if tarea.estado == "COMPLETADA" %}<i class="bx bx-check"></i>{% else %}<i class="bx bx-circle"></i>{% endif %}
+                  </button>
+                </form>
+                <div class="task-copy">
+                  <strong>{{ tarea.descripcion }}</strong>
+                  {% if tarea.detalle %}<p>{{ tarea.detalle }}</p>{% endif %}
+                  <div class="task-meta">
+                    <span>{{ tarea.get_estado_display }}</span>
+                    {% if tarea.fecha_limite %}<span>Fecha límite: {{ tarea.fecha_limite|date:"d/m/Y" }}</span>{% endif %}
+                    <span class="task-priority {{ tarea.prioridad }}">{{ tarea.get_prioridad_display }}</span>
+                  </div>
+                </div>
+                {% if tarea.creada_por %}<span class="task-priority">{{ tarea.creada_por.get_short_name|default:tarea.creada_por.username }}</span>{% endif %}
+              </div>
+            {% empty %}
+              <div class="task-empty">Todavía no hay tareas asociadas a esta consulta.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside>
+      <section class="consultation-panel">
+        <div class="consultation-panel-head">
+          <div>
+            <h2><i class="bx bx-history"></i> Bitácora del paciente</h2>
+            <p>Consultas anteriores registradas en su historia clínica.</p>
+          </div>
+          <a href="{% url 'homeinperfilpaciente' cita.paciente.pk %}" style="color:#39877f;text-decoration:none;font-size:.75rem;font-weight:650">Ver ficha</a>
+        </div>
+        <div class="consultation-panel-body">
+          <div class="clinical-timeline">
+            {% for registro in bitacora %}
+              <article class="timeline-item">
+                <span class="timeline-date">{{ registro.fecha|date:"d/m/Y H:i" }}</span>
+                <h3>{{ registro.motivo_consulta|default:"Consulta registrada" }}</h3>
+                <p><strong>Profesional:</strong> {{ registro.profesional }}</p>
+                {% if registro.observaciones %}<p><strong>Observaciones:</strong> {{ registro.observaciones|truncatechars:220 }}</p>{% endif %}
+                {% if registro.anotaciones %}<p><strong>Anotaciones:</strong> {{ registro.anotaciones|truncatechars:220 }}</p>{% endif %}
+                {% if registro.sugerencias_proxima_cita %}<p><strong>Próxima cita:</strong> {{ registro.sugerencias_proxima_cita|truncatechars:180 }}</p>{% endif %}
+                {% if registro.cita %}<a href="{% url 'homeinvercita' registro.cita.pk %}">Ver cita relacionada</a>{% endif %}
+              </article>
+            {% empty %}
+              <div class="timeline-empty">Este paciente todavía no tiene consultas anteriores registradas.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+
+      <div class="clinical-disclaimer">
+        <strong>Confidencialidad:</strong> este espacio está disponible únicamente para personal autorizado. Registra información objetiva y pertinente a la atención; evita incluir datos que no sean necesarios para el seguimiento.
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
