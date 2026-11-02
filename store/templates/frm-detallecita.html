@@ -1,0 +1,72 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Detalle de cita{% endblock %}
+{% block extra_head %}
+<style>
+  .detail-page{max-width:1120px;margin:0 auto;padding:30px 28px 42px;color:#2d403c}
+  .detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+  .detail-head h1{margin:0 0 6px;font:500 2rem Marcellus,serif;color:#203b39}
+  .detail-head p{margin:0;color:#7c8985}
+  .detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .detail-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:1px solid #dce6e3;border-radius:9px;background:#fff;color:#53645f;text-decoration:none;font-size:.86rem;font-weight:600}
+  .detail-btn.primary{background:#005855;border-color:#005855;color:#fff}
+  .detail-btn.danger{color:#b42318;border-color:#f0d4d1}
+  .detail-card{background:#fff;border:1px solid #e0e9e6;border-radius:14px;box-shadow:0 7px 22px rgba(26,53,50,.05);overflow:hidden}
+  .detail-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:20px 23px;border-bottom:1px solid #edf1f0}
+  .detail-card-head h2{margin:0;font-size:1.08rem}
+  .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}
+  .detail-field{padding:18px 23px;border-bottom:1px solid #f0f3f2}
+  .detail-field label{display:block;margin-bottom:6px;color:#899490;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .detail-field strong{color:#344944;font-size:.94rem;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+  .detail-field.full{grid-column:1/-1}
+  .detail-state{display:inline-flex;padding:6px 11px;border-radius:30px;background:#fff4df;color:#a66a10;font-size:.76rem;font-weight:700}
+  .detail-state.confirmed{background:#e8f1ff;color:#3568aa}
+  .detail-state.progress{background:#fff2dd;color:#a56a12}
+  .detail-state.done{background:#e7f5ed;color:#2d8050}
+  .detail-state.cancelled{background:#fff0f0;color:#b64d4d}
+  .detail-notes{white-space:pre-wrap;font-weight:400!important;color:#64736e!important}
+  @media(max-width:650px){.detail-page{padding:19px 12px 28px}.detail-grid{grid-template-columns:1fr}.detail-field.full{grid-column:auto}.detail-head h1{font-size:1.7rem}.detail-actions{width:100%}.detail-btn{flex:1;justify-content:center}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="detail-page">
+  <header class="detail-head">
+    <div>
+      <h1>Detalle de cita</h1>
+      <p>Información completa de la cita registrada.</p>
+    </div>
+    <div class="detail-actions">
+      <a class="detail-btn" href="{% url 'homeintodascitas' %}"><i class="bx bx-arrow-back"></i> Volver</a>
+      {% if cita.estado != "ATENDIDA" and cita.estado != "CANCELADA" and cita.estado != "NO_ASISTIO" %}
+        <a class="detail-btn" href="{% url 'homeineditarcita' cita.pk %}"><i class="bx bx-edit"></i> Editar</a>
+        <a class="detail-btn primary" href="{% url 'homeinreprogramarcita' cita.pk %}"><i class="bx bx-calendar-edit"></i> Reprogramar</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <article class="detail-card">
+    <div class="detail-card-head">
+      <h2>Cita #{{ cita.pk }}</h2>
+      {% if cita.estado == "PROGRAMADA" %}<span class="detail-state">Programada</span>
+      {% elif cita.estado == "CONFIRMADA" %}<span class="detail-state confirmed">Confirmada</span>
+      {% elif cita.estado == "EN_PROGRESO" %}<span class="detail-state progress">En progreso</span>
+      {% elif cita.estado == "ATENDIDA" %}<span class="detail-state done">Atendida</span>
+      {% elif cita.estado == "CANCELADA" %}<span class="detail-state cancelled">Cancelada</span>
+      {% else %}<span class="detail-state">{{ cita.get_estado_display }}</span>{% endif %}
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><label>Paciente</label><strong>{{ cita.paciente.nombre }}</strong></div>
+      <div class="detail-field"><label>Cédula</label><strong>{{ cita.paciente.cedula }}</strong></div>
+      <div class="detail-field"><label>Profesional</label><strong>{{ cita.profesional }}</strong></div>
+      <div class="detail-field"><label>Servicio / especialidad</label><strong>{% if cita.especialidad %}{{ cita.especialidad.nombre }}{% elif cita.servicio %}{{ cita.servicio.nombre }}{% else %}Sin especificar{% endif %}</strong></div>
+      <div class="detail-field"><label>Fecha</label><strong>{{ cita.fecha_hora|date:"d/m/Y" }}</strong></div>
+      <div class="detail-field"><label>Hora</label><strong>{{ cita.fecha_hora|date:"H:i" }}</strong></div>
+      <div class="detail-field"><label>Duración</label><strong>{{ cita.duracion_minutos }} minutos</strong></div>
+      <div class="detail-field"><label>Modalidad</label><strong>{{ cita.get_modalidad_display }}</strong></div>
+      <div class="detail-field full"><label>Motivo</label><strong>{{ cita.motivo|default:"No especificado" }}</strong></div>
+      <div class="detail-field full"><label>Notas</label><strong class="detail-notes">{{ cita.notas|default:"Sin notas" }}</strong></div>
+      <div class="detail-field"><label>Creada</label><strong>{{ cita.creado_en|date:"d/m/Y H:i" }}</strong></div>
+      <div class="detail-field"><label>Última actualización</label><strong>{{ cita.actualizado_en|date:"d/m/Y H:i" }}</strong></div>
+    </div>
+  </article>
+</section>
+{% endblock %}
