@@ -41,8 +41,8 @@ class PacienteAdmin(admin.ModelAdmin):
 
 @admin.register(Cita)
 class CitaAdmin(admin.ModelAdmin):
-    list_display = ("fecha_hora", "paciente", "profesional", "servicio", "duracion_minutos", "modalidad", "estado")
-    list_filter = ("estado", "modalidad", "profesional")
+    list_display = ("fecha_hora", "paciente", "profesional", "especialidad", "servicio", "duracion_minutos", "modalidad", "estado")
+    list_filter = ("estado", "modalidad", "profesional", "especialidad")
     search_fields = (
         "paciente__nombres",
         "paciente__apellidos",
