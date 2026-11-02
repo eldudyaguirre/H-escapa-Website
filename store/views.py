@@ -780,6 +780,8 @@ def homeincalendario(request):
     profesional_sel = None
     if profesional_id and profesional_id.isdigit():
         profesional_sel = profesionales.filter(pk=profesional_id).first()
+        if not profesional_sel:
+            profesional_id = ""
     else:
         profesional_id = ""
 
@@ -792,7 +794,6 @@ def homeincalendario(request):
         fecha_fin = fecha_inicio + timedelta(days=6)
         month_weeks = []
     else:
-        first_day = fecha_seleccionada.replace(day=1)
         month_weeks = month_calendar.Calendar(firstweekday=0).monthdatescalendar(
             fecha_seleccionada.year, fecha_seleccionada.month
         )
@@ -917,7 +918,13 @@ def homeincalendario(request):
         modo: calendar_url(fecha_seleccionada, modo)
         for modo in ("day", "week", "month")
     }
-    total_periodo = len(citas)
+    if vista == "month":
+        total_periodo = sum(
+            len(citas_por_dia.get(date(fecha_seleccionada.year, fecha_seleccionada.month, dia), []))
+            for dia in range(1, month_calendar.monthrange(fecha_seleccionada.year, fecha_seleccionada.month)[1] + 1)
+        )
+    else:
+        total_periodo = len(citas)
 
     if vista == "day":
         periodo_texto = fecha_seleccionada.strftime("%d/%m/%Y")
