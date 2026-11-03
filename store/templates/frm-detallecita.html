@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (whatsappLink) {
     const rawPhone = (share.dataset.phone || "").trim();
-    let phone = rawPhone.replace(/\\D/g, "");
+    let phone = rawPhone.replace(/\D/g, "");
     if (phone.startsWith("00")) phone = phone.slice(2);
     if (phone.startsWith("0")) phone = "593" + phone.slice(1);
     else if (phone.length === 9 && phone.startsWith("9")) phone = "593" + phone;
