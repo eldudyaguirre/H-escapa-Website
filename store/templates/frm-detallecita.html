@@ -28,6 +28,13 @@
   .detail-video strong{display:block;color:#24514c;margin-bottom:4px}.detail-video p{margin:0;color:#61736f;font-size:.88rem}
   .detail-video-actions{display:flex;gap:9px;flex-wrap:wrap}.detail-video button,.detail-video a{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:1px solid #c8dfda;border-radius:9px;background:#fff;color:#315e58;text-decoration:none;font-size:.86rem;font-weight:700;cursor:pointer}
   .detail-video .video-primary{background:#005855;border-color:#005855;color:#fff}
+  .detail-meet-share{flex:1 1 100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding-top:13px;border-top:1px solid #d5e9e5}
+  .detail-meet-url{width:100%;min-width:0;padding:11px 12px;border:1px solid #c8dfda;border-radius:8px;background:#fff;color:#315e58;font-size:.88rem}
+  .detail-meet-share-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .detail-meet-share-actions button,.detail-meet-share-actions a{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 13px;border:1px solid #c8dfda;border-radius:9px;background:#fff;color:#315e58;text-decoration:none;font-size:.85rem;font-weight:700;cursor:pointer}
+  .detail-meet-share-actions .whatsapp-action{background:#167c54;border-color:#167c54;color:#fff}
+  .detail-meet-feedback{grid-column:1/-1;min-height:18px;color:#39766d;font-size:.8rem}
+  @media(max-width:650px){.detail-meet-share{grid-template-columns:1fr}.detail-meet-share-actions>*{flex:1}}
   @media(max-width:650px){.detail-page{padding:19px 12px 28px}.detail-grid{grid-template-columns:1fr}.detail-field.full{grid-column:auto}.detail-head h1{font-size:1.7rem}.detail-actions{width:100%}.detail-btn{flex:1;justify-content:center}}
 </style>
 {% endblock %}
@@ -70,8 +77,23 @@
           <a class="video-primary" href="{% url 'videollamada_profesional' cita.pk %}"><i class="bx bxl-google"></i> Ingresar a Google Meet</a>
         {% endif %}
       </div>
-      {% if cita.google_meet_url %}
-        <p class="detail-video-link"><i class="bx bx-link"></i> Reunión creada y vinculada a esta cita.</p>
+      {% if cita.google_meet_url and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
+        <div class="detail-meet-share" id="meet-share"
+             data-phone="{{ cita.paciente.telefono|default:'' }}"
+             data-patient="{{ cita.paciente.nombres|escapejs }}"
+             data-date="{{ cita.fecha_hora|date:'d/m/Y' }}"
+             data-time="{{ cita.fecha_hora|date:'H:i' }}">
+          <input class="detail-meet-url" id="meet-url" type="text" value="{{ cita.google_meet_url }}" readonly aria-label="Enlace de Google Meet">
+          <div class="detail-meet-share-actions">
+            <button type="button" id="copy-meet-link"><i class="bx bx-copy"></i> Copiar enlace</button>
+            {% if cita.paciente.telefono %}
+              <a class="whatsapp-action" id="send-meet-whatsapp" href="#" target="_blank" rel="noopener noreferrer"><i class="bx bxl-whatsapp"></i> Enviar por WhatsApp</a>
+            {% endif %}
+          </div>
+          <span class="detail-meet-feedback" id="meet-share-feedback" role="status" aria-live="polite">Enlace listo para compartir con el paciente, incluso desde su celular.</span>
+        </div>
+      {% elif cita.google_meet_url %}
+        <p class="detail-video-link"><i class="bx bx-link"></i> La reunión Meet está vinculada a esta cita.</p>
       {% endif %}
     </section>
   {% endif %}
@@ -102,4 +124,54 @@
     </div>
   </article>
 </section>
+{% if cita.google_meet_url and cita.estado != "CANCELADA" and cita.estado != "ATENDIDA" and cita.estado != "NO_ASISTIO" %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const share = document.getElementById("meet-share");
+  const urlInput = document.getElementById("meet-url");
+  const copyButton = document.getElementById("copy-meet-link");
+  const whatsappLink = document.getElementById("send-meet-whatsapp");
+  const feedback = document.getElementById("meet-share-feedback");
+  if (!share || !urlInput || !copyButton) return;
+
+  copyButton.addEventListener("click", async function () {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(urlInput.value);
+      } else {
+        urlInput.focus();
+        urlInput.select();
+        if (!document.execCommand("copy")) throw new Error("copy_failed");
+      }
+      feedback.textContent = "Enlace copiado. Ya puedes pegarlo en WhatsApp.";
+    } catch (error) {
+      urlInput.focus();
+      urlInput.select();
+      feedback.textContent = "Selecciona el enlace y cópialo manualmente.";
+    }
+  });
+
+  if (whatsappLink) {
+    const rawPhone = (share.dataset.phone || "").trim();
+    let phone = rawPhone.replace(/\\D/g, "");
+    if (phone.startsWith("00")) phone = phone.slice(2);
+    if (phone.startsWith("0")) phone = "593" + phone.slice(1);
+    else if (phone.length === 9 && phone.startsWith("9")) phone = "593" + phone;
+    const patient = share.dataset.patient || "paciente";
+    const message = "Hola " + patient + ", te compartimos el enlace para tu consulta virtual de H-Escapa del " +
+      share.dataset.date + " a las " + share.dataset.time + ". Puedes ingresar desde tu celular pulsando este enlace: " +
+      urlInput.value;
+    if (phone.length >= 10) {
+      whatsappLink.href = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+    } else {
+      whatsappLink.removeAttribute("href");
+      whatsappLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        feedback.textContent = "Revisa el teléfono del paciente: debe incluir el código de país si no es de Ecuador.";
+      });
+    }
+  }
+});
+</script>
+{% endif %}
 {% endblock %}
