@@ -242,7 +242,7 @@
             <div class="nav__dropdown-content">
               <a href="{% url 'homeinclientesfacturacion' %}" class="nav__dropdown-item{% if active_menu == 'clientes_facturacion' %} nav-module-active{% endif %}">Datos Clientes</a>
               <a href="{% url 'homeinserviciosproductos' %}" class="nav__dropdown-item{% if active_menu == 'servicios_productos' %} nav-module-active{% endif %}">Datos de Servicios</a>
-              <a href="#" class="nav__dropdown-item">Parámetros</a>
+              <a href="{% url 'homeinparametros' %}" class="nav__dropdown-item{% if active_menu == 'parametros_facturacion' %} nav-module-active{% endif %}">Parámetros</a>
             </div>
           </div>
         </div>
