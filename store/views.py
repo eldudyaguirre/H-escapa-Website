@@ -34,7 +34,7 @@ import requests
 from dotenv import set_key
 
 from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, ServicioProductoForm, ParametrosFacturacionForm, horarios_disponibles, horarios_disponibles_duracion
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto, ParametrosFacturacion
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto, ParametrosFacturacion, Factura, DetalleFactura
 from .google_calendar import (
     GoogleCalendarError,
     cancelar_evento_google_calendar,
@@ -2187,6 +2187,169 @@ def eliminarservicioproducto(request, registro_id):
     registro.delete()
     messages.success(request, f"{nombre} fue eliminado del catálogo.")
     return redirect("homeinserviciosproductos")
+
+
+@staff_required
+def homeinfacturacion(request):
+    facturas = Factura.objects.all()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    if q:
+        facturas = facturas.filter(
+            models.Q(numero__icontains=q)
+            | models.Q(identificacion__icontains=q)
+            | models.Q(razon_social__icontains=q)
+        )
+    if estado:
+        facturas = facturas.filter(estado=estado)
+    return render(request, "frm-facturacion.html", {
+        "facturas": facturas[:250],
+        "total_facturas": Factura.objects.count(),
+        "borradores": Factura.objects.filter(estado="BORRADOR").count(),
+        "q": q,
+        "estado": estado,
+        "active_menu": "facturacion",
+    })
+
+
+@staff_required
+def homeinnuevafactura(request):
+    from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+    from django.utils.dateparse import parse_date
+
+    pacientes = Paciente.objects.filter(estado="ACTIVO").order_by("apellidos", "nombres")
+    clientes = ClienteFacturacion.objects.filter(estado="ACTIVO").order_by("razon_social")
+    catalogo = ServicioProducto.objects.filter(estado="ACTIVO").order_by("tipo", "nombre")
+    parametros = ParametrosFacturacion.objects.filter(pk=1).first()
+
+    if request.method == "POST":
+        origen = request.POST.get("origen_cliente", "manual")
+        paciente = None
+        cliente_registrado = None
+        if origen.startswith("P|"):
+            paciente = get_object_or_404(Paciente, pk=origen[2:], estado="ACTIVO")
+        elif origen.startswith("C|"):
+            cliente_registrado = get_object_or_404(ClienteFacturacion, pk=origen[2:], estado="ACTIVO")
+        elif origen != "manual":
+            messages.error(request, "Selecciona un origen de cliente válido.")
+            return redirect("homeinnuevafactura")
+
+        tipo_identificacion = request.POST.get("tipo_identificacion", "").strip()
+        identificacion = request.POST.get("identificacion", "").strip()
+        razon_social = request.POST.get("razon_social", "").strip()
+        correo = request.POST.get("correo", "").strip()
+        telefono = request.POST.get("telefono", "").strip()
+        direccion = request.POST.get("direccion", "").strip()
+
+        tipos_validos = dict(ClienteFacturacion.TIPOS_IDENTIFICACION)
+        if tipo_identificacion not in tipos_validos:
+            messages.error(request, "Selecciona un tipo de identificación válido.")
+            return redirect("homeinnuevafactura")
+        if tipo_identificacion == "07":
+            identificacion = "9999999999999"
+        if not identificacion or not razon_social:
+            messages.error(request, "Completa la identificación y la razón social del cliente.")
+            return redirect("homeinnuevafactura")
+        if tipo_identificacion == "05" and (not identificacion.isdigit() or len(identificacion) != 10):
+            messages.error(request, "La cédula debe contener 10 dígitos.")
+            return redirect("homeinnuevafactura")
+        if tipo_identificacion == "04" and (not identificacion.isdigit() or len(identificacion) != 13):
+            messages.error(request, "El RUC debe contener 13 dígitos.")
+            return redirect("homeinnuevafactura")
+
+        fecha_emision = parse_date(request.POST.get("fecha_emision", "")) or timezone.localdate()
+        producto_ids = request.POST.getlist("producto_id")
+        cantidades = request.POST.getlist("cantidad")
+        if not producto_ids or len(producto_ids) != len(cantidades):
+            messages.error(request, "Agrega al menos un servicio o producto a la factura.")
+            return redirect("homeinnuevafactura")
+
+        lineas = []
+        subtotal = Decimal("0.00")
+        total_iva = Decimal("0.00")
+        centavo = Decimal("0.01")
+        try:
+            for producto_id, cantidad_raw in zip(producto_ids, cantidades):
+                producto = ServicioProducto.objects.get(pk=int(producto_id), estado="ACTIVO")
+                cantidad = Decimal(cantidad_raw).quantize(centavo, rounding=ROUND_HALF_UP)
+                if cantidad <= 0 or cantidad > Decimal("99999999"):
+                    raise ValueError
+                base = (producto.precio * cantidad).quantize(centavo, rounding=ROUND_HALF_UP)
+                porcentaje = {"4": Decimal("15"), "5": Decimal("5")}.get(producto.porcentaje_iva, Decimal("0"))
+                iva = (base * porcentaje / Decimal("100")).quantize(centavo, rounding=ROUND_HALF_UP)
+                total_linea = base + iva
+                lineas.append((producto, cantidad, base, porcentaje, iva, total_linea))
+                subtotal += base
+                total_iva += iva
+        except (ServicioProducto.DoesNotExist, ValueError, InvalidOperation, TypeError):
+            messages.error(request, "Revisa los servicios, productos y cantidades ingresadas.")
+            return redirect("homeinnuevafactura")
+
+        try:
+            with transaction.atomic():
+                parametros = ParametrosFacturacion.objects.select_for_update().filter(pk=1).first()
+                if not parametros:
+                    messages.error(request, "Primero configura los parámetros de facturación.")
+                    return redirect("homeinparametros")
+                secuencial = int(parametros.secuencial_factura)
+                if secuencial > 999999999:
+                    messages.error(request, "El secuencial de facturas llegó a su límite. Actualiza los parámetros.")
+                    return redirect("homeinparametros")
+                numero = f"{parametros.establecimiento}-{parametros.punto_emision}-{secuencial:09d}"
+                factura = Factura.objects.create(
+                    numero=numero,
+                    fecha_emision=fecha_emision,
+                    ambiente=parametros.ambiente,
+                    paciente=paciente,
+                    cliente_registrado=cliente_registrado,
+                    tipo_identificacion=tipo_identificacion,
+                    identificacion=identificacion,
+                    razon_social=razon_social,
+                    correo=correo,
+                    telefono=telefono,
+                    direccion=direccion,
+                    subtotal=subtotal,
+                    total_iva=total_iva,
+                    total=subtotal + total_iva,
+                )
+                for producto, cantidad, base, porcentaje, iva, total_linea in lineas:
+                    DetalleFactura.objects.create(
+                        factura=factura,
+                        servicio_producto=producto,
+                        codigo=producto.codigo,
+                        descripcion=producto.nombre,
+                        cantidad=cantidad,
+                        precio_unitario=producto.precio,
+                        tarifa_iva=producto.porcentaje_iva,
+                        porcentaje_iva=porcentaje,
+                        base_imponible=base,
+                        valor_iva=iva,
+                        total_linea=total_linea,
+                    )
+                parametros.secuencial_factura = f"{secuencial + 1:09d}"
+                parametros.save(update_fields=["secuencial_factura", "actualizado_en"])
+            messages.success(request, f"Factura {factura.numero} guardada como borrador.")
+            return redirect("homeinverfactura", factura_id=factura.pk)
+        except Exception:
+            messages.error(request, "No se pudo guardar la factura. Verifica los datos e inténtalo nuevamente.")
+            return redirect("homeinnuevafactura")
+
+    return render(request, "frm-formfactura.html", {
+        "pacientes": pacientes,
+        "clientes": clientes,
+        "catalogo": catalogo,
+        "fecha_hoy": timezone.localdate().isoformat(),
+        "active_menu": "facturacion",
+    })
+
+
+@staff_required
+def homeinverfactura(request, factura_id):
+    factura = get_object_or_404(Factura.objects.prefetch_related("detalles"), pk=factura_id)
+    return render(request, "frm-verfactura.html", {
+        "factura": factura,
+        "active_menu": "facturacion",
+    })
 
 
 @staff_required
