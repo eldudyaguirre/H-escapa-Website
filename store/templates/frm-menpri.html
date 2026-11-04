@@ -241,7 +241,7 @@
           <div class="nav__dropdown-collapse" id="submenu-configuracion">
             <div class="nav__dropdown-content">
               <a href="{% url 'homeinclientesfacturacion' %}" class="nav__dropdown-item{% if active_menu == 'clientes_facturacion' %} nav-module-active{% endif %}">Datos Clientes</a>
-              <a href="#" class="nav__dropdown-item">Datos de Servicios</a>
+              <a href="{% url 'homeinserviciosproductos' %}" class="nav__dropdown-item{% if active_menu == 'servicios_productos' %} nav-module-active{% endif %}">Datos de Servicios</a>
               <a href="#" class="nav__dropdown-item">Parámetros</a>
             </div>
           </div>
