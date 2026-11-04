@@ -732,7 +732,7 @@ class DetalleFactura(models.Model):
     descripcion = models.CharField(max_length=250)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2)
     precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
-    tarifa_iva = models.CharField(max_length=2)
+    tarifa_iva = models.CharField(max_length=2, choices=ServicioProducto.TARIFAS_IVA)
     porcentaje_iva = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     base_imponible = models.DecimalField(max_digits=12, decimal_places=2)
     valor_iva = models.DecimalField(max_digits=12, decimal_places=2)
