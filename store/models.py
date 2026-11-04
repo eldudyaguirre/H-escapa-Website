@@ -669,3 +669,34 @@ class ServicioProducto(models.Model):
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
+
+
+class ParametrosFacturacion(models.Model):
+    AMBIENTES = [("1", "Pruebas"), ("2", "Producción")]
+    TIPOS_EMISION = [("1", "Emisión normal")]
+    establecimiento = models.CharField(max_length=3, default="001")
+    punto_emision = models.CharField(max_length=3, default="001")
+    ambiente = models.CharField(max_length=1, choices=AMBIENTES, default="1")
+    tipo_emision = models.CharField(max_length=1, choices=TIPOS_EMISION, default="1")
+    secuencial_factura = models.CharField(max_length=9, default="000000001")
+    secuencial_retencion = models.CharField(max_length=9, default="000000001")
+    secuencial_nota_credito = models.CharField(max_length=9, default="000000001")
+    secuencial_nota_debito = models.CharField(max_length=9, default="000000001")
+    secuencial_guia_remision = models.CharField(max_length=9, default="000000001")
+    secuencial_liquidacion_compra = models.CharField(max_length=9, default="000000001")
+    firma_nombre_archivo = models.CharField(max_length=255, blank=True)
+    firma_archivo_cifrado = models.BinaryField(blank=True, null=True)
+    clave_firma_cifrada = models.TextField(blank=True)
+    firma_vencimiento = models.DateField(blank=True, null=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Parámetros de facturación"
+        verbose_name_plural = "Parámetros de facturación"
+
+    def __str__(self):
+        return "Parámetros de facturación"
+
+    @property
+    def tiene_firma(self):
+        return bool(self.firma_archivo_cifrado and self.clave_firma_cifrada)
