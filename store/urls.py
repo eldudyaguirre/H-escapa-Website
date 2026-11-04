@@ -61,6 +61,7 @@ urlpatterns = [
     path("homein-especialidades/nueva/", views.homeinnuevaespecialidad, name="homeinnuevaespecialidad"),
     path("homein-especialidades/editar/<int:especialidad_id>/", views.homeineditarespecialidad, name="homeineditarespecialidad"),
     path("homein-especialidades/estado/<int:especialidad_id>/", views.cambiar_estado_especialidad, name="cambiar_estado_especialidad"),
+    path("homein-administracion/parametros/", views.homeinparametros, name="homeinparametros"),
     path("homein-administracion/servicios-productos/", views.homeinserviciosproductos, name="homeinserviciosproductos"),
     path("homein-administracion/servicios-productos/nuevo/", views.homeinnuevoservicioproducto, name="homeinnuevoservicioproducto"),
     path("homein-administracion/servicios-productos/editar/<int:registro_id>/", views.homeineditarservicioproducto, name="homeineditarservicioproducto"),
