@@ -1,0 +1,37 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Datos Clientes{% endblock %}
+{% block extra_head %}
+<style>
+.fc-page{max-width:1450px;margin:auto;padding:30px 36px 44px}.fc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:24px}.fc-title{margin:0;color:#19181b;font:2.15rem Marcellus,serif}.fc-subtitle{margin:7px 0 0;color:#727b79}.fc-add{display:inline-flex;align-items:center;gap:8px;padding:11px 17px;border-radius:9px;background:#439b95;color:#fff!important;text-decoration:none;font-weight:700}.fc-stats{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}.fc-stat{padding:13px 17px;border:1px solid #e4ece9;border-radius:10px;background:#fff;min-width:155px}.fc-stat strong{display:block;color:#005855;font-size:1.35rem}.fc-stat span{color:#77817e;font-size:.8rem}.fc-panel{background:#fff;border:1px solid #e6ecea;border-radius:13px;box-shadow:0 5px 20px #1e37350b;overflow:hidden}.fc-toolbar{display:flex;gap:10px;padding:17px;background:#fbfcfc;border-bottom:1px solid #edf0ef}.fc-toolbar input,.fc-toolbar select{height:42px;padding:0 12px;border:1px solid #dfe5e3;border-radius:8px;font:inherit;min-width:0}.fc-toolbar input{flex:1}.fc-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 15px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#40504d;text-decoration:none;cursor:pointer;font:inherit;font-weight:600}.fc-btn.primary{background:#005855;border-color:#005855;color:#fff}.fc-table-wrap{overflow-x:auto}.fc-table{width:100%;min-width:850px;border-collapse:collapse}.fc-table th{padding:13px 16px;background:#f7f9f9;color:#697370;text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}.fc-table td{padding:15px 16px;border-top:1px solid #eef1f0;color:#3c4643;font-size:.88rem}.fc-table tbody tr:hover{background:#f8fbfa}.fc-name strong{display:block;color:#26312e}.fc-name small{color:#89928f}.fc-badge{display:inline-block;padding:5px 9px;border-radius:99px;background:#e8f6ee;color:#287044;font-size:.75rem;font-weight:700}.fc-badge.off{background:#fff2d8;color:#8a6500}.fc-actions{display:flex;gap:7px;align-items:center}.fc-actions form{margin:0}.fc-icon{width:34px;height:34px;border:0;border-radius:7px;background:#f0f4f3;color:#52635f;display:grid;place-items:center;text-decoration:none;cursor:pointer;font-size:1.1rem}.fc-icon:hover{background:#dfeeed;color:#005855}.fc-icon.delete:hover{background:#fff0f0;color:#b42318}.fc-empty{text-align:center;padding:45px!important;color:#89928f!important}.fc-empty i{display:block;font-size:2.2rem;margin-bottom:8px}@media(max-width:767px){.fc-page{padding:22px 13px 30px}.fc-head{align-items:stretch;flex-direction:column}.fc-title{font-size:1.8rem}.fc-add{justify-content:center}.fc-toolbar{flex-direction:column}.fc-toolbar select,.fc-toolbar .fc-btn{width:100%}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="fc-page">
+  <header class="fc-head"><div><h1 class="fc-title">Datos Clientes</h1><p class="fc-subtitle">Administra los datos tributarios y de contacto para la facturación electrónica.</p></div><a class="fc-add" href="{% url 'homeinnuevoclientefacturacion' %}"><i class="bx bx-plus"></i> Nuevo cliente</a></header>
+  <div class="fc-stats"><div class="fc-stat"><strong>{{ total_clientes }}</strong><span>Clientes registrados</span></div><div class="fc-stat"><strong>{{ clientes_activos }}</strong><span>Clientes activos</span></div></div>
+  <div class="fc-panel">
+    <form class="fc-toolbar" method="get">
+      <input type="search" name="q" value="{{ q }}" placeholder="Buscar por identificación, razón social, correo o teléfono">
+      <select name="estado"><option value="">Todos los estados</option><option value="ACTIVO" {% if estado == "ACTIVO" %}selected{% endif %}>Activos</option><option value="INACTIVO" {% if estado == "INACTIVO" %}selected{% endif %}>Inactivos</option></select>
+      <button class="fc-btn primary" type="submit"><i class="bx bx-search"></i> Buscar</button>
+      <a class="fc-btn" href="{% url 'homeinclientesfacturacion' %}">Limpiar</a>
+    </form>
+    <div class="fc-table-wrap"><table class="fc-table">
+      <thead><tr><th>Cliente</th><th>Identificación</th><th>Contacto</th><th>Ubicación</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody>{% for cliente in clientes %}
+      <tr>
+        <td class="fc-name"><strong>{{ cliente.razon_social }}</strong><small>{{ cliente.get_tipo_identificacion_display }}</small></td>
+        <td>{{ cliente.identificacion }}</td>
+        <td>{{ cliente.correo|default:"—" }}<br>{{ cliente.telefono|default:"—" }}</td>
+        <td>{{ cliente.ciudad|default:"—" }}{% if cliente.provincia %}, {{ cliente.provincia }}{% endif %}</td>
+        <td><span class="fc-badge{% if cliente.estado == 'INACTIVO' %} off{% endif %}">{{ cliente.get_estado_display }}</span></td>
+        <td><div class="fc-actions">
+          <a class="fc-icon" href="{% url 'homeineditarclientefacturacion' cliente.pk %}" title="Editar" aria-label="Editar"><i class="bx bx-edit-alt"></i></a>
+          <form method="post" action="{% url 'eliminarclientefacturacion' cliente.pk %}" onsubmit="return confirm('¿Eliminar definitivamente a {{ cliente.razon_social|escapejs }}? Esta acción no se puede deshacer.');">{% csrf_token %}<button class="fc-icon delete" type="submit" title="Eliminar" aria-label="Eliminar"><i class="bx bx-trash"></i></button></form>
+        </div></td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="fc-empty"><i class="bx bx-user-x"></i>No hay clientes de facturación registrados.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+</section>
+{% endblock %}
