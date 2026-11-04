@@ -607,3 +607,35 @@ class InteraccionWebHistorial(models.Model):
         ordering = ["-creado_en"]
         verbose_name = "Historial de interacción web"
         verbose_name_plural = "Historial de interacciones web"
+
+
+class ClienteFacturacion(models.Model):
+    TIPOS_IDENTIFICACION = [
+        ("04", "RUC"), ("05", "Cédula"), ("06", "Pasaporte"), ("07", "Consumidor final"),
+    ]
+    ESTADOS = [("ACTIVO", "Activo"), ("INACTIVO", "Inactivo")]
+    tipo_identificacion = models.CharField(max_length=2, choices=TIPOS_IDENTIFICACION, default="05")
+    identificacion = models.CharField(max_length=20, db_index=True)
+    razon_social = models.CharField(max_length=200)
+    nombres = models.CharField(max_length=100, blank=True)
+    apellidos = models.CharField(max_length=100, blank=True)
+    correo = models.EmailField(blank=True)
+    telefono = models.CharField(max_length=30, blank=True)
+    direccion = models.CharField(max_length=250, blank=True)
+    ciudad = models.CharField(max_length=100, blank=True)
+    provincia = models.CharField(max_length=100, blank=True)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="ACTIVO")
+    observaciones = models.TextField(blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["razon_social", "identificacion"]
+        verbose_name = "Cliente de facturación"
+        verbose_name_plural = "Clientes de facturación"
+        constraints = [
+            models.UniqueConstraint(fields=["tipo_identificacion", "identificacion"], name="uniq_cliente_fact_id_tipo")
+        ]
+
+    def __str__(self):
+        return f"{self.razon_social} ({self.identificacion})"
