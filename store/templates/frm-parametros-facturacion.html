@@ -18,11 +18,11 @@
       {% endfor %}
     </div></div></section>
     <section class="pf-card"><div class="pf-card-head"><h2><i class="bx bx-list-ol"></i> Secuenciales</h2><p>Indica el próximo número que se utilizará para cada tipo de comprobante (9 dígitos).</p></div><div class="pf-body"><div class="pf-grid">
-      {% for field in form %}
-        {% if field.name == "secuencial_factura" or field.name == "secuencial_retencion" or field.name == "secuencial_nota_credito" or field.name == "secuencial_nota_debito" or field.name == "secuencial_guia_remision" or field.name == "secuencial_liquidacion_compra" %}
-          <div class="pf-field"><label for="{{ field.id_for_label }}">{{ field.label }} *</label>{{ field }}{% for error in field.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
-        {% endif %}
-      {% endfor %}
+      <div class="pf-field">
+        <label for="{{ form.secuencial_factura.id_for_label }}">{{ form.secuencial_factura.label }} *</label>
+        {{ form.secuencial_factura }}
+        {% for error in form.secuencial_factura.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}
+      </div>
     </div></div></section>
     <section class="pf-card"><div class="pf-card-head"><h2><i class="bx bx-certification"></i> Firma electrónica</h2><p>Sube el certificado digital y registra su clave para la firma de comprobantes.</p></div><div class="pf-body">
       <div class="pf-status">{% if parametros.tiene_firma %}<i class="bx bx-check-circle"></i><strong>Firma cargada</strong> — {{ parametros.firma_nombre_archivo }}{% else %}<i class="bx bx-info-circle"></i> No hay una firma electrónica cargada.{% endif %}</div>
