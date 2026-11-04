@@ -676,7 +676,7 @@ class ClienteFacturacionForm(forms.ModelForm):
 
     class Meta:
         model = ClienteFacturacion
-        fields = ["tipo_identificacion", "identificacion", "razon_social", "correo", "telefono", "direccion", "ciudad", "provincia", "estado", "observaciones"]
+        fields = ["tipo_identificacion", "identificacion", "razon_social", "correo", "telefono", "direccion", "estado", "observaciones"]
         labels = {
             "tipo_identificacion": "Tipo de identificación", "identificacion": "Número de identificación",
             "razon_social": "Razón social / Nombre completo",
