@@ -1,0 +1,26 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | {{ titulo }}{% endblock %}
+{% block extra_head %}
+<style>
+.sf-page{max-width:1100px;margin:auto;padding:30px 36px 44px}.sf-head{display:flex;align-items:center;gap:14px;margin-bottom:23px}.sf-back{width:42px;height:42px;display:grid;place-items:center;border-radius:9px;background:#439b95;color:#fff!important;text-decoration:none;font-size:1.4rem}.sf-title{margin:0;color:#19181b;font:2rem Marcellus,serif}.sf-sub{margin:5px 0 0;color:#77817e}.sf-card{background:#fff;border:1px solid #e5ebe9;border-radius:13px;box-shadow:0 5px 20px #1e37350b;overflow:hidden}.sf-card-head{padding:20px 24px;border-bottom:1px solid #edf0ef}.sf-card-head h2{margin:0 0 5px;font-size:1.15rem}.sf-card-head p{margin:0;color:#7b8581;font-size:.88rem}.sf-body{padding:24px}.sf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.sf-field{display:flex;flex-direction:column;gap:6px}.sf-field.full{grid-column:1/-1}.sf-field label{font-size:.85rem;font-weight:650;color:#45514e}.sf-field input,.sf-field select,.sf-field textarea{width:100%;box-sizing:border-box;min-height:42px;padding:9px 11px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#26312e;font:inherit;outline:0}.sf-field textarea{min-height:85px}.sf-field input:focus,.sf-field select:focus,.sf-field textarea:focus{border-color:#439b95;box-shadow:0 0 0 3px #439b9520}.sf-check{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid #e5ebe9;border-radius:8px}.sf-check input{width:18px;height:18px;min-height:0}.sf-error{color:#b42318;font-size:.78rem}.sf-alert{padding:12px 15px;border-radius:8px;background:#fff4f3;color:#a22b25;margin-bottom:16px}.sf-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;padding-top:17px;border-top:1px solid #edf0ef}.sf-btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;padding:10px 17px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#45514e;text-decoration:none;cursor:pointer;font:inherit;font-weight:600}.sf-btn.primary{background:#439b95;border-color:#439b95;color:#fff}@media(max-width:700px){.sf-page{padding:20px 13px 30px}.sf-title{font-size:1.7rem}.sf-body,.sf-card-head{padding:17px}.sf-grid{grid-template-columns:1fr}.sf-field.full{grid-column:auto}.sf-actions{flex-direction:column}.sf-btn{width:100%}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="sf-page">
+  <header class="sf-head"><a class="sf-back" href="{% url 'homeinserviciosproductos' %}" aria-label="Volver"><i class="bx bx-arrow-back"></i></a><div><h1 class="sf-title">{{ titulo }}</h1><p class="sf-sub">{{ subtitulo }}</p></div></header>
+  <form method="post" novalidate>{% csrf_token %}{% if form.errors %}<div class="sf-alert"><strong>No se pudo guardar el registro.</strong> Revisa los campos marcados.</div>{% endif %}
+    <div class="sf-card"><div class="sf-card-head"><h2>Información del servicio o producto</h2><p>Define el tipo, precio e información tributaria del concepto que se utilizará en facturación.</p></div><div class="sf-body">
+      <div class="sf-grid">
+        {% for field in form %}
+          {% if field.name == "controlar_stock" %}
+            <div class="sf-field full"><label class="sf-check" for="{{ field.id_for_label }}">{{ field }} <span>{{ field.label }}</span></label>{% for error in field.errors %}<span class="sf-error">{{ error }}</span>{% endfor %}</div>
+          {% else %}
+            <div class="sf-field{% if field.name == 'descripcion' %} full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<span class="sf-error">{{ error }}</span>{% endfor %}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="sf-actions"><a class="sf-btn" href="{% url 'homeinserviciosproductos' %}">Cancelar</a><button class="sf-btn primary" type="submit"><i class="bx bx-save"></i> Guardar</button></div>
+    </div></div>
+  </form>
+</section>
+{% endblock %}
