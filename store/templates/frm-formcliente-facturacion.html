@@ -13,7 +13,7 @@
     <div class="cf-card"><div class="cf-card-head"><h2>Información del cliente</h2><p>Estos datos se utilizarán como información del adquirente en los comprobantes electrónicos.</p></div>
       <div class="cf-body">
         <div class="cf-section"><h3>Identificación tributaria</h3><div class="cf-grid">
-          {% for field in form %}{% if field.name == "tipo_identificacion" or field.name == "identificacion" or field.name == "razon_social" or field.name == "nombres" or field.name == "apellidos" %}
+          {% for field in form %}{% if field.name == "tipo_identificacion" or field.name == "identificacion" or field.name == "razon_social" %}
           <div class="cf-field{% if field.name == 'razon_social' %} full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<span class="cf-error">{{ error }}</span>{% endfor %}</div>
           {% endif %}{% endfor %}
         </div></div>
