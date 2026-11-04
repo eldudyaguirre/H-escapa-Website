@@ -2081,6 +2081,7 @@ def homeinclientesfacturacion(request):
         "clientes": clientes, "q": q, "estado": estado,
         "total_clientes": ClienteFacturacion.objects.count(),
         "clientes_activos": ClienteFacturacion.objects.filter(estado="ACTIVO").count(),
+        "active_menu": "clientes_facturacion",
     })
 
 
