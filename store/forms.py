@@ -749,28 +749,16 @@ class ParametrosFacturacionForm(forms.ModelForm):
     class Meta:
         model = ParametrosFacturacion
         fields = ["establecimiento", "punto_emision", "ambiente", "tipo_emision",
-            "secuencial_factura", "secuencial_retencion", "secuencial_nota_credito",
-            "secuencial_nota_debito", "secuencial_guia_remision",
-            "secuencial_liquidacion_compra", "firma_vencimiento"]
+            "secuencial_factura", "firma_vencimiento"]
         labels = {
             "establecimiento": "Código de establecimiento", "punto_emision": "Punto de emisión",
             "ambiente": "Ambiente SRI", "tipo_emision": "Tipo de emisión",
             "secuencial_factura": "Próximo secuencial de facturas",
-            "secuencial_retencion": "Próximo secuencial de retenciones",
-            "secuencial_nota_credito": "Próximo secuencial de notas de crédito",
-            "secuencial_nota_debito": "Próximo secuencial de notas de débito",
-            "secuencial_guia_remision": "Próximo secuencial de guías de remisión",
-            "secuencial_liquidacion_compra": "Próximo secuencial de liquidaciones de compra",
             "firma_vencimiento": "Fecha de vencimiento de la firma"}
         widgets = {
             "establecimiento": forms.TextInput(attrs={"maxlength": "3", "inputmode": "numeric", "placeholder": "001"}),
             "punto_emision": forms.TextInput(attrs={"maxlength": "3", "inputmode": "numeric", "placeholder": "001"}),
             "secuencial_factura": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
-            "secuencial_retencion": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
-            "secuencial_nota_credito": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
-            "secuencial_nota_debito": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
-            "secuencial_guia_remision": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
-            "secuencial_liquidacion_compra": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
             "firma_vencimiento": forms.DateInput(attrs={"type": "date"})}
 
     def clean_establecimiento(self):
@@ -787,8 +775,7 @@ class ParametrosFacturacionForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
-        for field in ("secuencial_factura", "secuencial_retencion", "secuencial_nota_credito",
-            "secuencial_nota_debito", "secuencial_guia_remision", "secuencial_liquidacion_compra"):
+        for field in ("secuencial_factura",):
             value = (cleaned.get(field) or "").strip()
             if not value.isdigit() or len(value) != 9:
                 self.add_error(field, "El secuencial debe contener exactamente 9 dígitos.")
