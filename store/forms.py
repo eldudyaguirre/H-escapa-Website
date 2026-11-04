@@ -2,7 +2,7 @@ from django import forms
 
 from .blog_utils import sanitize_blog_html
 
-from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica, ClienteFacturacion, ServicioProducto
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica, ClienteFacturacion, ServicioProducto, ParametrosFacturacion
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -738,3 +738,69 @@ class ServicioProductoForm(forms.ModelForm):
             raise forms.ValidationError("El precio no puede ser negativo.")
         return value
 
+
+
+class ParametrosFacturacionForm(forms.ModelForm):
+    firma_archivo = forms.FileField(required=False, label="Firma electrónica (.p12 o .pfx)",
+        widget=forms.ClearableFileInput(attrs={"accept": ".p12,.pfx"}))
+    clave_firma = forms.CharField(required=False, label="Clave de la firma electrónica",
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password", "placeholder": "Ingresa la clave para guardar o cambiarla"}))
+
+    class Meta:
+        model = ParametrosFacturacion
+        fields = ["establecimiento", "punto_emision", "ambiente", "tipo_emision",
+            "secuencial_factura", "secuencial_retencion", "secuencial_nota_credito",
+            "secuencial_nota_debito", "secuencial_guia_remision",
+            "secuencial_liquidacion_compra", "firma_vencimiento"]
+        labels = {
+            "establecimiento": "Código de establecimiento", "punto_emision": "Punto de emisión",
+            "ambiente": "Ambiente SRI", "tipo_emision": "Tipo de emisión",
+            "secuencial_factura": "Próximo secuencial de facturas",
+            "secuencial_retencion": "Próximo secuencial de retenciones",
+            "secuencial_nota_credito": "Próximo secuencial de notas de crédito",
+            "secuencial_nota_debito": "Próximo secuencial de notas de débito",
+            "secuencial_guia_remision": "Próximo secuencial de guías de remisión",
+            "secuencial_liquidacion_compra": "Próximo secuencial de liquidaciones de compra",
+            "firma_vencimiento": "Fecha de vencimiento de la firma"}
+        widgets = {
+            "establecimiento": forms.TextInput(attrs={"maxlength": "3", "inputmode": "numeric", "placeholder": "001"}),
+            "punto_emision": forms.TextInput(attrs={"maxlength": "3", "inputmode": "numeric", "placeholder": "001"}),
+            "secuencial_factura": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "secuencial_retencion": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "secuencial_nota_credito": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "secuencial_nota_debito": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "secuencial_guia_remision": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "secuencial_liquidacion_compra": forms.TextInput(attrs={"maxlength": "9", "inputmode": "numeric"}),
+            "firma_vencimiento": forms.DateInput(attrs={"type": "date"})}
+
+    def clean_establecimiento(self):
+        value = self.cleaned_data["establecimiento"].strip()
+        if not value.isdigit() or len(value) != 3:
+            raise forms.ValidationError("El establecimiento debe tener exactamente 3 dígitos.")
+        return value
+
+    def clean_punto_emision(self):
+        value = self.cleaned_data["punto_emision"].strip()
+        if not value.isdigit() or len(value) != 3:
+            raise forms.ValidationError("El punto de emisión debe tener exactamente 3 dígitos.")
+        return value
+
+    def clean(self):
+        cleaned = super().clean()
+        for field in ("secuencial_factura", "secuencial_retencion", "secuencial_nota_credito",
+            "secuencial_nota_debito", "secuencial_guia_remision", "secuencial_liquidacion_compra"):
+            value = (cleaned.get(field) or "").strip()
+            if not value.isdigit() or len(value) != 9:
+                self.add_error(field, "El secuencial debe contener exactamente 9 dígitos.")
+        archivo = cleaned.get("firma_archivo")
+        clave = cleaned.get("clave_firma")
+        if archivo:
+            if not archivo.name.lower().endswith((".p12", ".pfx")):
+                self.add_error("firma_archivo", "Selecciona un archivo .p12 o .pfx.")
+            if archivo.size > 5 * 1024 * 1024:
+                self.add_error("firma_archivo", "El archivo no puede superar 5 MB.")
+            if not clave:
+                self.add_error("clave_firma", "Ingresa la clave para guardar la nueva firma.")
+        elif (not self.instance.pk or not self.instance.tiene_firma) and not clave:
+            self.add_error("firma_archivo", "Debes cargar la firma electrónica y su clave.")
+        return cleaned
