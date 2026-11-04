@@ -47,7 +47,18 @@
     .kpi-grid .kpi-card{position:relative;isolation:isolate;display:flex;align-items:center;gap:15px;min-width:0;min-height:142px;padding:24px 20px;border:1px solid transparent;border-radius:16px;overflow:hidden;box-shadow:0 8px 22px rgba(24,55,53,.08);transition:transform .22s ease,box-shadow .22s ease;text-decoration:none!important}
     .kpi-grid .kpi-card::before{content:"";position:absolute;inset:0;opacity:.12;z-index:-1;background:linear-gradient(135deg,var(--kpi-color),#fff 85%)}
     .kpi-grid .kpi-card::after{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--kpi-color)}
-    .kpi-grid .kpi-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(24,55,53,.14)}
+    .kpi-grid .kpi-card:hover{transform:translateY(-7px) scale(1.015);border-color:var(--kpi-color);box-shadow:0 18px 34px color-mix(in srgb,var(--kpi-color) 22%,transparent),0 5px 12px rgba(24,55,53,.07)}
+    .kpi-grid .kpi-card::before{transition:opacity .25s ease,transform .45s ease}
+    .kpi-grid .kpi-card::after{transition:height .25s ease,box-shadow .25s ease}
+    .kpi-grid .kpi-card:hover::before{opacity:.22;transform:scale(1.08) rotate(-2deg)}
+    .kpi-grid .kpi-card:hover::after{height:7px;box-shadow:0 2px 12px color-mix(in srgb,var(--kpi-color) 45%,transparent)}
+    .kpi-grid .kpi-card>i{transition:transform .28s cubic-bezier(.2,.75,.25,1),box-shadow .28s ease}
+    .kpi-grid .kpi-card:hover>i{transform:translateY(-3px) rotate(-6deg) scale(1.08);box-shadow:0 10px 20px color-mix(in srgb,var(--kpi-color) 38%,transparent)}
+    .kpi-grid .kpi-card h3{transition:transform .25s ease,text-shadow .25s ease;transform-origin:left center}
+    .kpi-grid .kpi-card:hover h3{transform:scale(1.08);text-shadow:0 4px 12px color-mix(in srgb,var(--kpi-color) 22%,transparent)}
+    .kpi-grid .kpi-card:focus-visible{outline:3px solid var(--kpi-color);outline-offset:4px}
+    @media(hover:hover) and (pointer:fine){.kpi-grid .kpi-card{cursor:pointer}}
+    @media(prefers-reduced-motion:reduce){.kpi-grid .kpi-card,.kpi-grid .kpi-card::before,.kpi-grid .kpi-card::after,.kpi-grid .kpi-card>i,.kpi-grid .kpi-card h3{transition:none!important}}
     .kpi-grid .kpi-card:nth-child(1){--kpi-color:#0f766e;background:#f0fdfa;border-color:#c9eee8}
     .kpi-grid .kpi-card:nth-child(2){--kpi-color:#2563eb;background:#eff6ff;border-color:#d5e5ff}
     .kpi-grid .kpi-card:nth-child(3){--kpi-color:#7c3aed;background:#f5f3ff;border-color:#e5dcff}
