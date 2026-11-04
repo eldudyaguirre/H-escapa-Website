@@ -18,7 +18,7 @@
           {% endif %}{% endfor %}
         </div></div>
         <div class="cf-section"><h3>Información de contacto</h3><div class="cf-grid">
-          {% for field in form %}{% if field.name == "correo" or field.name == "telefono" or field.name == "direccion" or field.name == "ciudad" or field.name == "provincia" %}
+          {% for field in form %}{% if field.name == "correo" or field.name == "telefono" or field.name == "direccion" %}
           <div class="cf-field{% if field.name == 'direccion' %} full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<span class="cf-error">{{ error }}</span>{% endfor %}</div>
           {% endif %}{% endfor %}
         </div></div>
