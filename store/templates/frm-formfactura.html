@@ -1,0 +1,67 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Nueva factura{% endblock %}
+{% block extra_head %}
+<style>
+.ff-page{max-width:1450px;margin:auto;padding:30px 36px 45px}.ff-head{display:flex;align-items:center;gap:13px;margin-bottom:22px}.ff-back{width:39px;height:39px;border:1px solid #e1e8e5;border-radius:9px;display:grid;place-items:center;color:#53635e;text-decoration:none}.ff-title{margin:0;font:2rem Marcellus,serif;color:#202a28}.ff-sub{margin:5px 0 0;color:#7a8581}.ff-card{background:#fff;border:1px solid #e4ebe8;border-radius:12px;overflow:hidden;margin-bottom:17px}.ff-card h2{font-size:1.02rem;margin:0;color:#33413d}.ff-card-head{padding:17px 21px;border-bottom:1px solid #edf0ef}.ff-card-head p{margin:4px 0 0;color:#84908b;font-size:.82rem}.ff-body{padding:20px 21px}.ff-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.ff-field{display:flex;flex-direction:column;gap:6px}.ff-field.full{grid-column:1/-1}.ff-field label{font-size:.82rem;font-weight:650;color:#4b5954}.ff-field input,.ff-field select{width:100%;box-sizing:border-box;min-height:41px;padding:9px 11px;border:1px solid #dce5e1;border-radius:8px;background:white;color:#26332f;font:inherit}.ff-field input:focus,.ff-field select:focus{outline:0;border-color:#439b95;box-shadow:0 0 0 3px #439b9520}.ff-muted{font-size:.76rem;color:#87918d}.ff-table-wrap{overflow:auto}.ff-lines{width:100%;border-collapse:collapse;min-width:700px}.ff-lines th,.ff-lines td{padding:10px 9px;border-bottom:1px solid #edf0ef;text-align:left;font-size:.84rem}.ff-lines th{font-size:.74rem;text-transform:uppercase;color:#78847f;background:#f8faf9}.ff-lines select,.ff-lines input{width:100%;min-height:38px;border:1px solid #dce5e1;border-radius:7px;padding:7px}.ff-lines .qty{max-width:95px}.ff-remove{border:0;background:#fff0ef;color:#b63a32;border-radius:7px;padding:8px;cursor:pointer}.ff-addline{margin-top:13px;border:1px solid #d5e6e2;background:#f6fbfa;color:#367e77;border-radius:8px;padding:9px 13px;font-weight:650;cursor:pointer}.ff-totals{margin-left:auto;max-width:370px;margin-top:17px}.ff-totalrow{display:flex;justify-content:space-between;padding:7px 0;color:#68746f;font-size:.9rem}.ff-totalrow.final{border-top:1px solid #dfe7e3;margin-top:6px;padding-top:13px;color:#263a35;font-size:1.12rem;font-weight:750}.ff-actions{display:flex;justify-content:flex-end;gap:9px}.ff-btn{padding:11px 18px;border:1px solid #dce5e1;border-radius:8px;background:white;color:#485650;text-decoration:none;font-weight:650;cursor:pointer}.ff-btn.primary{background:#439b95;border-color:#439b95;color:#fff}.ff-error{padding:12px 15px;background:#fff2f1;color:#a72c25;border-radius:8px;margin-bottom:15px}.ff-messages{margin-bottom:14px}.ff-messages p{margin:5px 0;padding:10px 13px;background:#fff2f1;color:#a72c25;border-radius:8px}.ff-item-option{display:none}@media(max-width:720px){.ff-page{padding:20px 13px 30px}.ff-grid{grid-template-columns:1fr}.ff-field.full{grid-column:auto}.ff-body{padding:16px}.ff-actions{flex-direction:column}.ff-btn{text-align:center}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="ff-page">
+  <header class="ff-head"><a class="ff-back" href="{% url 'homeinfacturacion' %}"><i class="bx bx-arrow-back"></i></a><div><h1 class="ff-title">Nueva factura</h1><p class="ff-sub">Registra manualmente el cliente y los conceptos que vas a facturar.</p></div></header>
+  {% if messages %}<div class="ff-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+  <form method="post" id="invoiceForm">{% csrf_token %}
+    <section class="ff-card"><div class="ff-card-head"><h2><i class="bx bx-user"></i> Datos del cliente</h2><p>Puedes seleccionar un paciente, un cliente registrado o ingresar los datos manualmente.</p></div><div class="ff-body">
+      <div class="ff-grid">
+        <div class="ff-field full"><label for="origen_cliente">Usar datos de</label><select id="origen_cliente" name="origen_cliente"><option value="manual">Ingreso manual</option><optgroup label="Pacientes">{% for p in pacientes %}<option value="P|{{ p.cedula }}" data-tipo="{% if p.tipo_identificacion_facturacion == 'RUC' %}04{% elif p.tipo_identificacion_facturacion == 'PASAPORTE' %}06{% elif p.tipo_identificacion_facturacion == 'CONSUMIDOR_FINAL' %}07{% else %}05{% endif %}" data-identificacion="{% if p.tipo_identificacion_facturacion == 'CONSUMIDOR_FINAL' %}9999999999999{% else %}{{ p.identificacion_facturacion|default:p.cedula }}{% endif %}" data-razon="{{ p.nombre_facturacion|default:p.nombre|escape }}" data-correo="{{ p.correo_facturacion|default:p.correo|escape }}" data-telefono="{{ p.telefono|escape }}" data-direccion="{{ p.direccion|escape }}">{{ p.nombre }} — {{ p.cedula }}</option>{% endfor %}</optgroup><optgroup label="Clientes registrados">{% for c in clientes %}<option value="C|{{ c.id }}" data-tipo="{{ c.tipo_identificacion }}" data-identificacion="{{ c.identificacion }}" data-razon="{{ c.razon_social|escape }}" data-correo="{{ c.correo|escape }}" data-telefono="{{ c.telefono|escape }}" data-direccion="{{ c.direccion|escape }}">{{ c.razon_social }} — {{ c.identificacion }}</option>{% endfor %}</optgroup></select><span class="ff-muted">Al seleccionar un registro se completan los datos tributarios; puedes corregirlos para esta factura sin alterar la ficha del paciente.</span></div>
+        <div class="ff-field"><label for="tipo_identificacion">Tipo de identificación *</label><select id="tipo_identificacion" name="tipo_identificacion" required><option value="">Seleccione</option><option value="04">RUC</option><option value="05">Cédula</option><option value="06">Pasaporte</option><option value="07">Consumidor final</option></select></div>
+        <div class="ff-field"><label for="identificacion">Identificación *</label><input id="identificacion" name="identificacion" maxlength="20" required></div>
+        <div class="ff-field"><label for="razon_social">Razón social / Nombre completo *</label><input id="razon_social" name="razon_social" maxlength="200" required></div>
+        <div class="ff-field"><label for="correo">Correo electrónico</label><input type="email" id="correo" name="correo"></div>
+        <div class="ff-field"><label for="telefono">Teléfono</label><input id="telefono" name="telefono" maxlength="30"></div>
+        <div class="ff-field full"><label for="direccion">Dirección</label><input id="direccion" name="direccion" maxlength="250"></div>
+        <div class="ff-field"><label for="fecha_emision">Fecha de emisión *</label><input type="date" id="fecha_emision" name="fecha_emision" value="{{ fecha_hoy }}" required></div>
+      </div>
+    </div></section>
+    <section class="ff-card"><div class="ff-card-head"><h2><i class="bx bx-cart"></i> Detalle de la factura</h2><p>Agrega los servicios o productos activos del catálogo.</p></div><div class="ff-body">
+      <div class="ff-table-wrap"><table class="ff-lines"><thead><tr><th style="width:48%">Servicio / producto</th><th style="width:14%">Cantidad</th><th>Precio</th><th>IVA</th><th>Total</th><th></th></tr></thead><tbody id="invoiceLines"></tbody></table></div>
+      <button class="ff-addline" type="button" id="addLine"><i class="bx bx-plus"></i> Agregar concepto</button>
+      <div class="ff-totals"><div class="ff-totalrow"><span>Subtotal</span><strong id="subtotal">$ 0.00</strong></div><div class="ff-totalrow"><span>IVA</span><strong id="ivaTotal">$ 0.00</strong></div><div class="ff-totalrow final"><span>Total a pagar</span><strong id="grandTotal">$ 0.00</strong></div></div>
+    </div></section>
+    <div class="ff-actions"><a class="ff-btn" href="{% url 'homeinfacturacion' %}">Cancelar</a><button class="ff-btn primary" type="submit"><i class="bx bx-save"></i> Guardar factura</button></div>
+  </form>
+</section>
+<select id="productOptions" class="ff-item-option"><option value="">Selecciona un concepto</option>{% for item in catalogo %}<option value="{{ item.id }}" data-precio="{{ item.precio }}" data-iva="{{ item.porcentaje_iva }}" data-label="{{ item.nombre|escape }}">{{ item.get_tipo_display }} · {{ item.nombre }} ({{ item.codigo }})</option>{% endfor %}</select>
+<script>
+(function(){
+ const origen=document.getElementById('origen_cliente');
+ const fields={tipo:document.getElementById('tipo_identificacion'),identificacion:document.getElementById('identificacion'),razon:document.getElementById('razon_social'),correo:document.getElementById('correo'),telefono:document.getElementById('telefono'),direccion:document.getElementById('direccion')};
+ origen.addEventListener('change',()=>{
+   const op=origen.selectedOptions[0]; if(origen.value==='manual'){Object.values(fields).forEach(f=>f.value='');return;}
+   fields.tipo.value=op.dataset.tipo||'';fields.identificacion.value=op.dataset.identificacion||'';fields.razon.value=op.dataset.razon||'';fields.correo.value=op.dataset.correo||'';fields.telefono.value=op.dataset.telefono||'';fields.direccion.value=op.dataset.direccion||'';
+ });
+ const body=document.getElementById('invoiceLines'), options=document.getElementById('productOptions');
+ const money=n=>'$ '+(Number(n)||0).toFixed(2);
+ const ivaRate=code=>code==='4'?15:code==='5'?5:0;
+ function recalc(){
+   let sub=0,tax=0;
+   body.querySelectorAll('tr').forEach(row=>{
+     const opt=row.querySelector('.product').selectedOptions[0], qty=Number(row.querySelector('.qty').value)||0;
+     const price=Number(opt?.dataset.precio)||0, rate=ivaRate(opt?.dataset.iva||'');
+     const base=Math.round(price*qty*100)/100, iva=Math.round(base*rate)/100;
+     sub+=base;tax+=iva;row.querySelector('.line-total').textContent=money(base+iva);
+     row.querySelector('.line-price').textContent=money(price);
+     row.querySelector('.line-iva').textContent=rate?rate+'%':(opt?.dataset.iva==='6'?'No objeto':opt?.dataset.iva==='7'?'Exento':'0%');
+   });
+   document.getElementById('subtotal').textContent=money(sub);document.getElementById('ivaTotal').textContent=money(tax);document.getElementById('grandTotal').textContent=money(sub+tax);
+ }
+ function addLine(){
+   const row=document.createElement('tr');
+   row.innerHTML='<td><select class="product" name="producto_id" required>'+options.innerHTML+'</select></td><td><input class="qty" type="number" name="cantidad" min="0.01" step="0.01" value="1" required></td><td class="line-price">$ 0.00</td><td class="line-iva">—</td><td class="line-total">$ 0.00</td><td><button class="ff-remove" type="button" aria-label="Eliminar"><i class="bx bx-trash"></i></button></td>';
+   row.querySelector('.product').addEventListener('change',recalc);row.querySelector('.qty').addEventListener('input',recalc);row.querySelector('.ff-remove').addEventListener('click',()=>{row.remove();recalc();});body.appendChild(row);recalc();
+ }
+ document.getElementById('addLine').addEventListener('click',addLine);
+ document.getElementById('invoiceForm').addEventListener('submit',e=>{if(!body.querySelector('tr')){e.preventDefault();alert('Agrega al menos un servicio o producto.');}});
+ addLine();
+})();
+</script>
+{% endblock %}
