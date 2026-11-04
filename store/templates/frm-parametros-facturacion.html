@@ -1,0 +1,39 @@
+{% extends "frm-menpri.html" %}
+{% block title %}H-Escapa | Parámetros de facturación{% endblock %}
+{% block extra_head %}
+<style>
+.pf-page{max-width:1150px;margin:auto;padding:30px 36px 45px}.pf-head{margin-bottom:24px}.pf-title{margin:0;color:#19181b;font:2.1rem Marcellus,serif}.pf-sub{margin:7px 0 0;color:#77817e}.pf-card{background:#fff;border:1px solid #e5ebe9;border-radius:13px;box-shadow:0 5px 20px #1e37350b;overflow:hidden;margin-bottom:18px}.pf-card-head{padding:19px 23px;border-bottom:1px solid #edf0ef}.pf-card-head h2{margin:0 0 4px;font-size:1.08rem;color:#273330}.pf-card-head p{margin:0;color:#7b8581;font-size:.86rem}.pf-body{padding:22px 23px}.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.pf-field{display:flex;flex-direction:column;gap:6px}.pf-field label{font-size:.84rem;font-weight:650;color:#45514e}.pf-field input,.pf-field select{width:100%;box-sizing:border-box;min-height:42px;padding:9px 11px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#26312e;font:inherit}.pf-field input:focus,.pf-field select:focus{outline:0;border-color:#439b95;box-shadow:0 0 0 3px #439b9520}.pf-help{font-size:.76rem;color:#85908c}.pf-error{font-size:.78rem;color:#b42318}.pf-alert{padding:12px 15px;border-radius:8px;background:#fff4f3;color:#a22b25;margin-bottom:16px}.pf-status{display:flex;align-items:center;gap:9px;padding:12px 14px;background:#f4f8f7;border:1px solid #e5eeeb;border-radius:9px;color:#4c5d58;font-size:.85rem}.pf-status strong{color:#176b4c}.pf-actions{display:flex;justify-content:flex-end;gap:9px;padding-top:5px}.pf-btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;padding:11px 18px;border:1px solid #dfe5e3;border-radius:8px;background:#fff;color:#45514e;text-decoration:none;cursor:pointer;font:inherit;font-weight:650}.pf-btn.primary{background:#439b95;border-color:#439b95;color:#fff}.pf-security{font-size:.8rem;color:#687570;margin-top:12px;line-height:1.5}@media(max-width:700px){.pf-page{padding:20px 13px 30px}.pf-title{font-size:1.75rem}.pf-body,.pf-card-head{padding:17px}.pf-grid{grid-template-columns:1fr}.pf-actions{flex-direction:column}.pf-btn{width:100%}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="pf-page">
+  <header class="pf-head"><h1 class="pf-title">Parámetros de facturación</h1><p class="pf-sub">Configura el establecimiento, los secuenciales y la firma electrónica de H-Escapa.</p></header>
+  <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+    {% if form.errors %}<div class="pf-alert"><strong>No se pudieron guardar los parámetros.</strong> Revisa los campos marcados.</div>{% endif %}
+    <section class="pf-card"><div class="pf-card-head"><h2><i class="bx bx-buildings"></i> Establecimiento y emisión</h2><p>Datos que identifican el punto desde el que se emitirán los comprobantes electrónicos.</p></div><div class="pf-body"><div class="pf-grid">
+      {% for field in form %}
+        {% if field.name == "establecimiento" or field.name == "punto_emision" or field.name == "ambiente" or field.name == "tipo_emision" %}
+          <div class="pf-field"><label for="{{ field.id_for_label }}">{{ field.label }} *</label>{{ field }}{% for error in field.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
+        {% endif %}
+      {% endfor %}
+    </div></div></section>
+    <section class="pf-card"><div class="pf-card-head"><h2><i class="bx bx-list-ol"></i> Secuenciales</h2><p>Indica el próximo número que se utilizará para cada tipo de comprobante (9 dígitos).</p></div><div class="pf-body"><div class="pf-grid">
+      {% for field in form %}
+        {% if field.name == "secuencial_factura" or field.name == "secuencial_retencion" or field.name == "secuencial_nota_credito" or field.name == "secuencial_nota_debito" or field.name == "secuencial_guia_remision" or field.name == "secuencial_liquidacion_compra" %}
+          <div class="pf-field"><label for="{{ field.id_for_label }}">{{ field.label }} *</label>{{ field }}{% for error in field.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
+        {% endif %}
+      {% endfor %}
+    </div></div></section>
+    <section class="pf-card"><div class="pf-card-head"><h2><i class="bx bx-certification"></i> Firma electrónica</h2><p>Sube el certificado digital y registra su clave para la firma de comprobantes.</p></div><div class="pf-body">
+      <div class="pf-status">{% if parametros.tiene_firma %}<i class="bx bx-check-circle"></i><strong>Firma cargada</strong> — {{ parametros.firma_nombre_archivo }}{% else %}<i class="bx bx-info-circle"></i> No hay una firma electrónica cargada.{% endif %}</div>
+      <div class="pf-grid" style="margin-top:17px">
+        <div class="pf-field"><label for="{{ form.firma_archivo.id_for_label }}">{{ form.firma_archivo.label }}</label>{{ form.firma_archivo }}<span class="pf-help">Formatos .p12 o .pfx. Máximo 5 MB. {% if parametros.tiene_firma %}Déjalo vacío para conservar el certificado actual.{% endif %}</span>{% for error in form.firma_archivo.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
+        <div class="pf-field"><label for="{{ form.clave_firma.id_for_label }}">{{ form.clave_firma.label }}</label>{{ form.clave_firma }}<span class="pf-help">La clave nunca se muestra después de guardarla. Déjala vacía para conservarla.</span>{% for error in form.clave_firma.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
+        <div class="pf-field"><label for="{{ form.firma_vencimiento.id_for_label }}">{{ form.firma_vencimiento.label }}</label>{{ form.firma_vencimiento }}{% for error in form.firma_vencimiento.errors %}<span class="pf-error">{{ error }}</span>{% endfor %}</div>
+      </div>
+      <p class="pf-security"><i class="bx bx-lock-alt"></i> El certificado y su clave se cifran antes de almacenarse en la base de datos. El archivo no se publica como descarga web.</p>
+    </div></section>
+    <div class="pf-actions"><button class="pf-btn primary" type="submit"><i class="bx bx-save"></i> Guardar parámetros</button></div>
+  </form>
+</section>
+{% endblock %}
