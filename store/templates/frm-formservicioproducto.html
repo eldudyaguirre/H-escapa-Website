@@ -12,11 +12,11 @@
     <div class="sf-card"><div class="sf-card-head"><h2>Información del servicio o producto</h2><p>Define el tipo, precio e información tributaria del concepto que se utilizará en facturación.</p></div><div class="sf-body">
       <div class="sf-grid">
         {% for field in form %}
-          {% if field.name == "controlar_stock" %}
-            <div class="sf-field full"><label class="sf-check" for="{{ field.id_for_label }}">{{ field }} <span>{{ field.label }}</span></label>{% for error in field.errors %}<span class="sf-error">{{ error }}</span>{% endfor %}</div>
-          {% else %}
-            <div class="sf-field{% if field.name == 'descripcion' %} full{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<span class="sf-error">{{ error }}</span>{% endfor %}</div>
-          {% endif %}
+          <div class="sf-field{% if field.name == 'descripcion' %} full{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {{ field }}
+            {% for error in field.errors %}<span class="sf-error">{{ error }}</span>{% endfor %}
+          </div>
         {% endfor %}
       </div>
       <div class="sf-actions"><a class="sf-btn" href="{% url 'homeinserviciosproductos' %}">Cancelar</a><button class="sf-btn primary" type="submit"><i class="bx bx-save"></i> Guardar</button></div>
