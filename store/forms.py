@@ -712,20 +712,18 @@ class ClienteFacturacionForm(forms.ModelForm):
 class ServicioProductoForm(forms.ModelForm):
     class Meta:
         model = ServicioProducto
-        fields = ["codigo", "tipo", "nombre", "descripcion", "precio", "porcentaje_iva", "controlar_stock", "stock_actual", "estado"]
+        fields = ["codigo", "tipo", "nombre", "descripcion", "precio", "porcentaje_iva", "estado"]
         labels = {
             "codigo": "Código", "tipo": "Tipo", "nombre": "Nombre",
             "descripcion": "Descripción", "precio": "Precio de venta",
-            "porcentaje_iva": "IVA (%)", "controlar_stock": "Controlar existencias",
-            "stock_actual": "Existencias actuales", "estado": "Estado",
+            "porcentaje_iva": "Tarifa IVA", "estado": "Estado",
         }
         widgets = {
             "codigo": forms.TextInput(attrs={"placeholder": "Ej.: SER-001"}),
             "nombre": forms.TextInput(attrs={"placeholder": "Nombre del servicio o producto"}),
             "descripcion": forms.Textarea(attrs={"rows": 3, "placeholder": "Descripción opcional"}),
             "precio": forms.NumberInput(attrs={"min": "0", "step": "0.01"}),
-            "porcentaje_iva": forms.NumberInput(attrs={"min": "0", "max": "100", "step": "0.01"}),
-            "stock_actual": forms.NumberInput(attrs={"min": "0", "step": "0.01"}),
+            "porcentaje_iva": forms.Select(),
         }
 
     def clean_codigo(self):
@@ -740,8 +738,3 @@ class ServicioProductoForm(forms.ModelForm):
             raise forms.ValidationError("El precio no puede ser negativo.")
         return value
 
-    def clean_stock_actual(self):
-        value = self.cleaned_data["stock_actual"]
-        if value < 0:
-            raise forms.ValidationError("Las existencias no pueden ser negativas.")
-        return value
