@@ -58,6 +58,14 @@
     .kpi-grid .kpi-card h3{margin:0 0 5px;color:var(--kpi-color);font-size:2rem;font-weight:750;line-height:1.05}
     .kpi-grid .kpi-card p{margin:0;color:#44515f;font-size:.92rem;line-height:1.35;font-weight:600}
     .kpi-grid .kpi-card small{display:block;margin-top:8px;color:#586575;font-size:.75rem;line-height:1.45}
+    .kpi-grid .kpi-card{opacity:0;transform:translateY(22px) scale(.985);animation:kpi-card-enter .65s cubic-bezier(.2,.75,.25,1) forwards}
+    .kpi-grid .kpi-card:nth-child(1){animation-delay:.06s}
+    .kpi-grid .kpi-card:nth-child(2){animation-delay:.16s}
+    .kpi-grid .kpi-card:nth-child(3){animation-delay:.26s}
+    .kpi-grid .kpi-card:nth-child(4){animation-delay:.36s}
+    .kpi-grid .kpi-card:nth-child(5){animation-delay:.46s}
+    @keyframes kpi-card-enter{to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(prefers-reduced-motion:reduce){.kpi-grid .kpi-card{opacity:1;transform:none;animation:none;transition:none}}
     @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     /* Responsive móvil: aprovechar el ancho disponible y mantener tres KPI por fila. */
     @media(max-width:767px){
@@ -230,10 +238,10 @@
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi-card"><i class="bx bx-calendar-check" aria-hidden="true"></i><div><h3>{{ citas_hoy_count }}</h3><p>Citas hoy</p></div></div>
-        <div class="kpi-card"><i class="bx bx-user" aria-hidden="true"></i><div><h3>{{ pacientes_activos }}</h3><p>Pacientes activos</p></div></div>
-        <div class="kpi-card"><i class="bx bx-group" aria-hidden="true"></i><div><h3>{{ profesionales_activos }}</h3><p>Profesionales activos</p></div></div><a href="{% url 'homeininteraccionesweb' %}" class="kpi-card" style="text-decoration:none;color:inherit"><i class="bx bx-globe" aria-hidden="true"></i><div><h3>{{ solicitudes_web_pendientes }}</h3><p>Solicitudes web pendientes</p><small style="opacity:.65">{{ solicitudes_web_contacto }} contactos · {{ solicitudes_web_agendamiento }} agendamientos</small></div></a>
-        <div class="kpi-card"><i class="bx bx-edit-alt" aria-hidden="true"></i><div><h3>{{ posts_publicados }}</h3><p>Posts publicados</p></div></div>
+        <div class="kpi-card"><i class="bx bx-calendar-check" aria-hidden="true"></i><div><h3 data-count="{{ citas_hoy_count }}">0</h3><p>Citas hoy</p></div></div>
+        <div class="kpi-card"><i class="bx bx-user" aria-hidden="true"></i><div><h3 data-count="{{ pacientes_activos }}">0</h3><p>Pacientes activos</p></div></div>
+        <div class="kpi-card"><i class="bx bx-group" aria-hidden="true"></i><div><h3 data-count="{{ profesionales_activos }}">0</h3><p>Profesionales activos</p></div></div><a href="{% url 'homeininteraccionesweb' %}" class="kpi-card" style="text-decoration:none;color:inherit"><i class="bx bx-globe" aria-hidden="true"></i><div><h3 data-count="{{ solicitudes_web_pendientes }}">0</h3><p>Solicitudes web pendientes</p><small style="opacity:.65">{{ solicitudes_web_contacto }} contactos · {{ solicitudes_web_agendamiento }} agendamientos</small></div></a>
+        <div class="kpi-card"><i class="bx bx-edit-alt" aria-hidden="true"></i><div><h3 data-count="{{ posts_publicados }}">0</h3><p>Posts publicados</p></div></div>
       </div>
 
       <div class="dashboard-grid">
@@ -334,6 +342,53 @@
       dropdown.classList.toggle('show-dropdown', isOpen);
       button.setAttribute('aria-expanded', String(isOpen));
     }, true);
+  })();
+  </script>
+  <script>
+  // Animación de entrada y conteo progresivo de las tarjetas del panel principal.
+  (function () {
+    function animateDashboardKpis() {
+      const grid = document.querySelector('.dashboard-home .kpi-grid');
+      if (!grid || grid.dataset.kpiAnimated === 'true') return;
+      grid.dataset.kpiAnimated = 'true';
+
+      const counters = grid.querySelectorAll('.kpi-card h3[data-count]');
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      counters.forEach(function (counter, index) {
+        const target = Number(String(counter.dataset.count || '0').replace(/,/g, '').trim());
+        if (!Number.isFinite(target)) {
+          counter.textContent = counter.dataset.count || '0';
+          return;
+        }
+        if (reduceMotion || target === 0) {
+          counter.textContent = new Intl.NumberFormat('es-EC').format(target);
+          return;
+        }
+
+        const duration = 1150;
+        const delay = index * 110;
+        const startAt = performance.now() + delay;
+        function frame(now) {
+          if (now < startAt) {
+            requestAnimationFrame(frame);
+            return;
+          }
+          const progress = Math.min((now - startAt) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          counter.textContent = new Intl.NumberFormat('es-EC').format(Math.floor(target * eased));
+          if (progress < 1) requestAnimationFrame(frame);
+          else counter.textContent = new Intl.NumberFormat('es-EC').format(target);
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', animateDashboardKpis, { once: true });
+    } else {
+      animateDashboardKpis();
+    }
   })();
   </script>
 </body>
