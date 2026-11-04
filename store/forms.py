@@ -2,7 +2,7 @@ from django import forms
 
 from .blog_utils import sanitize_blog_html
 
-from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica, ClienteFacturacion
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -666,3 +666,37 @@ class TareaClinicaForm(forms.ModelForm):
             "detalle": forms.Textarea(attrs={"rows": 2, "placeholder": "Descripción opcional de la tarea"}),
             "fecha_limite": forms.DateInput(attrs={"type": "date"}),
         }
+
+
+class ClienteFacturacionForm(forms.ModelForm):
+    class Meta:
+        model = ClienteFacturacion
+        fields = ["tipo_identificacion", "identificacion", "razon_social", "nombres", "apellidos", "correo", "telefono", "direccion", "ciudad", "provincia", "estado", "observaciones"]
+        labels = {
+            "tipo_identificacion": "Tipo de identificación", "identificacion": "Número de identificación",
+            "razon_social": "Razón social / Nombre completo", "nombres": "Nombres", "apellidos": "Apellidos",
+            "correo": "Correo electrónico", "telefono": "Teléfono", "direccion": "Dirección",
+            "ciudad": "Ciudad", "provincia": "Provincia", "estado": "Estado", "observaciones": "Observaciones",
+        }
+        widgets = {
+            "identificacion": forms.TextInput(attrs={"maxlength": "20", "placeholder": "Cédula, RUC o pasaporte"}),
+            "razon_social": forms.TextInput(attrs={"maxlength": "200", "placeholder": "Nombre o razón social para la factura"}),
+            "correo": forms.EmailInput(attrs={"placeholder": "correo@ejemplo.com"}),
+            "observaciones": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def clean_identificacion(self):
+        value = "".join((self.cleaned_data.get("identificacion") or "").split())
+        tipo = self.cleaned_data.get("tipo_identificacion")
+        if tipo == "05" and (not value.isdigit() or len(value) != 10):
+            raise forms.ValidationError("La cédula debe contener 10 dígitos.")
+        if tipo == "04" and (not value.isdigit() or len(value) != 13):
+            raise forms.ValidationError("El RUC debe contener 13 dígitos.")
+        if tipo == "07":
+            value = value or "9999999999999"
+        qs = ClienteFacturacion.objects.filter(tipo_identificacion=tipo, identificacion=value)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Ya existe un cliente con este tipo y número de identificación.")
+        return value
