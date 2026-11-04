@@ -33,7 +33,7 @@ import secrets
 import requests
 from dotenv import set_key
 
-from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, horarios_disponibles, horarios_disponibles_duracion
+from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, ServicioProductoForm, horarios_disponibles, horarios_disponibles_duracion
 from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto
 from .google_calendar import (
     GoogleCalendarError,
