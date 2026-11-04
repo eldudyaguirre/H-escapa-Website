@@ -695,3 +695,50 @@ class ParametrosFacturacion(models.Model):
     @property
     def tiene_firma(self):
         return bool(self.firma_archivo_cifrado and self.clave_firma_cifrada)
+
+
+class Factura(models.Model):
+    ESTADOS = [("BORRADOR", "Borrador")]
+    numero = models.CharField(max_length=17, unique=True)
+    fecha_emision = models.DateField(default=timezone.localdate)
+    ambiente = models.CharField(max_length=1, choices=ParametrosFacturacion.AMBIENTES, default="1")
+    paciente = models.ForeignKey(Paciente, on_delete=models.SET_NULL, null=True, blank=True, related_name="facturas")
+    cliente_registrado = models.ForeignKey(ClienteFacturacion, on_delete=models.SET_NULL, null=True, blank=True, related_name="facturas")
+    tipo_identificacion = models.CharField(max_length=2, choices=ClienteFacturacion.TIPOS_IDENTIFICACION)
+    identificacion = models.CharField(max_length=20)
+    razon_social = models.CharField(max_length=200)
+    correo = models.EmailField(blank=True)
+    telefono = models.CharField(max_length=30, blank=True)
+    direccion = models.CharField(max_length=250, blank=True)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_iva = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    estado = models.CharField(max_length=12, choices=ESTADOS, default="BORRADOR")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-fecha_emision", "-id"]
+        verbose_name = "Factura"
+        verbose_name_plural = "Facturas"
+
+    def __str__(self):
+        return f"{self.numero} - {self.razon_social}"
+
+
+class DetalleFactura(models.Model):
+    factura = models.ForeignKey(Factura, on_delete=models.CASCADE, related_name="detalles")
+    servicio_producto = models.ForeignKey(ServicioProducto, on_delete=models.SET_NULL, null=True, blank=True)
+    codigo = models.CharField(max_length=30)
+    descripcion = models.CharField(max_length=250)
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
+    tarifa_iva = models.CharField(max_length=2)
+    porcentaje_iva = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    base_imponible = models.DecimalField(max_digits=12, decimal_places=2)
+    valor_iva = models.DecimalField(max_digits=12, decimal_places=2)
+    total_linea = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        ordering = ["id"]
+        verbose_name = "Detalle de factura"
+        verbose_name_plural = "Detalles de factura"
