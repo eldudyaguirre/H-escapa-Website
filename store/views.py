@@ -33,8 +33,8 @@ import secrets
 import requests
 from dotenv import set_key
 
-from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, ServicioProductoForm, horarios_disponibles, horarios_disponibles_duracion
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto
+from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, ServicioProductoForm, ParametrosFacturacionForm, horarios_disponibles, horarios_disponibles_duracion
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto, ParametrosFacturacion
 from .google_calendar import (
     GoogleCalendarError,
     cancelar_evento_google_calendar,
@@ -2187,6 +2187,34 @@ def eliminarservicioproducto(request, registro_id):
     registro.delete()
     messages.success(request, f"{nombre} fue eliminado del catálogo.")
     return redirect("homeinserviciosproductos")
+
+
+@staff_required
+def homeinparametros(request):
+    from .security import cifrar_dato
+
+    parametros, _ = ParametrosFacturacion.objects.get_or_create(pk=1)
+    if request.method == "POST":
+        form = ParametrosFacturacionForm(request.POST, request.FILES, instance=parametros)
+        if form.is_valid():
+            registro = form.save(commit=False)
+            archivo = form.cleaned_data.get("firma_archivo")
+            clave = form.cleaned_data.get("clave_firma")
+            if archivo:
+                registro.firma_archivo_cifrado = cifrar_dato(archivo.read())
+                registro.firma_nombre_archivo = Path(archivo.name).name
+                registro.clave_firma_cifrada = cifrar_dato(clave.encode("utf-8")).decode("ascii")
+            elif clave:
+                registro.clave_firma_cifrada = cifrar_dato(clave.encode("utf-8")).decode("ascii")
+            registro.save()
+            messages.success(request, "Los parámetros de facturación se guardaron correctamente.")
+            return redirect("homeinparametros")
+    else:
+        form = ParametrosFacturacionForm(instance=parametros)
+    return render(request, "frm-parametros-facturacion.html", {
+        "form": form, "parametros": parametros,
+        "active_menu": "parametros_facturacion",
+    })
 
 
 @staff_required
