@@ -2095,6 +2095,7 @@ def homeinnuevoclientefacturacion(request):
     return render(request, "frm-formcliente-facturacion.html", {
         "form": form, "titulo": "Nuevo cliente",
         "subtitulo": "Registra los datos tributarios y de contacto del cliente.",
+        "active_menu": "clientes_facturacion",
     })
 
 
@@ -2109,6 +2110,7 @@ def homeineditarclientefacturacion(request, cliente_id):
     return render(request, "frm-formcliente-facturacion.html", {
         "form": form, "cliente": cliente, "titulo": "Editar cliente",
         "subtitulo": "Actualiza los datos tributarios y de contacto.",
+        "active_menu": "clientes_facturacion",
     })
 
 
