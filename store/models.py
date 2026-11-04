@@ -650,9 +650,14 @@ class ServicioProducto(models.Model):
     nombre = models.CharField(max_length=180)
     descripcion = models.TextField(blank=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    porcentaje_iva = models.DecimalField(max_digits=5, decimal_places=2, default=15)
-    controlar_stock = models.BooleanField(default=False)
-    stock_actual = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    TARIFAS_IVA = [
+        ("0", "0%"),
+        ("5", "5%"),
+        ("6", "NO OBJETO IMPUESTO"),
+        ("7", "EXENTO IVA"),
+        ("4", "15%"),
+    ]
+    porcentaje_iva = models.CharField(max_length=2, choices=TARIFAS_IVA, default="4")
     estado = models.CharField(max_length=10, choices=ESTADOS, default="ACTIVO")
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
