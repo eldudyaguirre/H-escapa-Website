@@ -2065,7 +2065,6 @@ def eliminarprofesional(request, profesional_id):
 
 
 @staff_required
-@staff_required
 def homeinclientesfacturacion(request):
     clientes = ClienteFacturacion.objects.all()
     q = request.GET.get("q", "").strip()
@@ -2123,6 +2122,7 @@ def eliminarclientefacturacion(request, cliente_id):
     return redirect("homeinclientesfacturacion")
 
 
+@staff_required
 def homeinpacientes(request):
     pacientes = Paciente.objects.select_related("profesional").all()
     q = request.GET.get("q", "").strip()
