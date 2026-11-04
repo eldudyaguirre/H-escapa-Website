@@ -228,7 +228,7 @@
       </div>
       <div class="nav__items">
         <h3 class="nav__subtitle">ADMINISTRACION</h3>
-        <a href="#" class="nav__link" aria-label="Facturación">
+        <a href="{% url 'homeinfacturacion' %}" class="nav__link{% if active_menu == 'facturacion' %} active{% endif %}" aria-label="Facturación">
           <i class="bx bx-receipt nav__icon" aria-hidden="true"></i>
           <span class="nav__name">Facturación</span>
         </a>
