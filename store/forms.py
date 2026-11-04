@@ -2,7 +2,7 @@ from django import forms
 
 from .blog_utils import sanitize_blog_html
 
-from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica, ClienteFacturacion
+from .models import Cita, Especialidad, Paciente, Profesional, Post, CategoriaBlog, EtiquetaBlog, Servicio, HistoriaClinica, TareaClinica, ClienteFacturacion, ServicioProducto
 
 class SignUpForm(forms.Form):
     username = forms.CharField(label="Usuario:", min_length=6, max_length=12, required=True, widget=forms.TextInput(attrs={'placeholder': 'Ej.: peluche'}))
@@ -706,4 +706,42 @@ class ClienteFacturacionForm(forms.ModelForm):
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
             raise forms.ValidationError("Ya existe un cliente con este tipo y número de identificación.")
+        return value
+
+
+class ServicioProductoForm(forms.ModelForm):
+    class Meta:
+        model = ServicioProducto
+        fields = ["codigo", "tipo", "nombre", "descripcion", "precio", "porcentaje_iva", "controlar_stock", "stock_actual", "estado"]
+        labels = {
+            "codigo": "Código", "tipo": "Tipo", "nombre": "Nombre",
+            "descripcion": "Descripción", "precio": "Precio de venta",
+            "porcentaje_iva": "IVA (%)", "controlar_stock": "Controlar existencias",
+            "stock_actual": "Existencias actuales", "estado": "Estado",
+        }
+        widgets = {
+            "codigo": forms.TextInput(attrs={"placeholder": "Ej.: SER-001"}),
+            "nombre": forms.TextInput(attrs={"placeholder": "Nombre del servicio o producto"}),
+            "descripcion": forms.Textarea(attrs={"rows": 3, "placeholder": "Descripción opcional"}),
+            "precio": forms.NumberInput(attrs={"min": "0", "step": "0.01"}),
+            "porcentaje_iva": forms.NumberInput(attrs={"min": "0", "max": "100", "step": "0.01"}),
+            "stock_actual": forms.NumberInput(attrs={"min": "0", "step": "0.01"}),
+        }
+
+    def clean_codigo(self):
+        return self.cleaned_data["codigo"].strip().upper()
+
+    def clean_nombre(self):
+        return self.cleaned_data["nombre"].strip()
+
+    def clean_precio(self):
+        value = self.cleaned_data["precio"]
+        if value < 0:
+            raise forms.ValidationError("El precio no puede ser negativo.")
+        return value
+
+    def clean_stock_actual(self):
+        value = self.cleaned_data["stock_actual"]
+        if value < 0:
+            raise forms.ValidationError("Las existencias no pueden ser negativas.")
         return value
