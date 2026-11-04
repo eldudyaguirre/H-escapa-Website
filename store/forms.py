@@ -669,6 +669,11 @@ class TareaClinicaForm(forms.ModelForm):
 
 
 class ClienteFacturacionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # El identificador de consumidor final se asigna automáticamente.
+        self.fields["identificacion"].required = False
+
     class Meta:
         model = ClienteFacturacion
         fields = ["tipo_identificacion", "identificacion", "razon_social", "nombres", "apellidos", "correo", "telefono", "direccion", "ciudad", "provincia", "estado", "observaciones"]
@@ -688,6 +693,8 @@ class ClienteFacturacionForm(forms.ModelForm):
     def clean_identificacion(self):
         value = "".join((self.cleaned_data.get("identificacion") or "").split())
         tipo = self.cleaned_data.get("tipo_identificacion")
+        if tipo != "07" and not value:
+            raise forms.ValidationError("Ingresa el número de identificación.")
         if tipo == "05" and (not value.isdigit() or len(value) != 10):
             raise forms.ValidationError("La cédula debe contener 10 dígitos.")
         if tipo == "04" and (not value.isdigit() or len(value) != 13):
