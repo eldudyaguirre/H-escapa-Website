@@ -33,8 +33,8 @@ import secrets
 import requests
 from dotenv import set_key
 
-from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, horarios_disponibles, horarios_disponibles_duracion
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio
+from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, horarios_disponibles, horarios_disponibles_duracion
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion
 from .google_calendar import (
     GoogleCalendarError,
     cancelar_evento_google_calendar,
@@ -2065,6 +2065,64 @@ def eliminarprofesional(request, profesional_id):
 
 
 @staff_required
+@staff_required
+def homeinclientesfacturacion(request):
+    clientes = ClienteFacturacion.objects.all()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    if q:
+        clientes = clientes.filter(
+            models.Q(identificacion__icontains=q) | models.Q(razon_social__icontains=q)
+            | models.Q(nombres__icontains=q) | models.Q(apellidos__icontains=q)
+            | models.Q(correo__icontains=q) | models.Q(telefono__icontains=q)
+        )
+    if estado in {"ACTIVO", "INACTIVO"}:
+        clientes = clientes.filter(estado=estado)
+    return render(request, "frm-clientes-facturacion.html", {
+        "clientes": clientes, "q": q, "estado": estado,
+        "total_clientes": ClienteFacturacion.objects.count(),
+        "clientes_activos": ClienteFacturacion.objects.filter(estado="ACTIVO").count(),
+    })
+
+
+@staff_required
+def homeinnuevoclientefacturacion(request):
+    form = ClienteFacturacionForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        cliente = form.save()
+        messages.success(request, f"Cliente {cliente.razon_social} registrado correctamente.")
+        return redirect("homeinclientesfacturacion")
+    return render(request, "frm-formcliente-facturacion.html", {
+        "form": form, "titulo": "Nuevo cliente",
+        "subtitulo": "Registra los datos tributarios y de contacto del cliente.",
+    })
+
+
+@staff_required
+def homeineditarclientefacturacion(request, cliente_id):
+    cliente = get_object_or_404(ClienteFacturacion, pk=cliente_id)
+    form = ClienteFacturacionForm(request.POST or None, instance=cliente)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, f"Los datos de {cliente.razon_social} se actualizaron correctamente.")
+        return redirect("homeinclientesfacturacion")
+    return render(request, "frm-formcliente-facturacion.html", {
+        "form": form, "cliente": cliente, "titulo": "Editar cliente",
+        "subtitulo": "Actualiza los datos tributarios y de contacto.",
+    })
+
+
+@staff_required
+def eliminarclientefacturacion(request, cliente_id):
+    if request.method != "POST":
+        return redirect("homeinclientesfacturacion")
+    cliente = get_object_or_404(ClienteFacturacion, pk=cliente_id)
+    nombre = cliente.razon_social
+    cliente.delete()
+    messages.success(request, f"El cliente {nombre} fue eliminado correctamente.")
+    return redirect("homeinclientesfacturacion")
+
+
 def homeinpacientes(request):
     pacientes = Paciente.objects.select_related("profesional").all()
     q = request.GET.get("q", "").strip()
