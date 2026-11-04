@@ -801,6 +801,6 @@ class ParametrosFacturacionForm(forms.ModelForm):
                 self.add_error("firma_archivo", "El archivo no puede superar 5 MB.")
             if not clave:
                 self.add_error("clave_firma", "Ingresa la clave para guardar la nueva firma.")
-        elif (not self.instance.pk or not self.instance.tiene_firma) and not clave:
+        elif not self.instance.tiene_firma:
             self.add_error("firma_archivo", "Debes cargar la firma electrónica y su clave.")
         return cleaned
