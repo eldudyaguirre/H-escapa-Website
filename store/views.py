@@ -34,7 +34,7 @@ import requests
 from dotenv import set_key
 
 from .forms import CitaForm, ReprogramarCitaForm, RegistroConsultaForm, TareaClinicaForm, EspecialidadForm, PacienteForm, ProfesionalForm, PostForm, ClienteFacturacionForm, horarios_disponibles, horarios_disponibles_duracion
-from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion
+from .models import Cita, CategoriaBlog, DocumentoPaciente, Especialidad, EtiquetaBlog, HistoriaClinica, TareaClinica, InteraccionWeb, InteraccionWebHistorial, Paciente, Post, Profesional, Servicio, ClienteFacturacion, ServicioProducto
 from .google_calendar import (
     GoogleCalendarError,
     cancelar_evento_google_calendar,
@@ -2123,6 +2123,70 @@ def eliminarclientefacturacion(request, cliente_id):
     cliente.delete()
     messages.success(request, f"El cliente {nombre} fue eliminado correctamente.")
     return redirect("homeinclientesfacturacion")
+
+
+@staff_required
+def homeinserviciosproductos(request):
+    registros = ServicioProducto.objects.all()
+    q = request.GET.get("q", "").strip()
+    tipo = request.GET.get("tipo", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    if q:
+        registros = registros.filter(
+            models.Q(codigo__icontains=q) | models.Q(nombre__icontains=q)
+            | models.Q(descripcion__icontains=q)
+        )
+    if tipo in {"SERVICIO", "PRODUCTO"}:
+        registros = registros.filter(tipo=tipo)
+    if estado in {"ACTIVO", "INACTIVO"}:
+        registros = registros.filter(estado=estado)
+    return render(request, "frm-servicios-productos.html", {
+        "registros": registros, "q": q, "tipo": tipo, "estado": estado,
+        "total_registros": ServicioProducto.objects.count(),
+        "servicios_activos": ServicioProducto.objects.filter(tipo="SERVICIO", estado="ACTIVO").count(),
+        "productos_activos": ServicioProducto.objects.filter(tipo="PRODUCTO", estado="ACTIVO").count(),
+        "active_menu": "servicios_productos",
+    })
+
+
+@staff_required
+def homeinnuevoservicioproducto(request):
+    form = ServicioProductoForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        registro = form.save()
+        messages.success(request, f"{registro.get_tipo_display()} {registro.nombre} registrado correctamente.")
+        return redirect("homeinserviciosproductos")
+    return render(request, "frm-formservicioproducto.html", {
+        "form": form, "titulo": "Nuevo servicio o producto",
+        "subtitulo": "Registra un concepto para el catálogo de facturación.",
+        "active_menu": "servicios_productos",
+    })
+
+
+@staff_required
+def homeineditarservicioproducto(request, registro_id):
+    registro = get_object_or_404(ServicioProducto, pk=registro_id)
+    form = ServicioProductoForm(request.POST or None, instance=registro)
+    if request.method == "POST" and form.is_valid():
+        registro = form.save()
+        messages.success(request, f"{registro.nombre} se actualizó correctamente.")
+        return redirect("homeinserviciosproductos")
+    return render(request, "frm-formservicioproducto.html", {
+        "form": form, "registro": registro, "titulo": "Editar servicio o producto",
+        "subtitulo": "Actualiza la información del catálogo.",
+        "active_menu": "servicios_productos",
+    })
+
+
+@staff_required
+def eliminarservicioproducto(request, registro_id):
+    if request.method != "POST":
+        return redirect("homeinserviciosproductos")
+    registro = get_object_or_404(ServicioProducto, pk=registro_id)
+    nombre = registro.nombre
+    registro.delete()
+    messages.success(request, f"{nombre} fue eliminado del catálogo.")
+    return redirect("homeinserviciosproductos")
 
 
 @staff_required
