@@ -48,6 +48,10 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Claves de Cloudflare Turnstile; se definen en el .env del servidor.
+TURNSTILE_SITE_KEY = os.getenv("TURNSTILE_SITE_KEY", "").strip()
+TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "").strip()
 USE_X_FORWARDED_HOST = not DEBUG
 SECURE_SSL_REDIRECT = not DEBUG
 PREPEND_WWW = False
