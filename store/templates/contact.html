@@ -33,6 +33,7 @@
 	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
 	<!-- Main Custom Css -->
 	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+    {% if turnstile_enabled %}<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>{% endif %}
 </head>
 <body>
 
@@ -130,6 +131,10 @@
                                     <label for="id_website">No completar este campo</label>
                                     <input type="text" name="website" id="id_website" tabindex="-1" autocomplete="off">
                                 </div>
+                                <div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;">
+                                    <label for="id_company_website">Dejar vacío</label>
+                                    <input type="text" name="company_website" id="id_company_website" tabindex="-1" autocomplete="off">
+                                </div>
                                 <input type="hidden" name="form_started_at" value="{{ form_started_at }}">
                                 {% if messages %}
                                     {% for message in messages %}
@@ -168,6 +173,9 @@
                                     </div>
         
                                     <div class="col-md-12">
+                                        {% if turnstile_enabled %}
+                                            <div class="cf-turnstile mb-3" data-sitekey="{{ turnstile_site_key }}" data-action="contact" data-theme="light"></div>
+                                        {% endif %}
                                         <button type="submit" class="btn-default">Enviar</button>
                                         <div id="msgSubmit" class="h3 hidden"></div>
                                     </div>
