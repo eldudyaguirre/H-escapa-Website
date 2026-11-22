@@ -52,13 +52,55 @@ SPAM_MIN_SECONDS = 3
 SPAM_MAX_SUBMISSIONS_PER_HOUR = 8
 
 
+def _turnstile_configurado():
+    return bool(
+        getattr(settings, "TURNSTILE_SITE_KEY", "")
+        and getattr(settings, "TURNSTILE_SECRET_KEY", "")
+    )
+
+
+def _turnstile_contexto():
+    activo = _turnstile_configurado()
+    return {
+        "turnstile_enabled": activo,
+        "turnstile_site_key": getattr(settings, "TURNSTILE_SITE_KEY", "") if activo else "",
+    }
+
+
+def _turnstile_valido(request, accion):
+    """Valida en el servidor el token Turnstile; no confía solo en el widget."""
+    if not _turnstile_configurado():
+        return True
+    token = (request.POST.get("cf-turnstile-response") or "").strip()
+    if not token or len(token) > 2048:
+        return False
+    try:
+        respuesta = requests.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={"secret": settings.TURNSTILE_SECRET_KEY, "response": token},
+            timeout=(3, 7),
+        )
+        respuesta.raise_for_status()
+        resultado = respuesta.json()
+    except (requests.RequestException, ValueError):
+        return False
+    if not resultado.get("success"):
+        return False
+    hostname = (resultado.get("hostname") or "").casefold()
+    permitidos = {"h-escapa.com", "www.h-escapa.com"}
+    if settings.DEBUG:
+        permitidos.update({"localhost", "127.0.0.1"})
+    if hostname not in permitidos:
+        return False
+    return resultado.get("action") == accion
+
 def _es_envio_spam(request, formulario):
     """Detecta el honeypot y limita ráfagas sin bloquear formularios sin timestamp."""
     if request.method != "POST":
         return False
 
     # Los bots suelen rellenar todos los campos; este campo está oculto a personas.
-    if request.POST.get("website", "").strip():
+    if any(request.POST.get(campo, "").strip() for campo in ("website", "company_website", "fax_number")):
         return True
 
     # La comprobación temporal es secundaria: si el campo no llegó por un proxy,
@@ -183,11 +225,16 @@ def signin(request):
 
 
 def about(request): return render(request, "about.html")
+@never_cache
 def contactanos(request):
     form = ContactoForm(request.POST or None)
 
     if request.method == "POST" and _es_envio_spam(request, "contacto"):
         # Respuesta neutra para no indicar a los bots qué control los bloqueó.
+        return redirect("contact")
+
+    if request.method == "POST" and not _turnstile_valido(request, "contact"):
+        messages.error(request, "No pudimos verificar el envío. Recarga la página e inténtalo nuevamente.", extra_tags="contact-form")
         return redirect("contact")
 
     if request.method == "POST" and form.is_valid():
@@ -279,6 +326,7 @@ def contactanos(request):
     return render(request, "contact.html", {
         "form": form,
         "form_started_at": timezone.now().timestamp(),
+        **_turnstile_contexto(),
     })
 
 def horarios_agendamiento(request):
@@ -292,15 +340,17 @@ def horarios_agendamiento(request):
     return JsonResponse({"horarios": horarios_disponibles(profesional, dia, servicio)})
 
 
+@never_cache
 def agendamiento(request):
     form = AgendamientoForm(request.POST or None)
 
-    if request.method == "POST" and _es_envio_spam(request, "agendamiento"):
-        messages.error(request, "No pudimos procesar la solicitud. Espera unos segundos, recarga la página e inténtalo nuevamente.", extra_tags="appointment-form")
+    if request.method == "POST" and (_es_envio_spam(request, "agendamiento") or not _turnstile_valido(request, "appointment")):
+        messages.error(request, "No pudimos procesar la solicitud. Verifica la protección antispam, recarga la página e inténtalo nuevamente.", extra_tags="appointment-form")
         return render(request, "book-appointment.html", {
             "form": form,
             "form_started_at": timezone.now().timestamp(),
             "appointment_error": True,
+            **_turnstile_contexto(),
         })
 
     if request.method == "POST":
@@ -371,6 +421,7 @@ def agendamiento(request):
         "form": form,
         "form_started_at": timezone.now().timestamp(),
         "appointment_sent": request.session.pop("appointment_sent_confirmation", False),
+        **_turnstile_contexto(),
     })
 
 
